@@ -1,0 +1,553 @@
+/* ============================================================
+   PROYECTO 05 · Objetos, JSON, Map y Set
+   Hoja de estilos propia del proyecto (no depende de otras carpetas).
+
+   Este archivo tambien esta comentado: la idea es que quien recien
+   empieza entienda POR QUE se toma cada decision de diseno.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. VARIABLES CSS (tambien llamadas "custom properties")
+   ------------------------------------------------------------
+   Definir los colores UNA sola vez en :root permite reutilizarlos
+   con var(--nombre). Si manana el docente quiere cambiar el color
+   principal, se cambia aqui y se actualiza toda la pagina.
+   :root es el elemento raiz del documento (<html>).
+------------------------------------------------------------ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ------------------------------------------------------------
+   2. REINICIO BASICO
+   ------------------------------------------------------------
+   Cada navegador trae margenes y tamanos por defecto distintos.
+   Con este bloque partimos todos desde el mismo punto.
+   box-sizing: border-box hace que el padding y el borde se cuenten
+   DENTRO del ancho declarado (mucho mas facil de razonar).
+------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* 17px de base: pensado para PROYECTAR en clase y que se lea de lejos. */
+  font-size: 17px;
+  font-family: var(--fuente);
+  line-height: 1.65;
+  color: var(--texto);
+  /* Degradado sutil: dos capas de color sobre el fondo plano. */
+  background-color: var(--fondo);
+  background-image:
+    radial-gradient(900px 500px at 15% -10%, rgba(56, 189, 248, 0.12), transparent),
+    radial-gradient(700px 400px at 90% 0%, rgba(192, 132, 252, 0.10), transparent);
+  background-attachment: fixed;
+}
+
+/* ------------------------------------------------------------
+   2.b. FRAGMENTOS DE CODIGO DENTRO DEL TEXTO
+   ------------------------------------------------------------
+   Los <code> sueltos que hay en los parrafos y en los avisos.
+   Sin esta regla el navegador los pinta con su monoespaciada por
+   defecto, que se ve MUCHO mas pequena y apenas se lee proyectada.
+   0.92em (y no un valor fijo en px) hace que el codigo crezca junto
+   con el texto que lo rodea.
+------------------------------------------------------------ */
+code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--primario);
+  background-color: rgba(56, 189, 248, 0.10);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 1px 6px;
+  /* Evita que un identificador largo desborde la caja en movil. */
+  overflow-wrap: anywhere;
+}
+
+/* Dentro del temario los <code> van en morado: ya tienen su propia
+   regla mas abajo y esta les sirve de base. */
+
+/* ------------------------------------------------------------
+   3. LAYOUT GENERAL
+   ------------------------------------------------------------
+   Un contenedor centrado con ancho maximo evita lineas de texto
+   larguisimas (incomodas de leer) en pantallas grandes.
+------------------------------------------------------------ */
+.contenedor {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ------------------------------------------------------------
+   4. CABECERA DEL PROYECTO
+------------------------------------------------------------ */
+.cabecera {
+  background: linear-gradient(135deg, var(--superficie), var(--superficie-2));
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 28px 26px;
+  margin-bottom: 26px;
+}
+
+.cabecera__volver {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: var(--primario);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px; /* valor enorme = pildora perfectamente redondeada */
+  padding: 4px 14px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.cabecera__volver:hover {
+  background-color: var(--superficie-2);
+  transform: translateX(-3px); /* pequeno guino visual hacia la izquierda */
+}
+
+.cabecera h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.7rem, 1.2rem + 2vw, 2.6rem); /* se adapta al ancho */
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.cabecera__frase {
+  margin: 0;
+  color: var(--texto-suave);
+  max-width: 70ch; /* 70 caracteres: medida comoda de lectura */
+}
+
+/* ------------------------------------------------------------
+   5. INDICE DE SECCIONES (enlaces ancla)
+   ------------------------------------------------------------
+   Grid con "auto-fill" + "minmax": crea tantas columnas como
+   quepan, cada una de 220px como minimo. Es responsive sin
+   escribir una sola media query.
+------------------------------------------------------------ */
+.indice {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 20px 22px;
+  margin-bottom: 30px;
+}
+
+.indice h2 {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+}
+
+.indice ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.indice a {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.indice a:hover {
+  border-color: var(--primario);
+  transform: translateY(-2px);
+}
+
+/* ------------------------------------------------------------
+   6. BLOQUES / TARJETAS DE SECCION
+------------------------------------------------------------ */
+.bloque {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 24px 24px 28px;
+  margin-bottom: 28px;
+  /* scroll-margin-top separa el titulo del borde superior cuando
+     llegamos a la seccion desde un enlace ancla (#id). */
+  scroll-margin-top: 20px;
+}
+
+.bloque h2 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Numerito redondo delante de cada titulo de seccion. */
+.bloque h2 .numero {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center; /* centra en horizontal y vertical de una sola vez */
+  border-radius: 50%;
+  background-color: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--primario);
+  color: var(--primario);
+  font-size: 1rem;
+  font-family: var(--mono);
+}
+
+.bloque__descripcion {
+  margin: 0 0 18px;
+  color: var(--texto-suave);
+  max-width: 80ch;
+}
+
+/* Lista de "que vas a ver" dentro de cada bloque. */
+.temario {
+  margin: 0 0 18px;
+  padding-left: 20px;
+  color: var(--texto-suave);
+  font-size: 0.95rem;
+}
+
+.temario li {
+  margin-bottom: 4px;
+}
+
+/* Dentro del temario el codigo va en morado para diferenciarlo del
+   codigo que aparece en los parrafos normales (celeste). */
+.temario code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--acento);
+  background-color: rgba(192, 132, 252, 0.1);
+  border-color: rgba(192, 132, 252, 0.35);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+/* ------------------------------------------------------------
+   7. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Este es el corazon didactico del proyecto: lo que normalmente
+   se ve en la consola del navegador (F12) tambien se escribe aqui,
+   para poder explicarlo proyectado sin abrir DevTools.
+------------------------------------------------------------ */
+.consola-caja {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden; /* recorta las esquinas de la barra superior */
+  background-color: #0b1220;
+}
+
+.consola-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background-color: var(--superficie-2);
+  border-bottom: 1px solid var(--borde);
+}
+
+.consola-barra span {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  letter-spacing: 0.04em;
+}
+
+.consola {
+  margin: 0;
+  padding: 16px 18px;
+  background-color: #0b1220;
+  color: #d7e3f4;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  /* pre-wrap respeta los saltos de linea PERO tambien parte lineas
+     muy largas para que no aparezca scroll horizontal infinito. */
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 420px;
+  overflow-y: auto; /* la consola tiene su propio scroll */
+}
+
+/* Barra de scroll discreta (solo la ven navegadores WebKit). */
+.consola::-webkit-scrollbar {
+  width: 10px;
+}
+
+.consola::-webkit-scrollbar-thumb {
+  background-color: var(--borde);
+  border-radius: 999px;
+}
+
+/* ------------------------------------------------------------
+   8. BOTONES
+------------------------------------------------------------ */
+.boton {
+  font-family: inherit;
+  font-size: 0.92rem;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background-color: var(--superficie-2);
+  color: var(--texto);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+}
+
+.boton:hover {
+  border-color: var(--primario);
+  background-color: #2f3f58;
+}
+
+.boton:active {
+  transform: translateY(1px); /* sensacion de "se hunde" al pulsar */
+}
+
+.boton:focus-visible {
+  /* Accesibilidad: quien navega con teclado debe VER donde esta. */
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.boton--primario {
+  background-color: rgba(56, 189, 248, 0.15);
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+.boton--acento {
+  background-color: rgba(192, 132, 252, 0.15);
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.boton--mini {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+}
+
+.barra-botones {
+  display: flex;
+  flex-wrap: wrap; /* en pantallas chicas los botones bajan de linea */
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+/* ------------------------------------------------------------
+   9. PROYECTO PRACTICO: FICHAS DE ESTUDIANTES
+------------------------------------------------------------ */
+.fichas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ficha {
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ficha:hover {
+  border-color: var(--primario);
+  transform: translateY(-3px);
+}
+
+.ficha__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Circulo con las iniciales del estudiante (avatar hecho con CSS). */
+.ficha__avatar {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primario), var(--acento));
+  color: #0b1220;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.ficha__nombre {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.ficha__meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.ficha__datos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  display: grid;
+  gap: 4px;
+}
+
+.ficha__datos strong {
+  color: var(--texto-suave);
+  font-weight: 500;
+}
+
+/* Texto para los datos que NO existen en el objeto (usamos ?. y ??). */
+.ficha__vacio {
+  color: var(--alerta);
+  font-style: italic;
+}
+
+.ficha__notas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pastilla {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background-color: rgba(148, 163, 184, 0.12);
+  color: var(--texto-suave);
+}
+
+.pastilla--exito {
+  border-color: var(--exito);
+  color: var(--exito);
+  background-color: rgba(74, 222, 128, 0.12);
+}
+
+.pastilla--alerta {
+  border-color: var(--alerta);
+  color: var(--alerta);
+  background-color: rgba(251, 191, 36, 0.12);
+}
+
+.pastilla--error {
+  border-color: var(--error);
+  color: var(--error);
+  background-color: rgba(248, 113, 113, 0.12);
+}
+
+.ficha__pie {
+  margin-top: auto; /* empuja el pie al fondo aunque las fichas midan distinto */
+  padding-top: 10px;
+  border-top: 1px dashed var(--borde);
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------
+   10. AVISOS Y PIE DE PAGINA
+------------------------------------------------------------ */
+.aviso {
+  border-left: 4px solid var(--alerta);
+  background-color: rgba(251, 191, 36, 0.08);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  margin: 18px 0 0;
+  font-size: 0.92rem;
+  color: var(--texto-suave);
+}
+
+.aviso strong {
+  color: var(--alerta);
+}
+
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  padding-top: 10px;
+}
+
+/* ------------------------------------------------------------
+   11. RESPONSIVE
+   ------------------------------------------------------------
+   En pantallas chicas reducimos paddings y tamanos de titulo para
+   que el contenido siga siendo comodo de leer.
+------------------------------------------------------------ */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+
+  .contenedor {
+    padding: 16px 14px 60px;
+  }
+
+  .bloque,
+  .cabecera,
+  .indice {
+    padding: 18px 16px;
+  }
+
+  .bloque h2 {
+    font-size: 1.25rem;
+  }
+
+  .consola {
+    font-size: 0.85rem;
+    max-height: 320px;
+  }
+}
+
+/* Respeta a quien configuro su sistema para reducir animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

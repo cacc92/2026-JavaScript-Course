@@ -1,0 +1,358 @@
+/* =====================================================================
+   INDICE DEL CURSO - Hoja de estilos
+   ---------------------------------------------------------------------
+   Este archivo NO forma parte del temario: es la portada del curso.
+   Aun asi va comentado, porque los estudiantes suelen curiosear aqui.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. TOKENS DE DISENO (variables CSS)
+   Se declaran en :root para que esten disponibles en todo el documento.
+   Cambiando un solo valor aqui, cambia el color en toda la pagina.
+   --------------------------------------------------------------------- */
+:root {
+  --fondo: #0f172a;         /* fondo general, azul muy oscuro   */
+  --superficie: #1e293b;    /* fondo de las tarjetas            */
+  --superficie-2: #273449;  /* fondo de elementos secundarios   */
+  --borde: #334155;         /* lineas y separadores             */
+  --texto: #e2e8f0;         /* texto principal                  */
+  --texto-suave: #94a3b8;   /* texto secundario / descripciones */
+  --primario: #38bdf8;      /* color de marca (celeste)         */
+  --exito: #4ade80;         /* verde                            */
+  --alerta: #fbbf24;        /* amarillo                         */
+  --error: #f87171;         /* rojo                             */
+  --acento: #c084fc;        /* morado                           */
+  --radio: 12px;            /* redondeo estandar                */
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ---------------------------------------------------------------------
+   2. RESET BASICO
+   box-sizing: border-box hace que el padding NO aumente el ancho total,
+   que es la forma mas comoda de maquetar.
+   --------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 17px;          /* algo grande: el codigo se proyecta en clase */
+  line-height: 1.6;
+  min-height: 100vh;
+  /* Degradados suaves de adorno detras del contenido */
+  background-image:
+    radial-gradient(900px 500px at 10% -10%, rgba(56, 189, 248, 0.14), transparent),
+    radial-gradient(800px 500px at 90% 0%, rgba(192, 132, 252, 0.12), transparent);
+  background-attachment: fixed;
+}
+
+/* Contenedor centrado reutilizable */
+.contenedor {
+  width: min(1100px, 92vw);   /* el menor de los dos: responsive sin media query */
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+/* ---------------------------------------------------------------------
+   3. CABECERA
+   --------------------------------------------------------------------- */
+.portada {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.portada .etiqueta {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primario);
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  padding: 6px 14px;
+  border-radius: 999px;   /* valor enorme = pildora perfecta */
+  margin-bottom: 18px;
+}
+
+.portada h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);  /* tipografia fluida: min, ideal, max */
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+/* background-clip: text pinta el degradado DENTRO de las letras */
+.portada h1 span {
+  background: linear-gradient(90deg, var(--primario), var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.portada p {
+  color: var(--texto-suave);
+  max-width: 62ch;          /* ~62 caracteres: ancho comodo de lectura */
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------------
+   4. BARRA DE DATOS DEL CURSO
+   --------------------------------------------------------------------- */
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.datos div {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.datos strong {
+  color: var(--texto);
+  display: block;
+  font-size: 1.25rem;
+}
+
+/* ---------------------------------------------------------------------
+   5. REJILLA DE PROYECTOS
+   auto-fill + minmax = tantas columnas como quepan, minimo 300px.
+   --------------------------------------------------------------------- */
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Titulo de cada bloque del temario */
+.bloque {
+  grid-column: 1 / -1;       /* ocupa TODAS las columnas de la rejilla */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 26px;
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.bloque::after {
+  content: "";               /* linea decorativa que rellena el espacio */
+  flex: 1;
+  height: 1px;
+  background: var(--borde);
+}
+
+/* ---------------------------------------------------------------------
+   6. TARJETA DE PROYECTO
+   Es un <a>, asi que TODA la tarjeta es clicable (mejor accesibilidad).
+   --------------------------------------------------------------------- */
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 22px;
+  color: inherit;
+  box-shadow: var(--sombra);
+  position: relative;
+  overflow: hidden;
+  /* transition = animacion suave entre el estado normal y :hover */
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+/* Franja de color superior, distinta por nivel */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;         /* top:0 right:0 left:0 (bottom auto) */
+  height: 3px;
+  background: var(--primario);
+}
+
+.tarjeta.intermedio::before { background: var(--alerta); }
+.tarjeta.avanzado::before   { background: var(--acento); }
+.tarjeta.final::before      { background: var(--exito); }
+
+.tarjeta:hover {
+  transform: translateY(-4px);   /* la tarjeta "se levanta" */
+  border-color: var(--primario);
+}
+
+.tarjeta .numero {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primario);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.tarjeta.intermedio .numero { color: var(--alerta); }
+.tarjeta.avanzado .numero   { color: var(--acento); }
+.tarjeta.final .numero      { color: var(--exito); }
+
+.tarjeta h2 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.tarjeta p {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  flex: 1;                   /* empuja las etiquetas hacia abajo */
+  margin-bottom: 16px;
+}
+
+/* Etiquetas de temas (chips) */
+.temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.temas span {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  color: var(--texto-suave);
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+/* Aviso para los proyectos que necesitan servidor local */
+.aviso-servidor {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: var(--alerta);
+  border-left: 3px solid var(--alerta);
+  padding-left: 10px;
+}
+
+/* ---------------------------------------------------------------------
+   6b. BOTONES DE ACCION DE CADA TARJETA
+   Cada proyecto tiene DOS rutas de entrada:
+     - la version resuelta (la que se usa como referencia o solucion)
+     - la plantilla de clase (HTML y CSS ya hechos, el JS por escribir)
+   Antes la tarjeta entera era un enlace; ahora es un <article> con dos
+   enlaces dentro, porque el HTML no permite anidar un <a> dentro de otro.
+   --------------------------------------------------------------------- */
+.acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borde);
+}
+
+.btn {
+  flex: 1;                    /* los dos botones reparten el ancho a partes iguales */
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Boton principal: lleva a la version resuelta */
+.btn-resuelto {
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+
+.btn-resuelto:hover {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #06202e;             /* texto oscuro sobre fondo celeste: contraste alto */
+}
+
+/* Boton secundario: lleva a la plantilla para desarrollar en clase */
+.btn-plantilla {
+  background: transparent;
+  color: var(--alerta);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.btn-plantilla:hover {
+  background: var(--alerta);
+  border-color: var(--alerta);
+  color: #2a1d00;
+}
+
+/* En pantallas muy estrechas los botones se apilan */
+@media (max-width: 420px) {
+  .acciones { flex-direction: column; }
+}
+
+/* ---------------------------------------------------------------------
+   7. PANEL DE INSTRUCCIONES
+   --------------------------------------------------------------------- */
+.panel {
+  margin-top: 56px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 28px;
+}
+
+.panel h3 {
+  margin-bottom: 14px;
+  font-size: 1.1rem;
+}
+
+.panel ol,
+.panel ul {
+  padding-left: 22px;
+  color: var(--texto-suave);
+}
+
+.panel li { margin-bottom: 8px; }
+
+.panel code {
+  font-family: var(--mono);
+  background: #0b1220;
+  border: 1px solid var(--borde);
+  color: var(--primario);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.86rem;
+}
+
+footer {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--borde);
+}
+
+/* ---------------------------------------------------------------------
+   8. RESPONSIVE
+   En pantallas pequenas reducimos el aire vertical.
+   --------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .contenedor { padding: 28px 0 56px; }
+  body { font-size: 16px; }
+}

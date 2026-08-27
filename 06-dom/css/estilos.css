@@ -1,0 +1,928 @@
+/* ============================================================
+   ARCHIVO: css/estilos.css
+   PROYECTO: 06 - Manipulación del DOM
+   ------------------------------------------------------------
+   Estilos propios de este proyecto. Está comentado en español
+   para que quien empieza entienda POR QUÉ se toma cada decisión,
+   no solo QUÉ propiedad se usa.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. TOKENS DE DISEÑO (variables CSS)
+   ------------------------------------------------------------
+   Una variable CSS se declara con dos guiones (--nombre) dentro
+   de :root (la raíz del documento, es decir <html>) y se usa con
+   var(--nombre). Ventaja: si mañana cambiamos el color primario,
+   lo cambiamos en UN sitio y se actualiza toda la página.
+   ------------------------------------------------------------ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ------------------------------------------------------------
+   2. REINICIO BÁSICO
+   ------------------------------------------------------------
+   box-sizing: border-box hace que el padding y el borde se
+   cuenten DENTRO del ancho declarado. Sin esto, un elemento de
+   width:100% con padding se sale de la pantalla.
+   ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  /* 17px de base: pensado para proyectar en clase y que se lea desde el fondo */
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* scroll suave al pulsar los enlaces ancla del índice */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ------------------------------------------------------------
+   2.b. FRAGMENTOS DE CÓDIGO DENTRO DEL TEXTO
+   ------------------------------------------------------------
+   En esta página hay decenas de <code> sueltos dentro de párrafos,
+   notas y tablas. Sin una regla propia, el navegador los pinta con
+   su tipografía monoespaciada por defecto, que se ve bastante más
+   pequeña que el texto de alrededor y se lee fatal proyectada.
+   Usamos 0.92em (relativo) para que el código crezca junto al texto.
+   ------------------------------------------------------------ */
+code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--primario);
+  background-color: rgba(56, 189, 248, 0.10);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 1px 6px;
+  /* Un identificador largo se parte en lugar de desbordar la caja. */
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------
+   3. LAYOUT GENERAL
+   ------------------------------------------------------------
+   .contenedor centra el contenido y limita el ancho: leer líneas
+   de 2000px de largo es incomodísimo.
+   ------------------------------------------------------------ */
+.contenedor {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ------------------------------------------------------------
+   4. CABECERA
+   ------------------------------------------------------------ */
+.cabecera {
+  padding: 40px 0 30px;
+  /* Degradado sutil para separar la cabecera del resto sin usar imágenes */
+  background: linear-gradient(180deg, var(--superficie) 0%, var(--fondo) 100%);
+  border-bottom: 1px solid var(--borde);
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease; /* transición: el cambio de color no es brusco */
+}
+
+.volver:hover {
+  color: var(--primario);
+}
+
+.titulo-proyecto {
+  margin: 0 0 10px;
+  font-size: 2.4rem;
+  line-height: 1.2;
+  /* El degradado sobre el texto se logra recortando el fondo a la forma de las letras */
+  background: linear-gradient(90deg, var(--primario), var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lema {
+  margin: 0 0 24px;
+  max-width: 70ch; /* ch = ancho del carácter "0": 70 caracteres es la medida cómoda de lectura */
+  color: var(--texto-suave);
+}
+
+/* Índice de secciones en rejilla automática */
+.indice ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* auto-fit + minmax = tantas columnas como quepan, mínimo 220px cada una */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.indice a {
+  display: block;
+  padding: 10px 14px;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.indice a:hover {
+  border-color: var(--primario);
+  transform: translateY(-2px); /* pequeño levantamiento al pasar el ratón */
+}
+
+/* ------------------------------------------------------------
+   5. SECCIONES Y TARJETAS
+   ------------------------------------------------------------ */
+.seccion {
+  padding: 46px 0;
+  border-bottom: 1px solid var(--borde);
+  /* scroll-margin-top evita que el título quede pegado al borde al saltar con un ancla */
+  scroll-margin-top: 20px;
+}
+
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 14px;
+  font-size: 1.7rem;
+}
+
+/* Círculo con el número de sección */
+.numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0; /* que no se aplaste cuando el título es largo */
+  border-radius: 50%;
+  background-color: var(--primario);
+  color: var(--fondo);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.intro {
+  max-width: 75ch;
+  color: var(--texto-suave);
+  margin-top: 0;
+}
+
+.tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+}
+
+.tarjeta h3 {
+  margin-top: 0;
+  color: var(--primario);
+}
+
+.rejilla-dos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.nota {
+  font-size: 0.88rem;
+  color: var(--texto-suave);
+}
+
+/* ------------------------------------------------------------
+   6. ÁRBOL DEL DOM (lista anidada decorada)
+   ------------------------------------------------------------
+   Usamos bordes izquierdos para simular las ramas del árbol.
+   ------------------------------------------------------------ */
+.arbol,
+.arbol ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.arbol li {
+  position: relative;
+  padding: 4px 0 4px 16px;
+  border-left: 1px solid var(--borde);
+}
+
+/* ::before crea una "ramita" horizontal desde la línea vertical hasta el texto */
+.arbol li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 12px;
+  height: 1px;
+  background-color: var(--borde);
+}
+
+/* Dentro del árbol de nodos quitamos la cajita del <code> general:
+   son decenas de etiquetas seguidas y las cajas ensuciarían el dibujo. */
+.arbol code {
+  color: var(--acento);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------
+   7. TABLAS
+   ------------------------------------------------------------ */
+/* Contenedor con scroll propio para las tablas.
+   Sin esto, en un móvil la tabla empujaría la página entera hacia los lados.
+   La regla es general: el contenido ancho (tablas, código, diagramas) se
+   desliza DENTRO de su caja; la página nunca se mueve en horizontal. */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  min-width: 420px; /* por debajo de este ancho, el contenedor activa su scroll */
+  border-collapse: collapse; /* une los bordes de las celdas en una sola línea */
+  font-size: 0.9rem;
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: top;
+}
+
+.tabla th {
+  color: var(--primario);
+}
+
+/* ------------------------------------------------------------
+   8. CAJAS DE DEMOSTRACIÓN
+   ------------------------------------------------------------ */
+.caja-demo {
+  background-color: var(--superficie);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio);
+  padding: 18px;
+  margin: 22px 0;
+}
+
+.caja-demo h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.caja-peligro {
+  border-color: var(--error);
+}
+
+.titulo-demo {
+  color: var(--primario);
+  margin-top: 0;
+}
+
+.producto {
+  margin: 6px 0;
+  padding: 8px 12px;
+  background-color: var(--superficie-2);
+  border-left: 3px solid var(--borde);
+  border-radius: 6px;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+/* Clase que el JS añade y quita para demostrar classList */
+.destacado {
+  border-left-color: var(--alerta);
+  background-color: rgba(251, 191, 36, 0.12);
+}
+
+.etiqueta {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Elemento oculto: sirve para demostrar que innerText NO lo lee y textContent SÍ */
+.oculto {
+  display: none;
+}
+
+.mini-tarjeta {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+}
+
+.mini-tarjeta h4 {
+  margin: 0 0 6px;
+  color: var(--acento);
+}
+
+.destino {
+  margin-top: 12px;
+  padding: 14px;
+  min-height: 60px;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  color: var(--texto-suave);
+}
+
+.peligro-visible {
+  color: var(--error);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------
+   9. FORMULARIOS Y BOTONES
+   ------------------------------------------------------------ */
+.campo {
+  display: block;
+  margin: 12px 0;
+  font-size: 0.86rem;
+  color: var(--texto-suave);
+}
+
+.campo input,
+.campo select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  background-color: #0b1220;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--primario);
+}
+
+/* El input de color necesita altura fija para verse bien */
+.campo input[type="color"] {
+  height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.fila-botones {
+  display: flex;
+  flex-wrap: wrap; /* en móvil los botones bajan de línea en lugar de desbordar */
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.boton {
+  padding: 10px 16px;
+  background-color: var(--superficie-2);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.boton:hover {
+  border-color: var(--primario);
+  transform: translateY(-1px);
+}
+
+.boton:active {
+  transform: translateY(1px); /* efecto de "pulsado" */
+}
+
+.boton-acento {
+  background-color: var(--acento);
+  border-color: var(--acento);
+  color: #1a1032;
+  font-weight: 600;
+}
+
+.boton-peligro {
+  background-color: rgba(248, 113, 113, 0.15);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.boton-suave {
+  background-color: transparent;
+  color: var(--texto-suave);
+}
+
+.mensaje-error {
+  min-height: 22px;
+  margin: 6px 0 0;
+  color: var(--error);
+  font-size: 0.86rem;
+}
+
+/* ------------------------------------------------------------
+   10. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Reproduce el aspecto de la consola del navegador dentro de la
+   página, para explicar en clase sin abrir DevTools.
+   ------------------------------------------------------------ */
+.consola {
+  margin: 20px 0 0;
+  padding: 16px;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  color: var(--exito);
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  max-height: 340px;   /* altura máxima: la consola no empuja la página hasta el infinito */
+  overflow: auto;      /* scroll propio, tanto vertical como horizontal */
+  white-space: pre-wrap;   /* respeta los saltos de línea y además parte líneas largas */
+  word-break: break-word;
+}
+
+/* ------------------------------------------------------------
+   11. SECCIÓN DE CLASES Y ESTILOS
+   ------------------------------------------------------------ */
+.caja-color {
+  padding: 26px;
+  border-radius: var(--radio);
+  border: 2px solid var(--borde);
+  text-align: center;
+  font-size: 1.05rem;
+  /* La transición hace visible el cambio de clase: se ve "animado", no de golpe */
+  transition: background-color 0.35s ease, border-color 0.35s ease,
+              transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.tema-frio {
+  background-color: rgba(56, 189, 248, 0.12);
+  border-color: var(--primario);
+}
+
+.tema-calido {
+  background-color: rgba(251, 191, 36, 0.14);
+  border-color: var(--alerta);
+}
+
+.destacada {
+  transform: scale(1.03);
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.35), var(--sombra);
+  border-color: var(--acento);
+}
+
+/* ------------------------------------------------------------
+   12. LISTAS Y BANCO DE PRUEBAS DE RENDIMIENTO
+   ------------------------------------------------------------ */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lista li {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background-color: var(--superficie-2);
+  border-radius: 6px;
+  border-left: 3px solid var(--primario);
+}
+
+.lista li.completada {
+  border-left-color: var(--exito);
+  color: var(--texto-suave);
+  text-decoration: line-through;
+}
+
+.banco-pruebas {
+  margin-top: 14px;
+  max-height: 140px;    /* limitamos la altura: son miles de elementos */
+  overflow: auto;
+  padding: 8px;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--texto-suave);
+}
+
+.banco-pruebas span {
+  display: inline-block;
+  margin: 1px;
+  padding: 1px 5px;
+  background-color: var(--superficie-2);
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------
+   13. ÁRBOL DE NAVEGACIÓN (sección 6)
+   ------------------------------------------------------------ */
+.departamento {
+  padding: 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background-color: var(--superficie-2);
+}
+
+.departamento h3 {
+  margin-top: 0;
+  color: var(--primario);
+}
+
+.equipo {
+  padding: 12px;
+  border: 1px dashed var(--borde);
+  border-radius: 8px;
+  background-color: var(--superficie);
+}
+
+.equipo h4 {
+  margin: 0 0 8px;
+  color: var(--acento);
+}
+
+.persona {
+  margin: 5px 0;
+  padding: 7px 10px;
+  background-color: var(--superficie-2);
+  border-radius: 6px;
+  transition: outline-color 0.3s ease, background-color 0.3s ease;
+  outline: 2px solid transparent;
+}
+
+/* Clases que aplica el JS de navegación para señalar parentescos */
+.resaltado-objetivo {
+  background-color: rgba(56, 189, 248, 0.2);
+  outline-color: var(--primario);
+}
+
+.resaltado-hermano {
+  background-color: rgba(74, 222, 128, 0.14);
+  outline-color: var(--exito);
+}
+
+/* ------------------------------------------------------------
+   14. LABORATORIO EN VIVO
+   ------------------------------------------------------------ */
+.laboratorio {
+  display: grid;
+  /* Panel estrecho a la izquierda y escenario elástico a la derecha */
+  grid-template-columns: minmax(210px, 260px) 1fr;
+  gap: 20px;
+  margin-top: 22px;
+}
+
+.panel-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  /* sticky: el panel se queda visible mientras se hace scroll por el escenario */
+  align-self: start;
+  position: sticky;
+  top: 16px;
+}
+
+.panel-lab h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: var(--primario);
+}
+
+.boton-lab {
+  padding: 9px 12px;
+  text-align: left;
+  background-color: var(--superficie-2);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, padding-left 0.2s ease;
+}
+
+.boton-lab:hover {
+  border-color: var(--primario);
+  padding-left: 18px; /* el texto se desplaza: refuerza que el botón es interactivo */
+}
+
+.escenario-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.escenario-interior {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px;
+  min-height: 220px;
+  padding: 18px;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.caja-lab {
+  padding: 22px 26px;
+  background-color: var(--superficie-2);
+  border: 2px solid var(--primario);
+  border-radius: var(--radio);
+  transition: all 0.35s ease; /* "all" aquí es cómodo para clase: cualquier cambio se anima */
+}
+
+.caja-lab.marcada {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.25);
+  transform: rotate(-2deg);
+}
+
+/* Las copias que crea el laboratorio (botones "Clonar" e "Insertar antes")
+   llevan la clase .clon. Se pintan con borde discontinuo para que en clase
+   se distinga de un vistazo cuál es la caja ORIGINAL y cuáles son copias.
+   El JS solo pone la clase; el aspecto lo decide el CSS: esa es la regla
+   de oro que repite todo este proyecto. */
+.clon {
+  border-style: dashed;
+  border-color: var(--texto-suave);
+  color: var(--texto-suave);
+  background-color: rgba(148, 163, 184, 0.08);
+}
+
+.codigo-ejecutado {
+  padding: 12px 14px;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.etiqueta-codigo {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+}
+
+/* Este <code> ya vive dentro de un panel oscuro con su propio borde:
+   le quitamos la cajita de la regla general para no doblar el marco. */
+.codigo-ejecutado code {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--primario);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------
+   15. PROYECTO: TARJETAS DE PRODUCTO
+   ------------------------------------------------------------ */
+.rejilla-proyecto {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 22px;
+  margin-top: 22px;
+  align-items: start;
+}
+
+.formulario {
+  padding: 18px;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  position: sticky;
+  top: 16px;
+}
+
+.formulario h3 {
+  margin-top: 0;
+  color: var(--primario);
+}
+
+.barra-grilla {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.barra-grilla h3 {
+  margin: 0;
+}
+
+.contador {
+  padding: 4px 10px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.grilla-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+/* Tarjeta de producto generada por JavaScript */
+.tarjeta-producto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--primario); /* el color lo sobrescribe el JS con style */
+  border-radius: var(--radio);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  /* Animación de entrada: la tarjeta aparece con un pequeño desplazamiento */
+  animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra);
+}
+
+/* Clase que alterna el botón "Destacar" */
+.tarjeta-producto.destacada-producto {
+  background-color: rgba(192, 132, 252, 0.12);
+  box-shadow: 0 0 0 2px var(--acento), var(--sombra);
+}
+
+.tarjeta-producto h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.precio-producto {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--exito);
+}
+
+.categoria-producto {
+  align-self: flex-start;
+  padding: 3px 9px;
+  background-color: var(--superficie-2);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  color: var(--texto-suave);
+}
+
+.acciones-producto {
+  display: flex;
+  gap: 8px;
+  margin-top: auto; /* empuja los botones al fondo aunque las tarjetas midan distinto */
+}
+
+.acciones-producto button {
+  flex: 1;
+  padding: 7px 8px;
+  background-color: var(--superficie-2);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.acciones-producto .btn-destacar:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.acciones-producto .btn-eliminar:hover {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.mensaje-vacio {
+  margin-top: 14px;
+  padding: 18px;
+  text-align: center;
+  color: var(--texto-suave);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio);
+}
+
+/* Clase de utilidad: el JS la añade para esconder el mensaje de grilla vacía */
+.invisible {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   16. PIE DE PÁGINA
+   ------------------------------------------------------------ */
+.pie {
+  padding: 30px 0 50px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   17. RESPONSIVE
+   ------------------------------------------------------------
+   Por debajo de 860px las rejillas de dos columnas pasan a una
+   sola columna y quitamos el sticky (en móvil molesta).
+   ------------------------------------------------------------ */
+@media (max-width: 860px) {
+  .laboratorio,
+  .rejilla-proyecto {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-lab,
+  .formulario {
+    position: static;
+  }
+
+  .titulo-proyecto {
+    font-size: 1.9rem;
+  }
+
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Respeta a quien ha pedido en su sistema operativo "menos animaciones" */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

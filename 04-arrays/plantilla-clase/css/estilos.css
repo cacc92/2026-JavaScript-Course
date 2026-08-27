@@ -1,0 +1,659 @@
+/* ============================================================
+   PROYECTO 04 · ARRAYS Y MÉTODOS FUNCIONALES
+   Hoja de estilos propia del proyecto (no depende de otras carpetas).
+   ------------------------------------------------------------
+   El CSS está comentado igual que el JavaScript: cada bloque
+   explica QUÉ hace y POR QUÉ se decidió así, pensando en quien
+   recién empieza y en que la pantalla se va a PROYECTAR en clase.
+   ============================================================ */
+
+/* ============================================================
+   1. TOKENS DE DISEÑO (variables CSS)
+   ------------------------------------------------------------
+   Una "variable CSS" es un valor con nombre que se define una vez
+   y se reutiliza en todo el archivo con var(--nombre).
+   Ventaja: si mañana queremos cambiar el azul de la marca,
+   lo cambiamos AQUÍ y se actualiza la página entera.
+   :root significa "el elemento raíz del documento" (<html>),
+   así las variables quedan disponibles en todas partes.
+   ============================================================ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ============================================================
+   2. RESETEO BÁSICO
+   ------------------------------------------------------------
+   Los navegadores traen márgenes y tamaños por defecto que varían
+   entre uno y otro. Este bloque los normaliza para partir de cero.
+   box-sizing: border-box hace que el padding y el borde se cuenten
+   DENTRO del ancho del elemento (mucho más intuitivo al maquetar).
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  /* 17px de base: se lee bien desde el fondo del aula al proyectar. */
+  font-size: 17px;
+  line-height: 1.65;
+  /* Suaviza el renderizado de la tipografía en pantallas Retina. */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL
+   ------------------------------------------------------------
+   Limitamos el ancho de la lectura: líneas de texto demasiado
+   largas cansan la vista. margin-inline: auto centra el bloque.
+   ============================================================ */
+.contenedor {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/* ============================================================
+   4. CABECERA
+   ============================================================ */
+.cabecera {
+  /* Degradado sutil para dar profundidad sin distraer. */
+  background: linear-gradient(180deg, #16233d 0%, var(--fondo) 100%);
+  border-bottom: 1px solid var(--borde);
+  padding-block: 32px 40px;
+  margin-bottom: 36px;
+}
+
+.volver {
+  display: inline-block;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  transition: color 0.2s ease; /* Animación suave al pasar el ratón. */
+}
+
+.volver:hover,
+.volver:focus-visible {
+  color: var(--primario);
+}
+
+.numero-proyecto {
+  margin: 0 0 4px;
+  color: var(--primario);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.16em; /* Letras separadas: look de "etiqueta". */
+  text-transform: uppercase;
+}
+
+.cabecera h1 {
+  margin: 0 0 14px;
+  /* clamp(mínimo, ideal, máximo): el título crece con la pantalla
+     pero nunca se hace ni ridículo ni gigante. Esto es tipografía fluida. */
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.lema {
+  margin: 0 0 18px;
+  max-width: 75ch; /* ch = ancho del carácter "0": ~75 caracteres por línea. */
+  color: var(--texto-suave);
+}
+
+.aviso {
+  margin: 0;
+  display: inline-block;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--alerta); /* Barra lateral de color = "atención". */
+  border-radius: var(--radio);
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-bottom-width: 3px; /* Truco visual: parece una tecla real. */
+  border-radius: 6px;
+  padding: 1px 7px;
+  color: var(--texto);
+}
+
+/* ============================================================
+   5. ÍNDICE DE SECCIONES
+   ============================================================ */
+.indice {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 22px 26px;
+  margin-bottom: 34px;
+  box-shadow: var(--sombra);
+}
+
+.indice h2 {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.indice ol {
+  margin: 0;
+  padding-left: 22px;
+  /* Grid de 2 columnas en pantallas anchas: el índice ocupa menos alto. */
+  display: grid;
+  gap: 6px 28px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.indice a {
+  color: var(--texto);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+}
+
+.indice a:hover,
+.indice a:focus-visible {
+  color: var(--primario);
+  border-bottom-color: var(--primario);
+}
+
+/* ============================================================
+   6. TARJETAS DE SECCIÓN
+   ------------------------------------------------------------
+   Cada tema vive en una "tarjeta": superficie + borde + radio.
+   scroll-margin-top evita que, al llegar por un enlace ancla,
+   el título quede pegado al borde superior de la ventana.
+   ============================================================ */
+.tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 28px;
+  margin-bottom: 34px;
+  box-shadow: var(--sombra);
+  scroll-margin-top: 20px;
+}
+
+.tarjeta h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 12px;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  line-height: 1.25;
+}
+
+/* El "número" de sección: círculo con el color de acento. */
+.numero {
+  flex-shrink: 0; /* Que nunca se aplaste aunque el título sea largo. */
+  display: inline-grid;
+  place-items: center; /* Centrado perfecto en horizontal y vertical. */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--primario);
+  color: var(--primario);
+  font-family: var(--mono);
+  font-size: 1rem;
+}
+
+.descripcion {
+  margin: 0 0 12px;
+  color: var(--texto-suave);
+  max-width: 80ch;
+}
+
+.archivo {
+  margin: 0 0 16px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+/* Código dentro del texto normal. */
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background-color: var(--superficie-2);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--acento);
+}
+
+/* ============================================================
+   7. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Es el <pre> donde el JavaScript escribe sus resultados.
+   - fuente monoespaciada: las columnas quedan alineadas.
+   - fondo más oscuro que la tarjeta: se distingue como "salida".
+   - max-height + overflow: auto: la caja tiene su PROPIO scroll
+     y no estira la página aunque se impriman 200 líneas.
+   - white-space: pre-wrap: respeta los saltos de línea que enviamos
+     desde JS pero además parte las líneas muy largas.
+   ============================================================ */
+.consola {
+  margin: 0;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 18px 20px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-height: 460px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* tab-size controla cuánto ocupa un tabulador dentro del <pre>. */
+  tab-size: 2;
+}
+
+/* ============================================================
+   8. PROYECTO PRÁCTICO: CONTROLES
+   ============================================================ */
+.tarjeta-proyecto {
+  /* Un borde de acento para diferenciar la parte práctica de la teórica. */
+  border-color: var(--acento);
+}
+
+.panel-controles {
+  display: flex;
+  flex-wrap: wrap; /* Si no caben, los grupos bajan de línea (responsive). */
+  gap: 20px 28px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.grupo-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.etiqueta-grupo {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.botonera {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.boton {
+  font-family: inherit; /* Los <button> NO heredan la fuente por defecto. */
+  font-size: 0.9rem;
+  color: var(--texto);
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px; /* Píldora. */
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.boton:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+/* Estado "seleccionado": lo activa el JavaScript añadiendo la clase .activo */
+.boton.activo {
+  background-color: var(--primario);
+  border-color: var(--primario);
+  color: #08131f;
+  font-weight: 600;
+}
+
+.boton-secundario {
+  border-style: dashed;
+  color: var(--texto-suave);
+}
+
+/* Accesibilidad: marcamos claramente el foco del teclado (tabulador). */
+.boton:focus-visible,
+.selector:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.selector {
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--texto);
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 190px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   9. PANEL DE ESTADÍSTICAS
+   ------------------------------------------------------------
+   auto-fit + minmax hace una rejilla que se adapta sola:
+   tantas tarjetas por fila como quepan con 170px mínimo.
+   ============================================================ */
+.estado-tabla {
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.panel-estadisticas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.estadistica {
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.estadistica .valor {
+  display: block;
+  font-family: var(--mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--primario);
+  line-height: 1.2;
+}
+
+.estadistica .titulo {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-top: 4px;
+}
+
+/* Variantes de color para dar significado de un vistazo. */
+.estadistica.exito .valor { color: var(--exito); }
+.estadistica.error .valor { color: var(--error); }
+.estadistica.alerta .valor { color: var(--alerta); }
+.estadistica.acento .valor { color: var(--acento); }
+
+/* ============================================================
+   10. TABLA DE CALIFICACIONES
+   ------------------------------------------------------------
+   El contenedor .tabla-scroll tiene overflow-x: auto para que en
+   móviles la tabla se desplace LATERALMENTE dentro de su caja,
+   en lugar de romper el ancho de la página entera.
+   ============================================================ */
+.tabla-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  margin-bottom: 20px;
+}
+
+.tabla-notas {
+  width: 100%;
+  min-width: 620px; /* Debajo de este ancho aparece el scroll horizontal. */
+  /* collapse une los bordes de celdas contiguas en una sola línea. */
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tabla-notas thead th {
+  position: sticky; /* La cabecera se queda fija al hacer scroll vertical. */
+  top: 0;
+  background-color: #16233d;
+  color: var(--texto-suave);
+  text-align: left;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--borde);
+  white-space: nowrap;
+}
+
+.tabla-notas tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: middle;
+}
+
+/* Fila cebra: alterna el fondo para seguir la línea con la vista.
+   nth-child(even) selecciona las filas pares. */
+.tabla-notas tbody tr:nth-child(even) {
+  background-color: rgba(39, 52, 73, 0.45);
+}
+
+.tabla-notas tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.09);
+}
+
+/* La última fila no necesita línea inferior: ya la pone el contenedor. */
+.tabla-notas tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Columnas numéricas: alineadas a la derecha y en monoespaciada,
+   así las unidades quedan una debajo de otra y se comparan mejor. */
+.col-num {
+  text-align: right;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.col-indice {
+  color: var(--texto-suave);
+  width: 56px;
+}
+
+.nombre-estudiante {
+  font-weight: 600;
+}
+
+.nota-ok { color: var(--exito); }
+.nota-mal { color: var(--error); }
+
+/* Etiqueta redondeada para el curso. */
+.etiqueta-curso {
+  display: inline-block;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+/* Distintivos de aprobado / reprobado. */
+.distintivo {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.distintivo-ok {
+  /* Color de texto sólido sobre fondo translúcido del mismo tono:
+     se lee bien y no compite con el resto de la tabla. */
+  background-color: rgba(74, 222, 128, 0.14);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  color: var(--exito);
+}
+
+.distintivo-mal {
+  background-color: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: var(--error);
+}
+
+/* Mensaje cuando ningún estudiante cumple el filtro. */
+.sin-datos {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+/* ============================================================
+   11. PANEL "CANTIDAD POR CURSO"
+   ============================================================ */
+.panel-cursos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pastilla-curso {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--acento);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
+.pastilla-curso strong {
+  font-family: var(--mono);
+  color: var(--acento);
+  font-size: 1.05rem;
+}
+
+/* ============================================================
+   12. PIE DE PÁGINA
+   ============================================================ */
+.pie {
+  border-top: 1px solid var(--borde);
+  padding-block: 26px 40px;
+  margin-top: 20px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+.pie p {
+  margin: 0 0 4px;
+}
+
+.pie-suave {
+  color: #64748b;
+}
+
+/* ============================================================
+   13. AJUSTES RESPONSIVE
+   ------------------------------------------------------------
+   Una "media query" aplica reglas solo cuando se cumple una
+   condición; aquí, cuando la pantalla mide 640px o menos.
+   ============================================================ */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+
+  .tarjeta {
+    padding: 20px 16px;
+  }
+
+  .panel-controles {
+    padding: 14px;
+  }
+
+  .numero {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+
+  .consola {
+    font-size: 0.82rem;
+    max-height: 340px;
+  }
+}
+
+/* Respeta a quien haya pedido en su sistema operativo "menos animaciones". */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   EXTRA DE LA PLANTILLA DE CLASE
+   ------------------------------------------------------------
+   Este bloque NO existe en la versión resuelta del proyecto.
+   Solo da estilo al cartel ".aviso-modo-clase" que aparece
+   arriba del todo para recordar que el HTML y el CSS ya están
+   hechos y que lo único que se escribe en vivo es el JavaScript.
+   Reutiliza los mismos tokens de color definidos en :root, así
+   que encaja con el resto de la página sin inventar colores.
+   ============================================================ */
+.aviso-modo-clase {
+  /* Superficie ligeramente más clara que el fondo, como las tarjetas. */
+  background-color: var(--superficie-2);
+  /* Franja lateral en amarillo de alerta: se ve al instante al proyectar. */
+  border-left: 4px solid var(--alerta);
+  border-radius: var(--radio);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  /* Algo más pequeño que el texto normal: es un aviso, no contenido. */
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--texto-suave);
+}
+
+/* El "MODO CLASE" en negrita se pinta del color de alerta para destacarlo. */
+.aviso-modo-clase strong {
+  color: var(--alerta);
+  letter-spacing: 0.04em;
+}
+
+/* El enlace a la solución hereda el color primario del resto de la página. */
+.aviso-modo-clase a {
+  color: var(--primario);
+}

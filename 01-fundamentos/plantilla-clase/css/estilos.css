@@ -1,0 +1,590 @@
+/* ============================================================
+   ESTILOS DEL PROYECTO 01 - FUNDAMENTOS DE JAVASCRIPT
+   ------------------------------------------------------------
+   Tema oscuro pensado para PROYECTAR en clase:
+   tipografia grande, mucho contraste y bloques bien separados.
+   Todo el archivo esta comentado porque muchos estudiantes
+   estan viendo CSS "de verdad" por primera vez.
+   ============================================================ */
+
+/* ============================================================
+   1. VARIABLES CSS (design tokens)
+   ------------------------------------------------------------
+   :root es el elemento raiz del documento (la etiqueta <html>).
+   Las variables declaradas aqui estan disponibles en TODO el CSS.
+   Ventaja: si manana cambia el color primario, se cambia en UN sitio.
+   ============================================================ */
+:root {
+  --fondo: #0f172a;          /* fondo general de la pagina */
+  --superficie: #1e293b;     /* fondo de las tarjetas */
+  --superficie-2: #273449;   /* fondo de elementos internos (thead, mini tarjetas) */
+  --borde: #334155;          /* lineas y separadores */
+  --texto: #e2e8f0;          /* color de texto principal */
+  --texto-suave: #94a3b8;    /* texto secundario, menos importante */
+  --primario: #38bdf8;       /* azul de marca: titulos, enlaces, botones */
+  --exito: #4ade80;          /* verde: buenas practicas */
+  --alerta: #fbbf24;         /* amarillo: cuidado */
+  --error: #f87171;          /* rojo: errores comunes */
+  --acento: #c084fc;         /* violeta: detalles y variaciones */
+  --radio: 12px;             /* radio de esquinas redondeadas */
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ============================================================
+   2. REINICIO BASICO (reset)
+   ------------------------------------------------------------
+   Los navegadores traen margenes por defecto que estorban.
+   Los quitamos para partir siempre del mismo punto.
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  /* border-box hace que el padding NO sume ancho extra:
+     una caja de 300px con 20px de padding sigue midiendo 300px. */
+  box-sizing: border-box;
+}
+
+html {
+  /* Al pulsar un enlace ancla del indice, la pagina se desliza suavemente. */
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 17px;      /* base grande: se lee bien desde el fondo del aula */
+  line-height: 1.65;    /* interlineado amplio = texto mas respirable */
+  /* Degradados sutiles para que el fondo no sea un plano muerto. */
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.10), transparent 45%),
+    radial-gradient(circle at 88% 8%, rgba(192, 132, 252, 0.10), transparent 40%);
+  background-attachment: fixed;
+}
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL
+   ------------------------------------------------------------
+   max-width evita lineas larguisimas (dificiles de leer)
+   y "margin: 0 auto" centra el bloque horizontalmente.
+   ============================================================ */
+.contenedor {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================================
+   4. CABECERA SUPERIOR
+   ------------------------------------------------------------
+   position: sticky mantiene la barra visible al hacer scroll,
+   lo que ayuda al docente a volver al indice en cualquier momento.
+   ============================================================ */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 10;                      /* se dibuja por encima del contenido */
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);       /* efecto cristal esmerilado */
+  border-bottom: 1px solid var(--borde);
+}
+
+.cabecera__interior {
+  display: flex;                    /* flexbox: elementos en fila */
+  align-items: center;
+  justify-content: space-between;   /* uno a cada extremo */
+  gap: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.enlace-volver {
+  color: var(--primario);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 999px;             /* valor enorme = pildora perfecta */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.enlace-volver:hover {
+  background-color: var(--superficie);
+  border-color: var(--primario);
+}
+
+.cabecera__marca {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   5. PORTADA (HERO)
+   ============================================================ */
+.hero {
+  padding: 56px 0 32px;
+}
+
+.hero__etiqueta {
+  display: inline-block;
+  color: var(--acento);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.hero__titulo {
+  /* clamp(minimo, ideal, maximo): tipografia fluida.
+     Crece con la pantalla pero nunca se pasa de 3.2rem. */
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.15;
+  /* Truco de degradado sobre el texto: se pinta el fondo y se recorta
+     a la forma de las letras. */
+  background: linear-gradient(90deg, var(--primario), var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 16px;
+}
+
+.hero__frase {
+  color: var(--texto-suave);
+  font-size: 1.1rem;
+  max-width: 70ch;                  /* ch = ancho del caracter "0" */
+}
+
+.hero__datos {
+  display: flex;
+  flex-wrap: wrap;                  /* si no cabe, salta de linea */
+  gap: 12px;
+  list-style: none;
+  margin-top: 22px;
+}
+
+.hero__datos li {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+
+.hero__datos strong { color: var(--texto); }
+
+/* ============================================================
+   6. INDICE DE SECCIONES
+   ------------------------------------------------------------
+   Grid con auto-fit: crea tantas columnas como quepan de 260px.
+   Es responsive sin escribir ni una media query.
+   ============================================================ */
+.indice {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: var(--sombra);
+}
+
+.indice__titulo {
+  font-size: 1.1rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.indice__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px 24px;
+  padding-left: 20px;
+}
+
+.indice__lista a {
+  color: var(--texto);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+}
+
+.indice__lista a:hover {
+  color: var(--primario);
+  border-bottom-color: var(--primario);
+}
+
+/* ============================================================
+   7. TARJETAS DE CONTENIDO
+   ============================================================ */
+.tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 28px;
+  margin-bottom: 28px;
+  /* scroll-margin-top separa el titulo de la cabecera fija
+     cuando llegamos por un enlace ancla. */
+  scroll-margin-top: 80px;
+}
+
+.tarjeta h2 {
+  font-size: 1.6rem;
+  color: var(--primario);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.tarjeta__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tarjeta__cabecera h2 {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.subtitulo {
+  margin-top: 22px;
+  margin-bottom: 8px;
+  font-size: 1.15rem;
+  color: var(--acento);
+}
+
+.parrafo { margin-bottom: 14px; }
+
+.lista {
+  margin: 0 0 14px 22px;
+}
+
+.lista li { margin-bottom: 6px; }
+
+/* ============================================================
+   8. REJILLAS DE MINI TARJETAS
+   ------------------------------------------------------------
+   Una sola clase base y variantes con el numero de columnas.
+   auto-fit + minmax hace que en movil todo caiga a una columna.
+   ============================================================ */
+.rejilla {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.rejilla--2 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rejilla--3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.rejilla--4 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+.mini-tarjeta {
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--primario);   /* franja de color a la izquierda */
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.mini-tarjeta h3 {
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--primario);
+  margin-bottom: 6px;
+}
+
+.mini-tarjeta p {
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+/* ============================================================
+   9. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Es un <pre>, asi que respeta saltos de linea y espacios.
+   Fondo mas oscuro que la tarjeta para que parezca una terminal.
+   ============================================================ */
+.consola {
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--exito);              /* verde terminal clasico */
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 18px;
+  min-height: 200px;
+  max-height: 460px;
+  overflow: auto;                   /* scroll propio si el texto crece */
+  /* white-space: pre-wrap parte las lineas muy largas en vez de
+     provocar scroll horizontal infinito. */
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* Marca interior sutil para dar sensacion de profundidad. */
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   10. BLOQUES DE CODIGO Y ETIQUETAS EN LINEA
+   ============================================================ */
+.codigo {
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--acento);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 12px 0 16px;
+  overflow-x: auto;                 /* el codigo largo scrollea DENTRO */
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  color: #cbd5e1;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background-color: rgba(56, 189, 248, 0.12);
+  color: var(--primario);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* Dentro de un bloque .codigo no queremos el fondo de la pildora. */
+.codigo code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-bottom-width: 3px;         /* efecto tecla fisica */
+  border-radius: 6px;
+  padding: 1px 7px;
+}
+
+/* ============================================================
+   11. NOTAS DESTACADAS
+   ------------------------------------------------------------
+   Una clase base y modificadores de color segun la intencion.
+   ============================================================ */
+.nota {
+  background-color: var(--superficie-2);
+  border-left: 4px solid var(--texto-suave);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 0.97rem;
+  color: var(--texto-suave);
+}
+
+.nota--exito { border-left-color: var(--exito); }
+.nota--alerta { border-left-color: var(--alerta); }
+.nota--error { border-left-color: var(--error); }
+
+.nota strong { color: var(--texto); }
+
+/* ============================================================
+   12. TABLAS COMPARATIVAS
+   ------------------------------------------------------------
+   border-collapse une los bordes de las celdas en una sola linea.
+   El contenedor .tabla-scroll evita que la tabla rompa el layout
+   en pantallas pequenas.
+   ============================================================ */
+.tabla-scroll {
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 620px;                 /* por debajo de esto, aparece el scroll */
+}
+
+.tabla caption {
+  caption-side: top;
+  text-align: left;
+  padding: 12px 14px;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.tabla th,
+.tabla td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tabla thead th {
+  background-color: var(--superficie-2);
+  color: var(--primario);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* th con scope="row": es la etiqueta de la fila, la resaltamos. */
+.tabla tbody th {
+  color: var(--texto);
+  font-weight: 600;
+}
+
+/* Filas alternas (zebra) para seguir la linea con la vista. */
+.tabla tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.tabla tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.07);
+}
+
+/* Colores semanticos reutilizables dentro de las tablas. */
+.bueno  { color: var(--exito); font-weight: 600; }
+.malo   { color: var(--error); font-weight: 600; }
+.alerta { color: var(--alerta); font-weight: 600; }
+.error  { color: var(--error); font-weight: 600; }
+
+/* ============================================================
+   13. BOTONES
+   ============================================================ */
+.barra-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.boton {
+  font-family: var(--fuente);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #06121f;                   /* texto oscuro sobre boton claro */
+  background-color: var(--primario);
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  cursor: pointer;                  /* manita: indica que se puede pulsar */
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.boton:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);      /* el boton "se levanta" */
+  box-shadow: 0 8px 18px rgba(56, 189, 248, 0.25);
+}
+
+.boton:active { transform: translateY(0); }
+
+/* :focus-visible marca el boton solo cuando se navega con teclado.
+   Importante para accesibilidad: nunca elimines el foco sin sustituirlo. */
+.boton:focus-visible,
+.enlace-volver:focus-visible,
+.indice__lista a:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.boton--acento { background-color: var(--acento); }
+.boton--exito  { background-color: var(--exito); }
+
+.boton--fantasma {
+  background-color: transparent;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+}
+
+.boton--fantasma:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+  box-shadow: none;
+}
+
+/* ============================================================
+   14. PIE DE PAGINA
+   ============================================================ */
+.pie {
+  border-top: 1px solid var(--borde);
+  margin-top: 40px;
+  padding: 28px 0 40px;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+}
+
+.pie__suave { margin-top: 6px; opacity: 0.8; }
+
+/* ============================================================
+   15. RESPONSIVE
+   ------------------------------------------------------------
+   Ajustes para pantallas pequenas (moviles y tablets verticales).
+   ============================================================ */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+
+  .tarjeta { padding: 20px 16px; }
+
+  .hero { padding: 36px 0 24px; }
+
+  .cabecera__interior { flex-direction: column; align-items: flex-start; }
+
+  .barra-botones .boton { width: 100%; }   /* botones a ancho completo */
+}
+
+/* ============================================================
+   16. ACCESIBILIDAD: MOVIMIENTO REDUCIDO
+   ------------------------------------------------------------
+   Si el sistema del usuario pide menos animacion, la quitamos.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   17. AVISO DE MODO CLASE (solo en la plantilla)
+   ------------------------------------------------------------
+   Esta regla NO existe en la version resuelta del proyecto.
+   Solo da forma al cartel que recuerda que el HTML y el CSS ya
+   estan hechos y que lo unico que se escribe en vivo es el JS.
+   Se usa el mismo lenguaje visual del resto del sitio:
+   una superficie interna, una barra lateral de color de alerta
+   y una tipografia algo mas pequena para que no robe atencion.
+   ============================================================ */
+.aviso-modo-clase {
+  width: 100%;
+  max-width: 1100px;               /* misma anchura que .contenedor */
+  margin: 0 auto 18px;             /* centrado y con aire por debajo */
+  background-color: var(--superficie-2);
+  border-left: 4px solid var(--alerta);   /* barra amarilla = "atencion" */
+  border-radius: var(--radio);
+  padding: 12px 18px;
+  font-size: 0.88rem;              /* algo menor que el texto normal */
+  line-height: 1.55;
+  color: var(--texto-suave);
+}
+
+.aviso-modo-clase strong { color: var(--alerta); }   /* destaca "MODO CLASE" */
+.aviso-modo-clase a { color: var(--primario); }      /* enlace a la solucion */

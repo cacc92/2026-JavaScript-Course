@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso de JavaScript · Full Stack 2</title>
+  <link rel="stylesheet" href="css/indice.css">
+</head>
+<body>
+
+  <div class="contenedor">
+
+    <!-- =============================================================
+         PORTADA
+         ============================================================= -->
+    <header class="portada">
+      <span class="etiqueta">Full Stack 2 · Desarrollo Front End</span>
+      <h1>Curso de <span>JavaScript</span><br>de cero a proyecto real</h1>
+      <p>
+        Once proyectos progresivos y completamente comentados. Cada uno viene por duplicado:
+        la <strong>versión resuelta</strong>, que sirve de referencia y solución, y la
+        <strong>plantilla de clase</strong>, con el HTML y el CSS ya hechos para escribir
+        el JavaScript en vivo delante de los estudiantes.
+      </p>
+
+      <div class="datos">
+        <div><strong>11</strong> proyectos</div>
+        <div><strong>4</strong> niveles</div>
+        <div><strong>0</strong> dependencias</div>
+        <div><strong>100%</strong> JavaScript puro</div>
+      </div>
+    </header>
+
+    <!-- =============================================================
+         REJILLA DE PROYECTOS
+         Cada tarjeta es un <article> con dos enlaces: la version
+         resuelta y la plantilla de clase. No puede ser un <a> que
+         envuelva todo, porque el HTML no permite anidar enlaces.
+         ============================================================= -->
+    <main class="rejilla">
+
+      <h2 class="bloque">Nivel 1 · Bases del lenguaje</h2>
+
+      <article class="tarjeta">
+        <div class="numero">01</div>
+        <h2>Fundamentos de JavaScript</h2>
+        <p>Cómo se incluye JS en una página, variables, tipos de datos, conversión y coerción, y todos los operadores del lenguaje.</p>
+        <div class="temas">
+          <span>let / const</span><span>tipos</span><span>typeof</span><span>operadores</span><span>== vs ===</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="01-fundamentos/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="01-fundamentos/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <div class="numero">02</div>
+        <h2>Control de flujo</h2>
+        <p>Condicionales, switch y los cinco tipos de bucle. Termina con los ejercicios clásicos: FizzBuzz, primos, factorial y pirámides.</p>
+        <div class="temas">
+          <span>if / else</span><span>switch</span><span>for</span><span>while</span><span>break</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="02-control-de-flujo/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="02-control-de-flujo/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <div class="numero">03</div>
+        <h2>Funciones a fondo</h2>
+        <p>Declaración, expresión y arrow functions. Ámbito, hoisting, closures, callbacks, funciones de orden superior y recursión.</p>
+        <div class="temas">
+          <span>arrow</span><span>scope</span><span>closures</span><span>callbacks</span><span>recursión</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="03-funciones/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="03-funciones/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <h2 class="bloque">Nivel 2 · Estructuras de datos</h2>
+
+      <article class="tarjeta intermedio">
+        <div class="numero">04</div>
+        <h2>Arrays y métodos funcionales</h2>
+        <p>Métodos mutadores y no mutadores, búsqueda, ordenamiento y el trío esencial: <em>map</em>, <em>filter</em> y <em>reduce</em>.</p>
+        <div class="temas">
+          <span>map</span><span>filter</span><span>reduce</span><span>sort</span><span>spread</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="04-arrays/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="04-arrays/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta intermedio">
+        <div class="numero">05</div>
+        <h2>Objetos, JSON, Map y Set</h2>
+        <p>Propiedades y métodos, <em>this</em>, destructuring, copias, encadenamiento opcional, JSON y las colecciones modernas.</p>
+        <div class="temas">
+          <span>objetos</span><span>destructuring</span><span>JSON</span><span>?.</span><span>Map / Set</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="05-objetos/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="05-objetos/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <h2 class="bloque">Nivel 3 · JavaScript en el navegador</h2>
+
+      <article class="tarjeta intermedio">
+        <div class="numero">06</div>
+        <h2>Manipulación del DOM</h2>
+        <p>Seleccionar, leer, crear, insertar y eliminar elementos. Clases, estilos, atributos <em>data-*</em> y recorrido del árbol.</p>
+        <div class="temas">
+          <span>querySelector</span><span>createElement</span><span>classList</span><span>dataset</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="06-dom/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="06-dom/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta intermedio">
+        <div class="numero">07</div>
+        <h2>Eventos, formularios y storage</h2>
+        <p>addEventListener, propagación y delegación, validación de formularios y persistencia. Incluye una lista de tareas completa.</p>
+        <div class="temas">
+          <span>eventos</span><span>delegación</span><span>validación</span><span>localStorage</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="07-eventos-y-formularios/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="07-eventos-y-formularios/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <h2 class="bloque">Nivel 4 · JavaScript avanzado</h2>
+
+      <article class="tarjeta avanzado">
+        <div class="numero">08</div>
+        <h2>Programación Orientada a Objetos</h2>
+        <p>Prototipos, clases, getters y setters, campos privados, herencia, polimorfismo y el control de <em>this</em>.</p>
+        <div class="temas">
+          <span>class</span><span>extends</span><span>#privado</span><span>prototype</span><span>bind</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="08-poo/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="08-poo/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta avanzado">
+        <div class="numero">09</div>
+        <h2>Asincronía y fetch</h2>
+        <p>El event loop paso a paso, callbacks, promesas, async/await y consumo de una API con estados de carga y error.</p>
+        <div class="temas">
+          <span>event loop</span><span>Promise</span><span>async / await</span><span>fetch</span>
+        </div>
+        <p class="aviso-servidor">Para que <em>fetch</em> alcance la API real, ábrelo con Live Server.</p>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="09-asincronia/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="09-asincronia/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <article class="tarjeta avanzado">
+        <div class="numero">10</div>
+        <h2>JavaScript moderno y módulos</h2>
+        <p>Sintaxis ES6+ al completo, iteradores, generadores e <em>import / export</em> repartiendo el código en módulos.</p>
+        <div class="temas">
+          <span>ES6+</span><span>import</span><span>export</span><span>generadores</span><span>??</span>
+        </div>
+        <p class="aviso-servidor">Obligatorio abrirlo con servidor local: los módulos no funcionan con file://</p>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="10-javascript-moderno-y-modulos/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="10-javascript-moderno-y-modulos/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+      <h2 class="bloque">Cierre · Integración</h2>
+
+      <article class="tarjeta final">
+        <div class="numero">11</div>
+        <h2>Proyecto final: TechStore</h2>
+        <p>Una tienda con catálogo, buscador en vivo, filtros, carrito con clases, control de stock, checkout validado y persistencia.</p>
+        <div class="temas">
+          <span>DOM</span><span>eventos</span><span>POO</span><span>reduce</span><span>localStorage</span><span>async</span>
+        </div>
+        <div class="acciones">
+          <a class="btn btn-resuelto" href="11-proyecto-final/index.html">Ver resuelto</a>
+          <a class="btn btn-plantilla" href="11-proyecto-final/plantilla-clase/index.html">Plantilla de clase</a>
+        </div>
+      </article>
+
+    </main>
+
+    <!-- =============================================================
+         CÓMO USAR EL MATERIAL
+         ============================================================= -->
+    <section class="panel">
+      <h3>Las dos versiones de cada proyecto</h3>
+      <ul>
+        <li><strong>Ver resuelto</strong> — el proyecto terminado y comentado línea por línea.
+            Sirve como referencia mientras explicas y como solución para entregar después de la clase.</li>
+        <li><strong>Plantilla de clase</strong> — la misma página con el <strong>HTML y el CSS ya completos</strong>
+            (todos los elementos, ids y clases ya puestos) y el <strong>JavaScript por escribir</strong>.
+            Cada archivo conserva sus secciones y la explicación del concepto, pero el código se sustituye por
+            instrucciones <code>// TODO (en clase):</code> que indican el nombre de las variables, el id del elemento
+            con el que trabajar y la salida esperada. La página arranca vacía a propósito: se va llenando conforme
+            escribes el código en vivo.</li>
+      </ul>
+
+      <h3 style="margin-top:24px">Cómo abrir los proyectos</h3>
+      <ol>
+        <li>Los proyectos <strong>01 al 08</strong> y el <strong>11</strong> funcionan con doble clic sobre su <code>index.html</code>.</li>
+        <li>El <strong>09</strong> y el <strong>10</strong> necesitan un servidor local. La forma más simple es la extensión
+            <strong>Live Server</strong> de VS Code: clic derecho sobre el archivo &rarr; <em>Open with Live Server</em>.</li>
+        <li>Sin VS Code, desde la terminal y dentro de la carpeta del proyecto:
+            <code>python3 -m http.server 8000</code> y luego abrir <code>http://localhost:8000</code>.</li>
+        <li>Recuerda tener abierta la consola del navegador con <code>F12</code>: casi todos los ejemplos también
+            imprimen ahí, además de en el bloque de salida de la propia página.</li>
+      </ol>
+
+      <h3 style="margin-top:24px">Cómo está organizado cada proyecto</h3>
+      <ul>
+        <li><code>index.html</code> — la página con la teoría y la parte práctica.</li>
+        <li><code>css/estilos.css</code> — los estilos, también comentados.</li>
+        <li><code>js/</code> — un archivo por tema, numerado en el orden en que conviene explicarlo.</li>
+        <li><code>README.md</code> — guía docente: temas, tiempos por bloque, ejercicios y errores comunes.</li>
+        <li><code>plantilla-clase/</code> — la misma estructura, con el JavaScript por completar.</li>
+      </ul>
+
+      <h3 style="margin-top:24px">Convenciones de los comentarios</h3>
+      <ul>
+        <li><code>// ⚠️ ERROR COMÚN</code> — el fallo que casi todo principiante comete en ese punto.</li>
+        <li><code>// ✅ BUENA PRÁCTICA</code> — cómo se escribe en un proyecto real.</li>
+        <li><code>// TODO (en clase)</code> — solo en las plantillas: el código que se escribe en vivo.</li>
+        <li><code>// EJERCICIOS PROPUESTOS</code> — al final de cada archivo, retos de dificultad creciente.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Material didáctico · Full Stack 2 — Desarrollo Front End · JavaScript sin librerías ni dependencias
+    </footer>
+
+  </div>
+
+</body>
+</html>

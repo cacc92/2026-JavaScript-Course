@@ -1,0 +1,1284 @@
+/* ============================================================================
+   ARCHIVO: css/estilos.css
+   PROYECTO: 11 · Proyecto final integrador: tienda con carrito (TechStore)
+   ----------------------------------------------------------------------------
+   Esta es la hoja de estilos más completa del curso. Además de dar forma a la
+   tienda, sirve como repaso de CSS moderno:
+
+     - Variables CSS (tokens de diseño) reutilizadas en toda la hoja.
+     - Grid responsive con auto-fill y minmax (el catálogo).
+     - Flexbox para barras, filas y botones.
+     - Posicionamiento fijo para el panel lateral, el modal y los avisos.
+     - Transiciones y transformaciones para el panel deslizante.
+     - Animaciones con @keyframes (esqueletos de carga y avisos emergentes).
+     - Estados: hover, focus-visible, disabled, clases .activo / .abierto.
+
+   Todo está comentado explicando NO solo qué hace la regla, sino POR QUÉ se
+   tomó esa decisión, porque muchos estudiantes recién empiezan con CSS.
+
+   ÍNDICE DE LA HOJA
+     1.  Tokens de diseño (variables CSS)
+     2.  Reset básico y ajustes globales
+     3.  Contenedor y cabecera del proyecto
+     4.  Índice de secciones y secciones didácticas
+     5.  Avisos, tablas y listas de ejercicios
+     6.  Barra de la tienda (marca, buscador, orden, botón del carrito)
+     7.  Filtros por categoría (botones tipo "chip")
+     8.  Rejilla del catálogo y tarjeta de producto
+     9.  Esqueletos de carga (skeletons) y estados vacíos
+     10. Panel lateral del carrito y capa oscura
+     11. Modal de checkout y formulario validado
+     12. Avisos emergentes (toasts)
+     13. Consola visual (bitácora)
+     14. Pie de página
+     15. Responsive y accesibilidad
+   ============================================================================ */
+
+
+/* ============================================================
+   1. TOKENS DE DISEÑO (VARIABLES CSS)
+   ============================================================
+   Una variable CSS es un valor con nombre que podemos reutilizar
+   en toda la hoja. Se declaran dentro de :root, que representa
+   la etiqueta <html> (el elemento raíz del documento).
+   Ventaja enorme: si mañana el cliente quiere otro color de
+   marca, se cambia AQUÍ y se actualiza la página entera. */
+:root {
+  --fondo: #0f172a;          /* Fondo general de la página (azul noche) */
+  --superficie: #1e293b;     /* Fondo de tarjetas y paneles */
+  --superficie-2: #273449;   /* Fondo de elementos internos (chips, filas) */
+  --borde: #334155;          /* Bordes suaves entre superficies */
+  --texto: #e2e8f0;          /* Texto principal, casi blanco */
+  --texto-suave: #94a3b8;    /* Texto secundario, menos contraste */
+  --primario: #38bdf8;       /* Color de marca: enlaces, foco, acciones */
+  --exito: #4ade80;          /* Verde: todo correcto / disponible */
+  --alerta: #fbbf24;         /* Ámbar: advertencias y stock bajo */
+  --error: #f87171;          /* Rojo: errores reales */
+  --acento: #c084fc;         /* Violeta: destacar conceptos clave */
+  --radio: 12px;             /* Redondeo estándar de esquinas */
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+
+  /* Tokens propios de ESTE proyecto (los anteriores son los del curso). */
+  --radio-chico: 8px;              /* Para chips, badges y botones pequeños */
+  --panel-ancho: 420px;            /* Ancho del panel lateral del carrito */
+  --transicion: 0.25s ease;        /* Duración estándar de las transiciones */
+  --consola-fondo: #0b1220;        /* Fondo de la consola visual */
+}
+
+
+/* ============================================================
+   2. RESET BÁSICO Y AJUSTES GLOBALES
+   ============================================================
+   Cada navegador aplica márgenes y tamaños por defecto que varían
+   un poco entre ellos. Un "reset" los normaliza para que todos
+   partamos exactamente del mismo punto. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;   /* El padding y el borde NO agrandan el elemento */
+}
+
+html {
+  scroll-behavior: smooth;  /* Desplazamiento suave con los enlaces #ancla */
+  scroll-padding-top: 20px; /* Evita que el título quede pegado al borde */
+
+  /* ⚠️ DETALLE IMPORTANTE: el tamaño base va en <html>, NO en <body>.
+     La unidad rem se mide SIEMPRE contra el elemento raíz (<html>). Si el
+     17px estuviera en body, el texto de body sí crecería, pero cada rem
+     seguiría valiendo 16px y todas las etiquetas pequeñas se verían más
+     chicas de lo previsto al proyectar. */
+  font-size: 17px;
+}
+
+body {
+  font-family: var(--fuente);
+  line-height: 1.65;
+  color: var(--texto);
+  background: var(--fondo);
+  /* Un degradado muy sutil da profundidad sin distraer.
+     radial-gradient dibuja un círculo de color que se desvanece. */
+  background-image:
+    radial-gradient(900px 500px at 10% -10%, rgba(56, 189, 248, 0.10), transparent),
+    radial-gradient(800px 500px at 100% 0%, rgba(192, 132, 252, 0.10), transparent);
+  background-attachment: fixed;  /* El degradado no se mueve al hacer scroll */
+  padding: 18px 14px 70px;
+  /* Cuando el panel del carrito está abierto añadimos la clase .sin-scroll
+     al body para que la página de atrás no se desplace. */
+}
+
+body.sin-scroll {
+  overflow: hidden;
+}
+
+/* Todos los elementos que reciben foco con el teclado (tabulador) muestran
+   un anillo visible. ✅ Buena práctica de accesibilidad: nunca eliminar el
+   outline sin poner algo equivalente en su lugar. */
+:focus-visible {
+  outline: 3px solid var(--primario);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+img, svg { max-width: 100%; display: block; }
+
+code, kbd {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--primario);
+}
+
+
+/* ============================================================
+   3. CONTENEDOR Y CABECERA DEL PROYECTO
+   ============================================================
+   max-width evita líneas larguísimas: leer 200 caracteres seguidos
+   cansa la vista. margin: 0 auto centra el bloque horizontalmente. */
+.contenedor {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cabecera {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 26px 28px;
+  margin-bottom: 22px;
+  /* position: relative crea el "contexto" para el brillo decorativo de abajo. */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ::before crea un elemento decorativo que NO existe en el HTML.
+   Lo usamos para una franja de color en el borde superior. */
+.cabecera::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;   /* atajo de top/right/bottom/left: pegado arriba */
+  height: 4px;
+  background: linear-gradient(90deg, var(--primario), var(--acento), var(--exito));
+}
+
+.volver {
+  display: inline-block;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+  transition: color var(--transicion);
+}
+
+.volver:hover { color: var(--primario); }
+
+.cabecera h1 {
+  font-size: 2rem;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+
+/* El número del proyecto, en grande y en color de marca. */
+.cabecera h1 .numero {
+  color: var(--primario);
+  font-variant-numeric: tabular-nums;
+}
+
+.subtitulo {
+  color: var(--texto-suave);
+  max-width: 72ch;   /* ch = ancho del carácter "0": ~72 caracteres por línea */
+  margin-bottom: 16px;
+}
+
+/* Fila de etiquetas con los temas del proyecto. flex-wrap permite que
+   salten de línea solas cuando no caben. */
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.etiqueta {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  color: var(--texto-suave);
+  border-radius: 999px;   /* Un radio enorme convierte el rectángulo en píldora */
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-family: var(--mono);
+}
+
+
+/* ============================================================
+   4. ÍNDICE DE SECCIONES Y SECCIONES DIDÁCTICAS
+   ============================================================ */
+.indice {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 20px 24px;
+  margin-bottom: 22px;
+}
+
+.indice h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--texto-suave);
+  margin-bottom: 12px;
+}
+
+/* La lista del índice se reparte en columnas automáticas:
+   auto-fit reparte el espacio disponible entre las que quepan. */
+.indice ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 6px 22px;
+  padding-left: 20px;
+}
+
+.indice a {
+  color: var(--texto);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition: color var(--transicion), border-color var(--transicion);
+}
+
+.indice a:hover {
+  color: var(--primario);
+  border-bottom-color: var(--primario);
+}
+
+.seccion {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 26px 28px;
+  margin-bottom: 22px;
+}
+
+.seccion > h2 {
+  font-size: 1.45rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Numerito redondo delante del título de cada sección. */
+.indicador {
+  display: inline-grid;
+  place-items: center;   /* Centra el contenido en los dos ejes de una vez */
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  color: var(--primario);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  flex-shrink: 0;        /* Que no se aplaste si el título es largo */
+}
+
+.seccion > p { color: var(--texto-suave); margin-bottom: 14px; }
+
+.clave {
+  font-family: var(--mono);
+  color: var(--acento);
+  font-size: 0.92em;
+}
+
+
+/* ============================================================
+   5. AVISOS, TABLAS Y LISTAS DE EJERCICIOS
+   ============================================================
+   El borde izquierdo grueso es un patrón clásico para las cajas
+   de nota: se distingue de un vistazo sin gritar. */
+.aviso {
+  background: var(--superficie-2);
+  border-left: 4px solid var(--primario);
+  border-radius: var(--radio-chico);
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 0.95rem;
+}
+
+.aviso.error-comun { border-left-color: var(--alerta); }
+.aviso.buena-practica { border-left-color: var(--exito); }
+
+/* Envoltorio de tablas: en móvil las tablas anchas se desbordan.
+   overflow-x: auto les da scroll horizontal propio. */
+.tabla-envoltorio {
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-chico);
+  margin: 16px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;   /* Une los bordes de las celdas en uno solo */
+  font-size: 0.9rem;
+  min-width: 540px;            /* Por debajo de esto aparece el scroll */
+}
+
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: top;
+}
+
+thead th {
+  background: var(--superficie-2);
+  color: var(--primario);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+.lista-ejercicios { padding-left: 22px; }
+.lista-ejercicios li { margin-bottom: 10px; }
+.lista-ejercicios strong { color: var(--primario); }
+
+
+/* ============================================================
+   6. BARRA DE LA TIENDA
+   ============================================================
+   Contiene la marca, el buscador, el selector de orden y el botón
+   del carrito. Con flex-wrap se reordena sola en pantallas chicas. */
+.barra-tienda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  /* margin-right: auto empuja todo lo demás hacia la derecha:
+     es el truco de flexbox para separar un elemento del resto. */
+  margin-right: auto;
+}
+
+.marca .logo {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primario), var(--acento));
+  color: #0b1220;
+  font-size: 1.2rem;
+}
+
+.marca small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--texto-suave);
+  letter-spacing: 0.5px;
+}
+
+/* Campo de búsqueda con una lupa dibujada con ::before. */
+.campo-busqueda { position: relative; }
+
+.campo-busqueda::before {
+  content: "🔎";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);  /* Centrado vertical exacto */
+  font-size: 0.9rem;
+  opacity: 0.7;
+  pointer-events: none;         /* La lupa no roba los clics al input */
+}
+
+input[type="search"],
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  font-family: inherit;   /* Los formularios NO heredan la fuente por defecto */
+  font-size: 0.95rem;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-chico);
+  padding: 10px 12px;
+  transition: border-color var(--transicion), box-shadow var(--transicion);
+}
+
+input[type="search"] { padding-left: 34px; width: 240px; }
+
+input:focus, select:focus, textarea:focus {
+  outline: none;                       /* Quitamos el outline del navegador... */
+  border-color: var(--primario);       /* ...y lo sustituimos por este resalte */
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+}
+
+input::placeholder, textarea::placeholder { color: #64748b; }
+
+/* ---- Botones -------------------------------------------------
+   Un único bloque .boton con variantes por clase. Así el estilo
+   base vive en un solo sitio y las variantes solo cambian color. */
+.boton {
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #06121f;
+  background: var(--primario);
+  border: 1px solid transparent;
+  border-radius: var(--radio-chico);
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform var(--transicion), filter var(--transicion),
+              background var(--transicion), color var(--transicion);
+}
+
+.boton:hover { filter: brightness(1.1); }
+.boton:active { transform: translateY(1px); }  /* Sensación de "hundirse" */
+
+/* Un botón deshabilitado debe verse y comportarse como tal. */
+.boton:disabled,
+.boton[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.boton.secundario {
+  background: var(--superficie-2);
+  color: var(--texto);
+  border-color: var(--borde);
+}
+
+.boton.peligro {
+  background: transparent;
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.boton.peligro:hover { background: rgba(248, 113, 113, 0.12); }
+
+.boton.ancho { width: 100%; }
+
+/* Botón del carrito con su contador (badge) encima. */
+.boton-carrito { position: relative; }
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--acento);
+  color: #1b0630;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--superficie-2);
+}
+
+/* Cuando el carrito está vacío ocultamos el contador desde JS
+   añadiendo esta clase, en lugar de tocar el estilo en línea. */
+.badge.oculto { display: none; }
+
+
+/* ============================================================
+   7. FILTROS POR CATEGORÍA (CHIPS)
+   ============================================================ */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.chip {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 7px 15px;
+  cursor: pointer;
+  transition: all var(--transicion);
+}
+
+.chip:hover {
+  color: var(--texto);
+  border-color: var(--primario);
+}
+
+/* .activo lo pone y lo quita el JavaScript con classList.toggle(). */
+.chip.activo {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #06121f;
+  font-weight: 600;
+}
+
+.resumen-resultados {
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+  font-family: var(--mono);
+}
+
+
+/* ============================================================
+   8. REJILLA DEL CATÁLOGO Y TARJETA DE PRODUCTO
+   ============================================================
+   repeat(auto-fill, minmax(240px, 1fr)) es la receta mágica del
+   grid responsive: "mete tantas columnas de mínimo 240px como
+   quepan y reparte el sobrante por igual". Sin media queries. */
+.rejilla-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.tarjeta-producto {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;             /* Recorta la imagen a las esquinas redondas */
+  display: flex;
+  flex-direction: column;       /* Contenido en columna: imagen, texto, botón */
+  transition: transform var(--transicion), border-color var(--transicion),
+              box-shadow var(--transicion);
+}
+
+/* El hover eleva ligeramente la tarjeta. translateY negativo = sube. */
+.tarjeta-producto:hover {
+  transform: translateY(-4px);
+  border-color: var(--primario);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* "Imagen" del producto hecha 100% con CSS: un degradado de fondo
+   y un emoji grande encima. Cero peticiones de red, cero archivos. */
+.imagen-producto {
+  height: 140px;
+  display: grid;
+  place-items: center;
+  font-size: 3.2rem;
+  position: relative;
+  /* El degradado concreto llega desde JS con una variable en línea:
+     style="--degradado: linear-gradient(...)". Este es el respaldo. */
+  background: var(--degradado, linear-gradient(135deg, #334155, #1e293b));
+}
+
+/* Etiqueta de categoría flotando sobre la imagen. */
+.etiqueta-categoria {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(11, 18, 32, 0.75);
+  color: var(--texto);
+  font-size: 0.7rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);   /* Desenfoca lo que hay detrás: efecto vidrio */
+}
+
+.cuerpo-producto {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* flex: 1 hace que este bloque ocupe el alto sobrante, de modo que
+     todos los botones "Agregar" queden alineados abajo aunque los
+     nombres de los productos tengan distinta longitud. */
+  flex: 1;
+}
+
+.nombre-producto {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.descripcion-producto {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  /* Recortamos la descripción a 3 líneas con puntos suspensivos. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fila-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.valoracion { color: var(--alerta); font-family: var(--mono); }
+
+/* Indicadores de stock. Las tres clases las decide el JavaScript. */
+.stock { font-family: var(--mono); font-size: 0.78rem; }
+.stock.alto { color: var(--exito); }
+.stock.bajo { color: var(--alerta); }
+.stock.agotado { color: var(--error); }
+
+.precio {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primario);
+  font-variant-numeric: tabular-nums;  /* Cifras de ancho fijo: se alinean */
+  /* margin-top: auto empuja el precio y el botón al fondo de la tarjeta. */
+  margin-top: auto;
+}
+
+
+/* ============================================================
+   9. ESQUELETOS DE CARGA Y ESTADOS VACÍOS
+   ============================================================
+   Mientras la promesa de carga no se resuelve mostramos "esqueletos":
+   bloques grises que laten. Comunican "esto está por llegar" mucho
+   mejor que una pantalla en blanco. */
+.esqueleto {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0 0 16px;
+  overflow: hidden;
+}
+
+.esqueleto .bloque {
+  background: linear-gradient(
+    90deg,
+    #273449 25%,
+    #33415c 50%,
+    #273449 75%
+  );
+  background-size: 200% 100%;
+  /* La animación desplaza el degradado y produce el efecto "shimmer". */
+  animation: brillo 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.esqueleto .bloque.imagen { height: 140px; border-radius: 0; }
+.esqueleto .bloque.linea { height: 12px; margin: 14px 16px 0; }
+.esqueleto .bloque.linea.corta { width: 45%; }
+.esqueleto .bloque.linea.media { width: 75%; }
+
+@keyframes brillo {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* Estado vacío: cuando una búsqueda no encuentra nada o el carrito
+   está vacío. Nunca dejar un hueco en blanco sin explicación. */
+.estado-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--texto-suave);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio);
+  background: rgba(39, 52, 73, 0.4);
+}
+
+.estado-vacio .icono { font-size: 2.6rem; display: block; margin-bottom: 10px; }
+.estado-vacio strong { color: var(--texto); display: block; margin-bottom: 6px; }
+
+/* Utilidad general: ocultar sin borrar del DOM. La usa mucho el JS. */
+.oculto { display: none !important; }
+
+/* Ocultar SOLO a la vista, pero seguir existiendo para los lectores de
+   pantalla. Es lo correcto para las etiquetas <label> que no queremos
+   mostrar: con display: none el lector tampoco las leería y el campo se
+   quedaría sin nombre accesible. */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ============================================================
+   10. PANEL LATERAL DEL CARRITO Y CAPA OSCURA
+   ============================================================
+   position: fixed saca el panel del flujo normal y lo ancla a la
+   ventana (no a la página), así queda visible aunque se haga scroll.
+   El truco del panel deslizante: siempre está en el DOM, pero
+   desplazado fuera de la pantalla con translateX(100%). Al añadir
+   la clase .abierto vuelve a translateX(0) y la transición lo anima. */
+.panel-carrito {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(var(--panel-ancho), 100%);  /* Nunca más ancho que la pantalla */
+  height: 100%;
+  background: var(--superficie);
+  border-left: 1px solid var(--borde);
+  box-shadow: -20px 0 40px rgba(0, 0, 0, 0.5);
+  z-index: 60;                  /* Por encima del contenido y de la capa */
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);  /* Estado cerrado: fuera de la pantalla */
+  transition: transform 0.3s ease;
+  /* visibility evita que el panel cerrado sea alcanzable con el tabulador. */
+  visibility: hidden;
+}
+
+.panel-carrito.abierto {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.cabecera-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.cabecera-panel h2 { font-size: 1.15rem; }
+
+.boton-cerrar {
+  background: transparent;
+  border: 1px solid var(--borde);
+  color: var(--texto-suave);
+  border-radius: var(--radio-chico);
+  width: 34px;
+  height: 34px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all var(--transicion);
+}
+
+.boton-cerrar:hover { color: var(--error); border-color: var(--error); }
+
+/* La lista de líneas crece y, si hace falta, tiene scroll propio.
+   flex: 1 la hace ocupar todo el alto que sobra entre cabecera y totales. */
+/* El estado vacío, cuando aparece dentro del panel, necesita su margen. */
+.panel-carrito .estado-vacio { margin: 20px; }
+
+.lineas-carrito {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linea-carrito {
+  display: grid;
+  /* Tres columnas: miniatura fija, datos elásticos, botón de quitar fijo. */
+  grid-template-columns: 54px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-chico);
+  padding: 10px;
+  /* Animación de entrada para que se note qué línea acaba de aparecer. */
+  animation: aparecer 0.25s ease;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.miniatura {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radio-chico);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  background: var(--degradado, linear-gradient(135deg, #334155, #1e293b));
+}
+
+.datos-linea { min-width: 0; }  /* Permite que el texto largo se recorte */
+
+.datos-linea .titulo {
+  font-size: 0.92rem;
+  font-weight: 600;
+  /* Recorte a una línea con puntos suspensivos. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.datos-linea .precio-unitario {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+  font-family: var(--mono);
+}
+
+/* Controles de cantidad: - [n] + */
+.controles-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.boton-cantidad {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all var(--transicion);
+}
+
+.boton-cantidad:hover:not(:disabled) {
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+.boton-cantidad:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.cantidad {
+  min-width: 30px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.subtotal-linea {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--primario);
+  margin-left: auto;
+}
+
+.quitar-linea {
+  background: transparent;
+  border: none;
+  color: var(--texto-suave);
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color var(--transicion), background var(--transicion);
+}
+
+.quitar-linea:hover { color: var(--error); background: rgba(248, 113, 113, 0.12); }
+
+/* Zona de totales, pegada abajo del panel. */
+.totales {
+  border-top: 1px solid var(--borde);
+  padding: 16px 20px 20px;
+  background: var(--superficie-2);
+}
+
+.fila-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+  font-family: var(--mono);
+}
+
+.fila-total.grande {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--texto);
+  border-top: 1px dashed var(--borde);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.fila-total.grande span:last-child { color: var(--exito); }
+
+.acciones-panel {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.acciones-panel .boton { flex: 1; }
+
+/* Capa oscura que cubre la página cuando el panel o el modal están
+   abiertos. Sirve para dos cosas: enfocar la atención y cerrar al hacer clic. */
+.capa-oscura {
+  position: fixed;
+  inset: 0;                      /* top/right/bottom/left = 0 */
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transicion), visibility var(--transicion);
+}
+
+.capa-oscura.visible { opacity: 1; visibility: visible; }
+
+
+/* ============================================================
+   11. MODAL DE CHECKOUT Y FORMULARIO VALIDADO
+   ============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;                  /* Por encima del panel del carrito */
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transicion), visibility var(--transicion);
+  overflow-y: auto;             /* Si el formulario no cabe, scroll */
+}
+
+.modal.abierto { opacity: 1; visibility: visible; }
+
+.caja-modal {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  width: min(560px, 100%);
+  max-height: 90vh;             /* Nunca más alto que la ventana */
+  overflow-y: auto;
+  transform: scale(0.94);       /* Cerrado: ligeramente encogido */
+  transition: transform 0.3s ease;
+}
+
+.modal.abierto .caja-modal { transform: scale(1); }
+
+.cabecera-modal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--borde);
+  position: sticky;             /* Se queda arriba al hacer scroll dentro */
+  top: 0;
+  background: var(--superficie);
+  z-index: 1;
+}
+
+.cuerpo-modal { padding: 20px 22px 24px; }
+
+/* Rejilla del formulario: dos columnas en escritorio, una en móvil. */
+.rejilla-formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+/* Un campo que debe ocupar toda la fila lleva esta clase. */
+.campo.completo { grid-column: 1 / -1; }
+
+.campo { display: flex; flex-direction: column; gap: 6px; }
+
+.campo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.campo label .obligatorio { color: var(--error); }
+
+.campo input,
+.campo textarea { width: 100%; }
+
+.campo textarea { resize: vertical; min-height: 76px; }
+
+/* Mensaje de error bajo cada campo. Existe SIEMPRE en el HTML pero
+   vacío; el JavaScript solo le escribe el texto. Así el layout no
+   "salta" cuando aparece el error. */
+.mensaje-error {
+  font-size: 0.78rem;
+  color: var(--error);
+  min-height: 16px;
+}
+
+/* Estado de error del campo: lo activa el JS con classList.add('invalido'). */
+.campo.invalido input,
+.campo.invalido textarea {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+}
+
+.campo.valido input,
+.campo.valido textarea { border-color: var(--exito); }
+
+/* Botón de enviar el pedido: separado del último campo del formulario. */
+#confirmar-pedido { margin-top: 16px; }
+
+/* Botón de la pantalla de confirmación. */
+#seguir-comprando { margin-top: 16px; }
+
+.resumen-pedido {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-chico);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+
+.resumen-pedido h3 { font-size: 0.95rem; margin-bottom: 8px; }
+
+.resumen-pedido ul { list-style: none; }
+
+.resumen-pedido li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+  padding: 3px 0;
+}
+
+.resumen-pedido .total-resumen {
+  border-top: 1px dashed var(--borde);
+  margin-top: 8px;
+  padding-top: 8px;
+  color: var(--exito);
+  font-weight: 700;
+}
+
+/* Pantalla de confirmación (se muestra al enviar el pedido válido). */
+.confirmacion { text-align: center; padding: 10px 0 6px; }
+.confirmacion .icono-exito { font-size: 3rem; display: block; margin-bottom: 10px; }
+.confirmacion h3 { color: var(--exito); font-size: 1.3rem; margin-bottom: 8px; }
+.confirmacion p { color: var(--texto-suave); margin-bottom: 6px; }
+.confirmacion .numero-pedido {
+  font-family: var(--mono);
+  color: var(--primario);
+  font-size: 1.05rem;
+}
+
+
+/* ============================================================
+   12. AVISOS EMERGENTES (TOASTS)
+   ============================================================
+   Un "toast" es un mensaje breve que aparece en una esquina y se va
+   solo. Es el feedback correcto para acciones pequeñas: mucho menos
+   invasivo que un alert(), que además bloquea la página entera. */
+.toasts {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);  /* Centrado horizontal exacto */
+  z-index: 90;                  /* Siempre lo más visible */
+  display: flex;
+  flex-direction: column-reverse;  /* El más nuevo, abajo del todo */
+  gap: 10px;
+  pointer-events: none;         /* Los avisos no bloquean clics de la página */
+  width: min(420px, calc(100% - 32px));
+}
+
+.toast {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--primario);
+  border-radius: var(--radio-chico);
+  box-shadow: var(--sombra);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: entrar-toast 0.25s ease;
+}
+
+/* Variantes de color según el tipo de mensaje. Los cuatro nombres coinciden
+   exactamente con las claves de ICONOS_TOAST en js/04-ui.js: si añades un
+   tipo nuevo allí, añade aquí su color. */
+.toast.exito { border-left-color: var(--exito); }
+.toast.alerta { border-left-color: var(--alerta); }
+.toast.error { border-left-color: var(--error); }
+.toast.info { border-left-color: var(--primario); }
+
+.toast .icono-toast { font-size: 1.1rem; }
+
+/* Clase que añade el JS justo antes de eliminar el aviso del DOM. */
+.toast.saliendo { animation: salir-toast 0.25s ease forwards; }
+
+@keyframes entrar-toast {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes salir-toast {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(16px); }
+}
+
+
+/* ============================================================
+   13. CONSOLA VISUAL (BITÁCORA)
+   ============================================================
+   Reproduce el aspecto de la consola del navegador dentro de la
+   página, para explicar en clase sin tener que abrir DevTools. */
+.barra-consola {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-bottom: none;
+  border-radius: var(--radio) var(--radio) 0 0;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  font-family: var(--mono);
+}
+
+.consola {
+  background: var(--consola-fondo);
+  border: 1px solid var(--borde);
+  border-radius: 0 0 var(--radio) var(--radio);
+  color: var(--texto);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  padding: 14px 16px;
+  max-height: 340px;
+  overflow: auto;               /* Scroll propio, no empuja la página */
+  /* white-space: pre-wrap respeta los saltos de línea del texto Y
+     además parte las líneas larguísimas en lugar de desbordar. */
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 120px;
+}
+
+
+/* ============================================================
+   14. PIE DE PÁGINA
+   ============================================================ */
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  padding: 30px 0 10px;
+  border-top: 1px solid var(--borde);
+  margin-top: 20px;
+}
+
+
+/* ============================================================
+   15. RESPONSIVE Y ACCESIBILIDAD
+   ============================================================
+   Las rejillas ya se adaptan solas gracias a auto-fill/auto-fit.
+   Aquí solo corregimos lo que el grid no puede resolver. */
+@media (max-width: 720px) {
+  html { font-size: 16px; }
+  body { padding: 14px 10px 60px; }
+  .cabecera, .seccion { padding: 20px 16px; }
+  .cabecera h1 { font-size: 1.55rem; }
+
+  /* En móvil el buscador ocupa toda la fila. */
+  .barra-tienda { gap: 10px; }
+  .marca { width: 100%; margin-right: 0; }
+  .campo-busqueda { flex: 1; }
+  input[type="search"] { width: 100%; }
+
+  /* Tarjetas un poco más estrechas para que entren dos por fila
+     en móviles grandes y una en los pequeños. */
+  .rejilla-productos { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .imagen-producto { height: 110px; font-size: 2.4rem; }
+  .panel-carrito { --panel-ancho: 100%; }
+  .consola { font-size: 0.78rem; max-height: 260px; }
+}
+
+/* Accesibilidad: si la persona pidió al sistema operativo "menos
+   movimiento", desactivamos animaciones y transiciones.
+   ✅ Buena práctica que casi nadie recuerda y cuesta 5 líneas. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Estilos de impresión: si alguien imprime la página, sobran los
+   paneles flotantes y el fondo oscuro gasta tinta. */
+@media print {
+  body { background: #fff; color: #000; }
+  .panel-carrito, .capa-oscura, .modal, .toasts, .barra-tienda { display: none !important; }
+}
+
+
+/* ============================================================
+   16. AVISO DE MODO CLASE (SOLO EN LA PLANTILLA)
+   ============================================================
+   Estas reglas NO existen en la version resuelta del proyecto.
+   Pintan la banda que avisa de que la pagina es la plantilla de
+   clase y de que el JavaScript esta todavia por escribir.
+   Reutiliza los mismos tokens que el resto de la hoja, asi que
+   encaja con el tema oscuro sin inventar colores nuevos. */
+.aviso-modo-clase {
+  max-width: 1180px;              /* Mismo ancho util que .contenedor */
+  margin: 24px auto 0;            /* Centrado y separado del borde superior */
+  padding: 14px 18px;             /* Aire interior comodo de leer */
+  background: var(--superficie-2);/* Fondo de elemento interno, no de tarjeta */
+  border-left: 4px solid var(--alerta); /* Franja ambar: "atencion, es un aviso" */
+  border-radius: var(--radio);    /* Mismo redondeo que el resto de bloques */
+  color: var(--texto-suave);      /* Texto secundario: informa, no compite */
+  font-size: 0.9rem;              /* Algo menor que el texto normal */
+  line-height: 1.6;
+}
+
+/* El rotulo "MODO CLASE" en el color de marca para que se lea de un vistazo. */
+.aviso-modo-clase strong { color: var(--primario); }
+
+/* El <code> hereda ya el estilo monoespaciado general; aqui solo se ajusta
+   el tamano para que no rompa la altura de la linea del aviso. */
+.aviso-modo-clase code { font-size: 0.85em; }

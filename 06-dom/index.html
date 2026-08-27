@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- charset UTF-8: permite acentos, ñ y símbolos sin que se vean caracteres raros -->
+  <meta charset="UTF-8">
+  <!-- viewport: hace que la página se adapte al ancho real del móvil -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 · Manipulación del DOM</title>
+  <!-- Hoja de estilos propia del proyecto (ruta relativa a este archivo) -->
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ==========================================================
+       CABECERA DEL PROYECTO
+       ========================================================== -->
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="volver" href="../index.html">← Volver al índice del curso</a>
+      <h1 class="titulo-proyecto">06 · Manipulación del DOM</h1>
+      <p class="lema">
+        Aprende a leer, modificar, crear y eliminar elementos de una página con JavaScript puro:
+        el puente entre tu código y lo que el usuario ve en pantalla. 🌳
+      </p>
+
+      <!-- Índice de secciones con enlaces ancla (#id) -->
+      <nav class="indice" aria-label="Índice de secciones">
+        <ol>
+          <li><a href="#que-es-el-dom">1. ¿Qué es el DOM?</a></li>
+          <li><a href="#seleccion">2. Selección de elementos</a></li>
+          <li><a href="#contenido-y-atributos">3. Contenido y atributos</a></li>
+          <li><a href="#clases-y-estilos">4. Clases y estilos</a></li>
+          <li><a href="#crear-y-eliminar">5. Crear, eliminar y clonar</a></li>
+          <li><a href="#navegar-el-arbol">6. Navegar por el árbol</a></li>
+          <li><a href="#laboratorio">7. Laboratorio en vivo</a></li>
+          <li><a href="#proyecto">8. Proyecto: tarjetas de producto</a></li>
+        </ol>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- ==========================================================
+         1. ¿QUÉ ES EL DOM?
+         ========================================================== -->
+    <section id="que-es-el-dom" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">1</span> ¿Qué es el DOM?</h2>
+
+      <p class="intro">
+        Cuando el navegador lee tu HTML no se queda con el texto: construye en memoria un
+        <strong>árbol de objetos</strong> llamado <em>DOM</em> (Document Object Model).
+        JavaScript no toca el archivo <code>.html</code>; toca ese árbol. Y cada cambio en el árbol
+        se repinta en la pantalla al instante.
+      </p>
+
+      <div class="rejilla-dos">
+        <!-- Representación visual del árbol (HTML estático, solo para explicar en clase) -->
+        <article class="tarjeta">
+          <h3>El árbol de nodos</h3>
+          <ul class="arbol">
+            <li><code>document</code>
+              <ul>
+                <li><code>&lt;html&gt;</code>
+                  <ul>
+                    <li><code>&lt;head&gt;</code>
+                      <ul>
+                        <li><code>&lt;title&gt;</code> → nodo de texto: "06 · DOM"</li>
+                      </ul>
+                    </li>
+                    <li><code>&lt;body&gt;</code>
+                      <ul>
+                        <li><code>&lt;header&gt;</code></li>
+                        <li><code>&lt;main&gt;</code>
+                          <ul>
+                            <li><code>&lt;section&gt;</code> → nodo de texto</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p class="nota">
+            Cada caja del árbol es un <strong>nodo</strong>. Los nodos que son etiquetas
+            se llaman <strong>elementos</strong> (<code>Element</code>). También hay nodos de
+            texto y nodos de comentario.
+          </p>
+        </article>
+
+        <article class="tarjeta">
+          <h3>window vs document vs Element</h3>
+          <!-- La tabla va envuelta en un contenedor con scroll propio:
+               en pantallas estrechas se desliza ella sola en lugar de
+               desbordar la página entera. -->
+          <div class="tabla-scroll">
+          <table class="tabla">
+            <thead>
+              <tr><th>Objeto</th><th>Qué representa</th><th>Ejemplo típico</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>window</code></td>
+                <td>La ventana/pestaña del navegador. Es el objeto global.</td>
+                <td><code>window.innerWidth</code></td>
+              </tr>
+              <tr>
+                <td><code>document</code></td>
+                <td>El documento cargado: la raíz del árbol DOM.</td>
+                <td><code>document.body</code></td>
+              </tr>
+              <tr>
+                <td><code>Element</code></td>
+                <td>Una etiqueta concreta dentro del documento.</td>
+                <td><code>document.querySelector('h1')</code></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="nota">
+            Regla mnemotécnica: <strong>window</strong> es la casa,
+            <strong>document</strong> es el plano de la casa y cada
+            <strong>Element</strong> es una habitación.
+          </p>
+        </article>
+      </div>
+
+      <!-- Consola visual de esta sección -->
+      <pre id="salida-dom" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         2. SELECCIÓN DE ELEMENTOS
+         ========================================================== -->
+    <section id="seleccion" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">2</span> Selección de elementos</h2>
+
+      <p class="intro">
+        Antes de modificar algo hay que <strong>encontrarlo</strong>. Aquí comparamos los cinco
+        métodos clásicos y la diferencia crítica entre colecciones <em>vivas</em> y
+        listas <em>estáticas</em>.
+      </p>
+
+      <!-- Zona de pruebas: el JS de esta sección solo mira aquí dentro -->
+      <div id="caja-seleccion" class="caja-demo">
+        <h3 id="titulo-catalogo" class="titulo-demo">Catálogo de la tienda</h3>
+        <p class="producto">Teclado mecánico</p>
+        <p class="producto">Monitor de 27 pulgadas</p>
+        <p class="producto destacado">Silla ergonómica</p>
+        <span class="etiqueta">Zona de pruebas de selección</span>
+      </div>
+
+      <pre id="salida-seleccion" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         3. CONTENIDO Y ATRIBUTOS
+         ========================================================== -->
+    <section id="contenido-y-atributos" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">3</span> Contenido y atributos</h2>
+
+      <p class="intro">
+        <code>textContent</code>, <code>innerText</code> e <code>innerHTML</code> parecen lo mismo
+        y no lo son. Y los atributos se pueden leer de dos formas distintas que a veces
+        devuelven valores diferentes.
+      </p>
+
+      <div class="caja-demo">
+        <p id="parrafo-precio">
+          Precio del teclado: <strong>49.90</strong> euros
+          <span class="oculto">(este texto está oculto con CSS)</span>
+        </p>
+
+        <a id="enlace-demo" href="pagina-inexistente.html" title="Enlace de ejemplo"
+           data-tipo="interno">Enlace de ejemplo</a>
+
+        <label class="campo">
+          Campo de texto de ejemplo
+          <input id="campo-demo" type="text" value="Valor inicial del HTML">
+        </label>
+
+        <!-- Elemento con varios atributos data-* para practicar dataset -->
+        <article id="tarjeta-dataset" class="mini-tarjeta"
+                 data-id="42"
+                 data-categoria="perifericos"
+                 data-precio-base="49.90"
+                 data-en-oferta="true">
+          <h4>Teclado mecánico RGB</h4>
+          <p>Este artículo guarda información en atributos <code>data-*</code>.</p>
+        </article>
+      </div>
+
+      <!-- Demostración controlada del riesgo de innerHTML (se lanza con un botón) -->
+      <div class="caja-demo caja-peligro">
+        <h3>⚠️ Demostración de XSS con innerHTML</h3>
+        <p class="nota">
+          Escribe (o deja el texto de ejemplo) y pulsa cada botón para ver la diferencia
+          entre insertar como <strong>texto</strong> y como <strong>HTML</strong>.
+        </p>
+        <label class="campo">
+          Contenido enviado por un "usuario malicioso"
+          <input id="campo-xss" type="text"
+                 value="&lt;img src=x onerror=&quot;this.replaceWith('CODIGO AJENO EJECUTADO')&quot;&gt;">
+        </label>
+        <div class="fila-botones">
+          <button id="btn-xss-texto" class="boton" type="button">Insertar con textContent (seguro)</button>
+          <button id="btn-xss-html" class="boton boton-peligro" type="button">Insertar con innerHTML (peligroso)</button>
+        </div>
+        <div id="destino-xss" class="destino">Aquí se insertará el contenido.</div>
+      </div>
+
+      <pre id="salida-contenido" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         4. CLASES Y ESTILOS
+         ========================================================== -->
+    <section id="clases-y-estilos" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">4</span> Clases y estilos</h2>
+
+      <p class="intro">
+        La regla de oro: JavaScript decide <strong>qué clase</strong> lleva un elemento,
+        y el CSS decide <strong>cómo se ve</strong> esa clase. Tocar
+        <code>element.style</code> a mano se reserva para valores calculados.
+      </p>
+
+      <div class="caja-demo">
+        <div id="caja-clases" class="caja-color tema-frio">
+          Caja de ejemplo para <code>classList</code>
+        </div>
+        <div class="fila-botones">
+          <button id="btn-toggle-clase" class="boton" type="button">toggle('destacada')</button>
+          <button id="btn-replace-clase" class="boton" type="button">replace('tema-frio', 'tema-calido')</button>
+          <button id="btn-computed" class="boton" type="button">Leer getComputedStyle()</button>
+        </div>
+      </div>
+
+      <pre id="salida-clases" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         5. CREAR, ELIMINAR Y CLONAR
+         ========================================================== -->
+    <section id="crear-y-eliminar" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">5</span> Crear, eliminar y clonar</h2>
+
+      <p class="intro">
+        Un elemento creado con <code>createElement</code> existe en memoria pero
+        <strong>no se ve</strong> hasta que lo insertas en el árbol. Aquí practicamos todas
+        las formas de insertar, borrar, reemplazar y duplicar.
+      </p>
+
+      <div class="caja-demo">
+        <h3>Lista de tareas construida desde JavaScript</h3>
+        <ul id="lista-tareas" class="lista"></ul>
+      </div>
+
+      <!-- Medición de rendimiento: bucle directo vs DocumentFragment -->
+      <div class="caja-demo">
+        <h3>Rendimiento: bucle directo vs DocumentFragment</h3>
+        <p class="nota">
+          Ambos botones insertan el mismo número de elementos. Fíjate en los milisegundos.
+        </p>
+        <label class="campo">
+          Número de elementos a insertar
+          <input id="campo-cantidad" type="number" value="3000" min="100" max="20000" step="100">
+        </label>
+        <div class="fila-botones">
+          <button id="btn-bucle" class="boton" type="button">Insertar uno a uno</button>
+          <button id="btn-fragment" class="boton boton-acento" type="button">Insertar con DocumentFragment</button>
+          <button id="btn-limpiar-banco" class="boton boton-suave" type="button">Vaciar</button>
+        </div>
+        <div id="banco-pruebas" class="banco-pruebas"></div>
+      </div>
+
+      <pre id="salida-crear" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         6. NAVEGAR POR EL ÁRBOL
+         ========================================================== -->
+    <section id="navegar-el-arbol" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">6</span> Navegar por el árbol</h2>
+
+      <p class="intro">
+        Desde un elemento puedes moverte a su padre, a sus hijos o a sus hermanos.
+        Es la técnica que sostiene la delegación de eventos y los componentes reutilizables.
+      </p>
+
+      <div id="arbol-demo" class="caja-demo">
+        <div class="departamento" id="departamento-informatica" data-area="informatica">
+          <h3>Departamento de Informática</h3>
+          <div class="equipo" id="equipo-frontend">
+            <h4>Equipo Front End</h4>
+            <p class="persona">Ana Restrepo</p>
+            <p class="persona" id="persona-objetivo">Bruno Salazar</p>
+            <p class="persona">Carla Méndez</p>
+          </div>
+        </div>
+      </div>
+
+      <pre id="salida-navegar" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         7. LABORATORIO EN VIVO
+         ========================================================== -->
+    <section id="laboratorio" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">7</span> Laboratorio en vivo</h2>
+
+      <p class="intro">
+        Panel de demostración para explicar operación por operación. Cada botón ejecuta
+        <strong>una sola instrucción del DOM</strong> sobre la caja de ejemplo y muestra
+        exactamente la línea de código que se ejecutó.
+      </p>
+
+      <div class="laboratorio">
+        <!-- Panel lateral con un botón por operación -->
+        <aside class="panel-lab" aria-label="Operaciones del DOM">
+          <h3>Operaciones</h3>
+          <button class="boton-lab" type="button" data-operacion="texto">Cambiar el texto</button>
+          <button class="boton-lab" type="button" data-operacion="html">Insertar HTML</button>
+          <button class="boton-lab" type="button" data-operacion="color">Cambiar el color</button>
+          <button class="boton-lab" type="button" data-operacion="clase">Alternar una clase</button>
+          <button class="boton-lab" type="button" data-operacion="atributo">Escribir un data-*</button>
+          <button class="boton-lab" type="button" data-operacion="clonar">Clonar la caja</button>
+          <button class="boton-lab" type="button" data-operacion="antes">Insertar antes (before)</button>
+          <button class="boton-lab" type="button" data-operacion="eliminar">Eliminar el último clon</button>
+          <button class="boton-lab boton-suave" type="button" data-operacion="reiniciar">Reiniciar el laboratorio</button>
+        </aside>
+
+        <!-- Escenario donde vive la caja de ejemplo -->
+        <div class="escenario-lab">
+          <div id="escenario-lab" class="escenario-interior">
+            <div id="caja-lab" class="caja-lab" data-estado="inicial">Caja de ejemplo</div>
+          </div>
+          <div class="codigo-ejecutado">
+            <span class="etiqueta-codigo">Línea ejecutada</span>
+            <code id="codigo-lab">Pulsa un botón del panel para empezar.</code>
+          </div>
+        </div>
+      </div>
+
+      <pre id="salida-lab" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ==========================================================
+         8. PROYECTO: GENERADOR DE TARJETAS DE PRODUCTO
+         ========================================================== -->
+    <section id="proyecto" class="seccion">
+      <h2 class="titulo-seccion"><span class="numero">8</span> Proyecto: generador de tarjetas de producto</h2>
+
+      <p class="intro">
+        Todo lo anterior junto: un formulario que crea tarjetas reales en una grilla,
+        con botón para destacarlas y botón para eliminarlas.
+      </p>
+
+      <div class="rejilla-proyecto">
+        <!-- Formulario de alta -->
+        <form id="formulario-producto" class="formulario" novalidate>
+          <h3>Nuevo producto</h3>
+
+          <label class="campo">
+            Nombre del producto
+            <input id="campo-nombre" name="nombre" type="text" placeholder="Teclado mecánico RGB" required>
+          </label>
+
+          <label class="campo">
+            Precio en euros
+            <input id="campo-precio" name="precio" type="number" placeholder="49.90" min="0" step="0.01" required>
+          </label>
+
+          <label class="campo">
+            Categoría
+            <select id="campo-categoria" name="categoria">
+              <option value="Periféricos">Periféricos</option>
+              <option value="Monitores">Monitores</option>
+              <option value="Mobiliario">Mobiliario</option>
+              <option value="Audio">Audio</option>
+              <option value="Almacenamiento">Almacenamiento</option>
+            </select>
+          </label>
+
+          <label class="campo">
+            Color identificativo
+            <input id="campo-color" name="color" type="color" value="#38bdf8">
+          </label>
+
+          <p id="mensaje-error" class="mensaje-error" role="alert"></p>
+
+          <div class="fila-botones">
+            <button type="submit" class="boton boton-acento">Crear tarjeta</button>
+            <button type="button" id="btn-ejemplos" class="boton">Cargar 3 ejemplos</button>
+            <button type="button" id="btn-vaciar" class="boton boton-suave">Vaciar la grilla</button>
+          </div>
+        </form>
+
+        <!-- Grilla de tarjetas + contador -->
+        <div class="zona-grilla">
+          <div class="barra-grilla">
+            <h3>Catálogo</h3>
+            <span id="contador-productos" class="contador">0 productos</span>
+          </div>
+          <div id="grilla-productos" class="grilla-productos"></div>
+          <p id="mensaje-vacio" class="mensaje-vacio">
+            Todavía no hay productos. Usa el formulario para crear el primero.
+          </p>
+        </div>
+      </div>
+
+      <pre id="salida-proyecto" class="consola" aria-live="polite"></pre>
+    </section>
+
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>Full Stack 2 · Desarrollo Front End · Proyecto 06 · Manipulación del DOM</p>
+      <p class="nota">Abre la consola del navegador con F12 para ver la misma salida en su sitio natural.</p>
+    </div>
+  </footer>
+
+  <!--
+    ORDEN DE CARGA DE LOS SCRIPTS
+    ---------------------------------------------------------------
+    defer  = el navegador descarga el archivo mientras lee el HTML,
+             pero lo EJECUTA cuando el árbol DOM ya está completo.
+             Gracias a defer no hace falta esperar a DOMContentLoaded.
+    El orden de los <script defer> se respeta: 00 se ejecuta antes que 01, etc.
+    Por eso 00-utilidades.js puede publicar la consola visual y el resto usarla.
+  -->
+  <script src="js/00-utilidades.js" defer></script>
+  <script src="js/01-seleccion.js" defer></script>
+  <script src="js/02-contenido-y-atributos.js" defer></script>
+  <script src="js/03-clases-y-estilos.js" defer></script>
+  <script src="js/04-crear-y-eliminar.js" defer></script>
+  <script src="js/05-navegar-el-arbol.js" defer></script>
+  <script src="js/06-laboratorio.js" defer></script>
+  <script src="js/07-proyecto-tarjetas.js" defer></script>
+</body>
+</html>

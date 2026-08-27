@@ -1,0 +1,365 @@
+/**
+ * ============================================================================
+ * ARCHIVO: js/01-eventos-basicos.js
+ * TEMA:    Qué es un evento y cómo se escucha
+ * ----------------------------------------------------------------------------
+ * QUÉ APRENDERÁS AQUÍ:
+ *   - Qué es exactamente un evento y quién lo dispara.
+ *   - Las TRES formas de asignar un manejador y por qué addEventListener gana.
+ *   - Cómo quitar un manejador con removeEventListener (y por qué necesita
+ *     una función con nombre).
+ *   - El objeto event: type, target, currentTarget y timeStamp.
+ *   - La diferencia entre target y currentTarget (fuente eterna de confusión).
+ *   - preventDefault(): cancelar el comportamiento de fábrica del navegador.
+ * ============================================================================
+ */
+
+/*
+  ¿POR QUÉ TODO EL ARCHIVO ESTÁ DENTRO DE (function () { ... })(); ?
+
+  Esta página carga SEIS archivos .js distintos. Si en dos de ellos
+  declaráramos, por ejemplo, "const salida = ...", el navegador lanzaría el
+  error "Identifier 'salida' has already been declared" y la página se rompería.
+
+  La solución se llama IIFE (Immediately Invoked Function Expression:
+  "función que se invoca a sí misma inmediatamente"). Al meter el código dentro
+  de una función, todas sus variables viven SOLO dentro de ella: son privadas.
+  Es como poner cada tema dentro de su propia caja cerrada.
+*/
+(function () {
+  // 'use strict' activa el modo estricto: el navegador avisa de errores
+  // que de otro modo pasarían en silencio (por ejemplo, usar una variable
+  // sin declararla). Buena práctica en todo archivo JS.
+  'use strict';
+
+  // ==========================================================================
+  // 0. HERRAMIENTAS DE LA SECCIÓN (consola visual)
+  // ==========================================================================
+
+  // Id del <pre> donde escribe ESTA sección. Cada archivo tiene el suyo.
+  const ID_SALIDA = 'salida-01';
+
+  /**
+   * imprimir(): muestra un mensaje TANTO en la consola del navegador (F12)
+   * COMO en el bloque visual de la página, para que se vea en clase sin
+   * necesidad de abrir las herramientas de desarrollo.
+   */
+  function imprimir(...mensajes) {
+    console.log(...mensajes); // salida clásica de DevTools
+
+    const salida = document.getElementById(ID_SALIDA);
+    if (!salida) return; // si la página no tiene consola visual, no hacemos nada
+
+    // Los objetos se ven fatal como "[object Object]", así que los convertimos
+    // a texto legible con JSON.stringify y una indentación de 2 espacios.
+    const texto = mensajes
+      .map((m) => (typeof m === 'object' && m !== null ? JSON.stringify(m, null, 2) : String(m)))
+      .join(' ');
+
+    salida.textContent += texto + '\n';
+    salida.scrollTop = salida.scrollHeight; // auto-scroll: siempre se ve lo último
+  }
+
+  /** titulo(): imprime un separador visual antes de cada bloque. */
+  function titulo(texto) {
+    imprimir('\n===== ' + texto + ' =====');
+  }
+
+  // ==========================================================================
+  // 1. ¿QUÉ ES UN EVENTO?
+  // ==========================================================================
+
+  /*
+    Un evento es un AVISO que lanza el navegador cuando ocurre algo:
+    el usuario pulsa el ratón, escribe una tecla, envía un formulario,
+    la página termina de cargar, una imagen falla...
+
+    Piensa en el timbre de una casa: el timbre (el evento) suena, y tú decides
+    qué hacer cuando suena (el manejador). El timbre no sabe qué harás; solo
+    avisa. Nosotros "nos suscribimos" a ese aviso.
+
+    Vocabulario que se usará todo el curso:
+      - evento (event): el hecho que ocurre. Tiene un nombre: 'click', 'keydown'...
+      - manejador (handler / listener): la función que reacciona a ese hecho.
+      - disparar (fire / trigger): el momento en que el evento sucede.
+  */
+  titulo('1. Eventos básicos: la página está lista');
+  imprimir('Este texto se ha escrito al cargar el archivo 01, sin ningún clic.');
+
+  // ==========================================================================
+  // 2. FORMA 1: EL ATRIBUTO onclick EN EL HTML (la antigua)
+  // ==========================================================================
+
+  /*
+    En el HTML hay un botón escrito así:
+
+        <button onclick="saludarDesdeAtributo(event)">Forma 1</button>
+
+    Para que eso funcione, la función DEBE ser global (accesible desde window).
+    Como este archivo está dentro de una IIFE, sus funciones son privadas;
+    por eso la colgamos a propósito de window. Que haga falta este truco ya
+    es una pista de lo poco recomendable que es esta técnica.
+  */
+  window.saludarDesdeAtributo = function (evento) {
+    titulo('2. Forma 1: atributo onclick en el HTML');
+    imprimir('Ha funcionado, pero mezcla HTML y JavaScript en el mismo sitio.');
+    imprimir('Tipo de evento recibido:', evento.type); // "click"
+  };
+
+  // ⚠️ ERROR COMÚN: creer que "onclick" en el HTML es lo mismo que un listener.
+  //    Problemas reales de esta forma:
+  //      1. Ensucia el HTML con lógica de programación.
+  //      2. Solo admite UN manejador por elemento.
+  //      3. Obliga a tener funciones globales (chocan entre archivos).
+  //      4. No se puede usar con opciones como once, capture o passive.
+  // ✅ BUENA PRÁCTICA: reconocerla al verla en código antiguo, pero NO usarla.
+
+  // ==========================================================================
+  // 3. FORMA 2: LA PROPIEDAD .onclick DESDE JAVASCRIPT
+  // ==========================================================================
+
+  /*
+    Mejor que la anterior porque el HTML queda limpio. Pero sigue teniendo un
+    defecto grave: .onclick es UNA propiedad, así que solo puede guardar UNA
+    función. Si asignas otra, la segunda PISA a la primera, igual que cuando
+    guardas dos veces en la misma variable.
+  */
+  const btnPropiedad = document.getElementById('btn-propiedad');
+
+  // Primera asignación...
+  btnPropiedad.onclick = function () {
+    imprimir('Manejador A (este NUNCA se ejecutará: lo pisa el B)');
+  };
+
+  // ...y segunda asignación sobre el MISMO elemento.
+  btnPropiedad.onclick = function (evento) {
+    titulo('3. Forma 2: propiedad .onclick');
+    imprimir('Manejador B: soy el único que sobrevive.');
+    imprimir('El manejador A se perdió al asignar el B encima.');
+    imprimir('Elemento pulsado:', evento.currentTarget.id);
+  };
+
+  // ⚠️ ERROR COMÚN: escribir btn.onclick = miFuncion(); con paréntesis.
+  //    Con paréntesis EJECUTAS la función ya mismo y guardas su resultado
+  //    (normalmente undefined). Se pasa la función SIN paréntesis: es una
+  //    receta que se entrega, no un plato que se sirve.
+
+  // ==========================================================================
+  // 4. FORMA 3: addEventListener (LA CORRECTA)
+  // ==========================================================================
+
+  /*
+    Sintaxis:  elemento.addEventListener('nombreDelEvento', funcion, opciones);
+
+    Ventajas frente a las dos anteriores:
+      - Se pueden registrar MUCHOS manejadores para el mismo evento.
+      - Permite opciones: once, capture, passive.
+      - Se puede quitar después con removeEventListener.
+      - Mantiene el HTML completamente limpio de JavaScript.
+  */
+  const btnListener = document.getElementById('btn-listener');
+
+  // Manejador 1
+  btnListener.addEventListener('click', function () {
+    titulo('4. Forma 3: addEventListener');
+    imprimir('Manejador 1: registrado con addEventListener.');
+  });
+
+  // Manejador 2 sobre el MISMO botón y el MISMO evento: convive con el anterior
+  btnListener.addEventListener('click', function () {
+    imprimir('Manejador 2: yo también me ejecuto, no piso a nadie.');
+  });
+
+  // Manejador 3, esta vez con una función de flecha
+  btnListener.addEventListener('click', () => {
+    imprimir('Manejador 3: se ejecutan en el ORDEN en que se registraron.');
+  });
+
+  // ✅ BUENA PRÁCTICA: usa siempre addEventListener. Es el estándar moderno.
+
+  // ==========================================================================
+  // 5. QUITAR MANEJADORES: removeEventListener
+  // ==========================================================================
+
+  /*
+    Para quitar un manejador, el navegador necesita saber EXACTAMENTE cuál.
+    Y solo puede identificarlo si le pasamos LA MISMA referencia de función
+    que le dimos al registrarlo.
+
+    Analogía: para dar de baja una suscripción tienes que enseñar tu número de
+    socio. Si dices "quiero dar de baja a alguien parecido a mí", no vale.
+
+    Por eso el manejador debe tener NOMBRE y estar guardado en una variable.
+  */
+  const btnContador = document.getElementById('btn-contador');
+  const marcador = document.getElementById('marcador-clics');
+  const btnQuitar = document.getElementById('btn-quitar');
+
+  let clics = 0; // let porque su valor va a cambiar
+
+  // Función CON NOMBRE: podemos referirnos a ella más adelante.
+  function contarClics(evento) {
+    clics = clics + 1;
+    marcador.textContent = clics; // actualizamos el número visible del botón
+    imprimir('Clic número ' + clics + ' sobre #' + evento.currentTarget.id);
+  }
+
+  // La registramos pasando la REFERENCIA (sin paréntesis).
+  btnContador.addEventListener('click', contarClics);
+
+  btnQuitar.addEventListener('click', function () {
+    titulo('5. removeEventListener');
+
+    // Mismo elemento, mismo tipo de evento y MISMA referencia de función.
+    btnContador.removeEventListener('click', contarClics);
+
+    imprimir('Manejador retirado. El botón de la izquierda ya no cuenta clics.');
+    imprimir('Pruébalo: puedes pulsarlo, pero el número se queda en ' + clics + '.');
+
+    // Dejamos el botón visualmente desactivado para que se note el efecto.
+    btnContador.disabled = true;
+  });
+
+  // Demostración de por qué una función ANÓNIMA no se puede quitar.
+  const btnAnonimo = document.getElementById('btn-anonimo');
+
+  btnAnonimo.addEventListener('click', function () {
+    imprimir('Manejador anónimo ejecutado (intentaré quitarme a mí mismo...).');
+
+    // Esta función parece idéntica a la de arriba, pero es OTRA función
+    // distinta en memoria: dos recetas iguales escritas en dos papeles
+    // distintos siguen siendo dos papeles. El navegador no encuentra nada
+    // que quitar, no da error... y el manejador sigue ahí.
+    btnAnonimo.removeEventListener('click', function () {
+      imprimir('Manejador anónimo ejecutado (intentaré quitarme a mí mismo...).');
+    });
+
+    imprimir('No ha servido de nada: vuelve a pulsar y seguiré respondiendo.');
+  });
+
+  // ⚠️ ERROR COMÚN: intentar quitar un manejador anónimo o una arrow function
+  //    escrita directamente en el addEventListener. Es imposible.
+  // ✅ BUENA PRÁCTICA: si sabes que vas a necesitar quitar un manejador,
+  //    dale nombre desde el principio.
+
+  // ==========================================================================
+  // 6. EL OBJETO event: type, target, currentTarget, timeStamp
+  // ==========================================================================
+
+  /*
+    Cuando un evento se dispara, el navegador llama a tu función y le pasa
+    automáticamente UN argumento: el objeto del evento. Contiene toda la
+    información de lo que ha pasado. Por convención lo llamamos "evento",
+    "event" o "e".
+
+    Propiedades imprescindibles:
+      - type:          nombre del evento ('click', 'keydown'...).
+      - target:        el elemento MÁS PROFUNDO donde ocurrió de verdad.
+      - currentTarget: el elemento en el que TÚ pusiste el addEventListener.
+      - timeStamp:     milisegundos desde que se abrió la página.
+
+    LA DIFERENCIA CLAVE (target vs currentTarget):
+      Imagina que pones un micrófono en la puerta de un aula (currentTarget).
+      Si alguien estornuda en la última fila (target), el micrófono lo capta,
+      pero el estornudo NO ocurrió en la puerta.
+      target = quién estornudó. currentTarget = dónde está tu micrófono.
+  */
+  const cajaEvento = document.getElementById('caja-evento');
+
+  // OJO: el listener va en la CAJA, no en el botón que hay dentro.
+  cajaEvento.addEventListener('click', function (evento) {
+    titulo('6. El objeto event');
+
+    imprimir('evento.type          =', evento.type);
+    imprimir('evento.target        =', '<' + evento.target.tagName.toLowerCase() + '> id="' + evento.target.id + '"');
+    imprimir('evento.currentTarget =', '<' + evento.currentTarget.tagName.toLowerCase() + '> id="' + evento.currentTarget.id + '"');
+
+    // timeStamp trae muchos decimales; Math.round lo deja legible.
+    imprimir('evento.timeStamp     =', Math.round(evento.timeStamp) + ' ms desde que cargó la página');
+
+    // Comparamos ambos con === (compara si son el MISMO objeto en memoria)
+    if (evento.target === evento.currentTarget) {
+      imprimir('Has pulsado la caja directamente: target y currentTarget coinciden.');
+    } else {
+      imprimir('Has pulsado el botón interior: son DISTINTOS.');
+      imprimir('Texto del elemento pulsado: "' + evento.target.textContent.trim() + '"');
+    }
+  });
+
+  // ⚠️ ERROR COMÚN: usar event.target creyendo que siempre es el elemento donde
+  //    pusiste el listener. En cuanto ese elemento tenga hijos (un icono, un
+  //    <span>...), target será el hijo y tu código dejará de funcionar.
+  // ✅ BUENA PRÁCTICA: si quieres el elemento donde escuchas, usa currentTarget.
+  //    Si quieres saber qué pulsó exactamente el usuario, usa target.
+
+  // ==========================================================================
+  // 7. preventDefault(): CANCELAR EL COMPORTAMIENTO POR DEFECTO
+  // ==========================================================================
+
+  /*
+    Muchos elementos traen una acción "de fábrica":
+      - un <a> navega a su href,
+      - un <input type="checkbox"> se marca al pulsarlo,
+      - un formulario se envía y RECARGA la página,
+      - la tecla flecha abajo hace scroll.
+
+    event.preventDefault() le dice al navegador: "gracias, pero de esto me
+    encargo yo". No detiene la propagación del evento (eso es otra cosa que
+    veremos en el archivo 02), solo cancela la acción automática.
+  */
+  const enlace = document.getElementById('enlace-bloqueado');
+
+  enlace.addEventListener('click', function (evento) {
+    evento.preventDefault(); // sin esta línea, el navegador se iría a MDN
+
+    titulo('7. preventDefault()');
+    imprimir('Clic en el enlace, pero NO hemos navegado.');
+    imprimir('Destino que se ha cancelado:', evento.currentTarget.href);
+  });
+
+  const checkbox = document.getElementById('chk-bloqueado');
+
+  checkbox.addEventListener('click', function (evento) {
+    evento.preventDefault(); // el checkbox nunca llega a marcarse
+    imprimir('Has intentado marcar el checkbox y lo hemos impedido.');
+    imprimir('Estado real de .checked:', evento.currentTarget.checked); // false
+  });
+
+  // ⚠️ ERROR COMÚN: escribir preventDefault sin los paréntesis.
+  //    evento.preventDefault;   // no hace NADA: solo menciona la función
+  //    evento.preventDefault(); // correcto: la EJECUTA
+  // ⚠️ ERROR COMÚN 2: usar "return false" (eso solo funciona en la forma
+  //    antigua del atributo onclick, no con addEventListener).
+
+  // ==========================================================================
+  // 8. BOTÓN PARA LIMPIAR LA CONSOLA DE ESTA SECCIÓN
+  // ==========================================================================
+
+  document.getElementById('limpiar-01').addEventListener('click', function () {
+    document.getElementById(ID_SALIDA).textContent = '';
+  });
+
+  /* ==========================================================================
+   * EJERCICIOS PROPUESTOS · archivo 01
+   * --------------------------------------------------------------------------
+   * 1) Añade en el HTML un botón nuevo con id="btn-color" y, desde este
+   *    archivo, regístrale con addEventListener un manejador que cambie el
+   *    color de fondo de la caja #caja-evento a un color a tu elección.
+   *
+   * 2) Crea un botón que registre y otro que elimine un manejador que imprima
+   *    la hora actual cada vez que se pulse una tercera zona de la página.
+   *    Pista: necesitas guardar la función en una variable con nombre.
+   *
+   * 3) Modifica el manejador de #caja-evento para que, además de lo que ya
+   *    imprime, muestre cuántos hijos directos tiene el currentTarget.
+   *    Pista: evento.currentTarget.children.length
+   *
+   * 4) Haz que el checkbox #chk-bloqueado solo se pueda marcar si el usuario
+   *    mantiene pulsada la tecla Shift mientras hace clic.
+   *    Pista: dentro del manejador, evento.shiftKey vale true o false.
+   *
+   * 5) (Reto) Crea un contador de clics que se reinicie a cero automáticamente
+   *    si pasan más de 2 segundos entre un clic y el siguiente.
+   *    Pista: guarda el timeStamp del clic anterior y compáralo con el nuevo.
+   * ========================================================================== */
+})();

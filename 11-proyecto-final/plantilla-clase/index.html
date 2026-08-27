@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  ARCHIVO: index.html
+  PROYECTO: 11 · Proyecto final integrador: tienda con carrito (TechStore)
+  ----------------------------------------------------------------------------
+  Esta es la página del proyecto final del curso. Reúne en una sola aplicación
+  todo lo estudiado en los proyectos 01 al 10.
+
+  ESTRUCTURA DE LA PÁGINA
+    1. Cabecera con el título y el enlace de vuelta al índice del curso.
+    2. Índice de secciones con enlaces ancla (#).
+    3. Sección "mapa": qué proyecto del curso aporta cada pieza de la tienda.
+    4. La tienda: barra, filtros, buscador, orden y rejilla del catálogo.
+    5. Secciones didácticas que explican el carrito y el checkout.
+    6. Consola visual (bitácora) para seguir en clase lo que hace el código.
+    7. Ejercicios propuestos.
+    8. Fuera del contenedor: panel lateral del carrito, capa oscura,
+       modal de checkout y zona de avisos emergentes (toasts).
+
+  POR QUÉ EL PANEL, EL MODAL Y LOS TOASTS ESTÁN AL FINAL DEL <body>
+  Son elementos "flotantes" con position: fixed. Colocarlos como hijos
+  directos del <body> evita que un `overflow: hidden` o un `transform` de
+  algún contenedor padre los recorte o los descoloque. Es el patrón que usan
+  todas las librerías de componentes.
+
+  LOS SCRIPTS SE CARGAN CON `defer`
+  Con defer, el navegador descarga los archivos mientras sigue leyendo el HTML
+  y los ejecuta EN ORDEN justo antes de terminar de cargar la página. Gracias a
+  eso, cuando el JavaScript se ejecuta, todos los elementos del DOM ya existen
+  y document.getElementById() los encuentra sin problema.
+  ⚠️ ERROR COMÚN: poner los <script> en el <head> SIN defer. En ese caso el JS
+  se ejecuta antes de que exista el HTML y todo devuelve null.
+  ============================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>11 · Proyecto final: TechStore | Full Stack 2 · Plantilla de clase</title>
+  <meta name="description" content="Proyecto final del curso de JavaScript: tienda con catálogo, carrito, validación y persistencia.">
+
+  <!-- Icono de la pestana escrito EN LINEA con un data URI (un SVG diminuto
+       con un emoji dentro). Sin esta linea el navegador pide /favicon.ico por
+       su cuenta y, como ese archivo no existe, deja un 404 rojo en la consola
+       justo cuando estamos ensenando a leerla. Asi no hace falta ningun
+       archivo extra ni ninguna peticion de red. -->
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48dGV4dCB5PScuOWVtJyBmb250LXNpemU9Jzg4Jz7wn5uSPC90ZXh0Pjwvc3ZnPg==">
+
+  <!-- Hoja de estilos propia del proyecto (carpeta css de esta misma carpeta) -->
+  <link rel="stylesheet" href="css/estilos.css">
+
+  <!--
+    EL ORDEN DE LOS SCRIPTS SÍ IMPORTA EN ESTE PROYECTO.
+    A diferencia de los proyectos anteriores (donde cada archivo era
+    independiente), aquí los archivos COLABORAN: comparten un único objeto
+    global llamado TIENDA, y cada uno añade su parte.
+
+      01-utilidades.js -> TIENDA.utiles   (consola visual, formato, ayudas)
+      02-datos.js      -> TIENDA.datos    (catálogo y carga simulada)
+      03-clases.js     -> TIENDA.Producto, TIENDA.Carrito, TIENDA.Almacen
+      04-ui.js         -> TIENDA.ui       (todo lo que dibuja en el DOM)
+      05-app.js        -> arranca la aplicación y escucha los eventos
+
+    Cada archivo se envuelve en una IIFE para no ensuciar el ámbito global:
+    así podemos repetir nombres internos (como `contenedor`) en varios
+    archivos sin provocar "Identifier has already been declared".
+  -->
+  <script src="js/01-utilidades.js" defer></script>
+  <script src="js/02-datos.js" defer></script>
+  <script src="js/03-clases.js" defer></script>
+  <script src="js/04-ui.js" defer></script>
+  <script src="js/05-app.js" defer></script>
+</head>
+
+<body>
+
+  <!-- ====================================================================
+       AVISO DE MODO CLASE
+       Este bloque SOLO existe en la plantilla; la version resuelta de la
+       carpeta padre no lo lleva. Sirve para que en el proyector quede claro
+       que la pagina arranca vacia a proposito.
+       ==================================================================== -->
+  <div class="aviso-modo-clase">
+    <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+    JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+    <a href="../index.html">la carpeta del proyecto</a>.
+  </div>
+
+  <div class="contenedor">
+
+    <!-- ==================================================================
+         1. CABECERA
+         ================================================================== -->
+    <header class="cabecera">
+      <a class="volver" href="../../index.html">&larr; Volver al índice del curso</a>
+
+      <h1><span class="numero">11</span> · Proyecto final integrador: tienda con carrito</h1>
+
+      <p class="subtitulo">
+        TechStore es una tienda completa escrita en JavaScript puro: catálogo
+        cargado con una promesa, buscador en vivo, filtros por categoría,
+        ordenamiento, carrito construido con clases, control de stock,
+        persistencia en <span class="clave">localStorage</span> y un checkout
+        con validación campo a campo. Aquí se juntan las diez unidades
+        anteriores del curso en una sola aplicación real. 🛒
+      </p>
+
+      <div class="etiquetas">
+        <span class="etiqueta">map · filter · reduce · sort</span>
+        <span class="etiqueta">clases</span>
+        <span class="etiqueta">getters</span>
+        <span class="etiqueta">DOM</span>
+        <span class="etiqueta">delegación</span>
+        <span class="etiqueta">promesas</span>
+        <span class="etiqueta">async / await</span>
+        <span class="etiqueta">localStorage</span>
+        <span class="etiqueta">expresiones regulares</span>
+        <span class="etiqueta">Intl.NumberFormat</span>
+        <span class="etiqueta">destructuring</span>
+        <span class="etiqueta">spread</span>
+      </div>
+    </header>
+
+    <!-- ==================================================================
+         2. ÍNDICE DE SECCIONES (enlaces ancla)
+         Cada href="#id" salta al elemento que tenga ese id en la página.
+         ================================================================== -->
+    <nav class="indice" aria-label="Índice del proyecto">
+      <h2>Índice de secciones</h2>
+      <ol>
+        <li><a href="#mapa">Mapa: qué aporta cada proyecto del curso</a></li>
+        <li><a href="#catalogo">La tienda: catálogo, buscador, filtros y orden</a></li>
+        <li><a href="#carrito-teoria">El carrito: clases, stock y persistencia</a></li>
+        <li><a href="#checkout-teoria">Checkout: validación con expresiones regulares</a></li>
+        <li><a href="#laboratorio">Laboratorio: botones para probar en clase</a></li>
+        <li><a href="#consola">Bitácora: la consola visual</a></li>
+        <li><a href="#ejercicios">Ejercicios propuestos</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ================================================================
+           SECCIÓN: MAPA DEL PROYECTO
+           ================================================================ -->
+      <section class="seccion" id="mapa">
+        <h2><span class="indicador">00</span> Mapa: qué aporta cada proyecto del curso</h2>
+        <p>
+          Antes de tocar una sola línea de código conviene ver el plano.
+          Esta tabla conecta cada unidad ya estudiada con la parte concreta
+          de TechStore donde se usa. Nada de lo que verás es nuevo: es todo
+          lo anterior, trabajando junto.
+        </p>
+
+        <div class="tabla-envoltorio">
+          <table>
+            <thead>
+              <tr>
+                <th>Unidad del curso</th>
+                <th>Dónde aparece en TechStore</th>
+                <th>Archivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>01</strong> Fundamentos</td>
+                <td>Tipos, plantillas de texto, <code>const</code>, operadores y conversión de números en el precio.</td>
+                <td><code>01-utilidades.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>02</strong> Control de flujo</td>
+                <td>Condicionales del stock, <code>switch</code> del ordenamiento, bucles de recorrido.</td>
+                <td><code>05-app.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>03</strong> Funciones</td>
+                <td>Funciones puras de formato, callbacks, parámetros por defecto y closures.</td>
+                <td><code>01-utilidades.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>04</strong> Arrays</td>
+                <td><code>map</code> para pintar, <code>filter</code> para buscar, <code>sort</code> para ordenar, <code>reduce</code> para los totales.</td>
+                <td><code>03-clases.js</code>, <code>05-app.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>05</strong> Objetos</td>
+                <td>Catálogo como array de objetos, destructuring, spread y <code>JSON</code>.</td>
+                <td><code>02-datos.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>06</strong> DOM</td>
+                <td>Creación de tarjetas, <code>innerHTML</code>, <code>classList</code>, atributos <code>data-*</code>.</td>
+                <td><code>04-ui.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>07</strong> Eventos y formularios</td>
+                <td>Evento <code>input</code>, <code>change</code>, <code>submit</code>, delegación y validación.</td>
+                <td><code>05-app.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>08</strong> POO</td>
+                <td>Clases <code>Producto</code> y <code>Carrito</code> con campos privados y getters calculados.</td>
+                <td><code>03-clases.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>09</strong> Asincronía</td>
+                <td>Carga del catálogo con una promesa + <code>setTimeout</code>, <code>async/await</code> y <code>try/catch</code>.</td>
+                <td><code>02-datos.js</code>, <code>05-app.js</code></td>
+              </tr>
+              <tr>
+                <td><strong>10</strong> JavaScript moderno</td>
+                <td>Encadenamiento opcional, fusión nula, plantillas, patrón namespace.</td>
+                <td>Todos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="aviso buena-practica">
+          <strong>✅ Buena práctica:</strong> separar el código por
+          responsabilidades. Los <em>datos</em> no saben pintar, la
+          <em>interfaz</em> no sabe calcular y la <em>lógica de negocio</em>
+          (las clases) no sabe nada del DOM. Esa separación es lo que permite
+          cambiar el diseño sin romper los cálculos.
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: LA TIENDA
+           Este es el corazón del proyecto: todo lo de aquí lo rellena el JS.
+           ================================================================ -->
+      <section class="seccion" id="catalogo">
+        <h2><span class="indicador">01</span> La tienda: catálogo, buscador, filtros y orden</h2>
+        <p>
+          El catálogo llega desde una promesa que tarda a propósito unos
+          instantes, igual que haría un servidor real. Mientras tanto se
+          muestran <strong>esqueletos de carga</strong>. Después, el buscador
+          filtra en vivo con <span class="clave">filter</span>, los botones
+          de categoría vuelven a filtrar y el desplegable ordena con
+          <span class="clave">sort</span>. Cada cambio vuelve a pintar la
+          rejilla con <span class="clave">map</span>.
+        </p>
+
+        <!-- Barra superior de la tienda -->
+        <div class="barra-tienda">
+          <div class="marca">
+            <span class="logo" aria-hidden="true">⚡</span>
+            <span>
+              TechStore
+              <small>Tecnología para estudiantes</small>
+            </span>
+          </div>
+
+          <!-- Buscador en vivo: el evento `input` se dispara con CADA tecla -->
+          <div class="campo-busqueda">
+            <label class="solo-lectores" for="buscador">Buscar productos</label>
+            <input
+              type="search"
+              id="buscador"
+              placeholder="Buscar producto..."
+              autocomplete="off">
+          </div>
+
+          <!-- Selector de orden: usa el evento `change` -->
+          <label class="solo-lectores" for="orden">Ordenar catálogo</label>
+          <select id="orden">
+            <option value="destacados">Destacados</option>
+            <option value="precio-asc">Precio: de menor a mayor</option>
+            <option value="precio-desc">Precio: de mayor a menor</option>
+            <option value="valoracion">Mejor valorados</option>
+            <option value="nombre">Nombre (A-Z)</option>
+          </select>
+
+          <!-- Botón que abre el panel lateral. El contador lo actualiza el JS -->
+          <button type="button" class="boton boton-carrito" id="abrir-carrito">
+            🛒 Carrito
+            <span class="badge oculto" id="contador-carrito">0</span>
+          </button>
+        </div>
+
+        <!-- Los botones de categoría los genera el JavaScript a partir de
+             las categorías reales del catálogo (con un Set, sin repetir). -->
+        <div class="filtros" id="filtros-categoria" role="group" aria-label="Filtrar por categoría"></div>
+
+        <!-- Texto tipo "Mostrando 8 de 14 productos" -->
+        <p class="resumen-resultados" id="resumen-resultados">Cargando catálogo...</p>
+
+        <!-- Aquí se inyectan las tarjetas de producto -->
+        <div class="rejilla-productos" id="rejilla-productos"></div>
+
+        <!-- Estado vacío: se muestra cuando ninguna búsqueda coincide -->
+        <div class="estado-vacio oculto" id="estado-vacio">
+          <span class="icono" aria-hidden="true">🔍</span>
+          <strong>No encontramos productos</strong>
+          Prueba con otro término de búsqueda o quita el filtro de categoría.
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: TEORÍA DEL CARRITO
+           ================================================================ -->
+      <section class="seccion" id="carrito-teoria">
+        <h2><span class="indicador">02</span> El carrito: clases, stock y persistencia</h2>
+        <p>
+          El carrito no es un array suelto: es una <strong>clase</strong> con
+          campos privados y métodos que validan cada operación. Los totales no
+          se guardan, se <em>calculan</em> con getters y
+          <span class="clave">reduce</span> cada vez que se piden. Así nunca
+          pueden quedar desactualizados.
+        </p>
+
+        <div class="tabla-envoltorio">
+          <table>
+            <thead>
+              <tr>
+                <th>Miembro de la clase Carrito</th>
+                <th>Tipo</th>
+                <th>Qué hace</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agregar(producto, cantidad)</code></td><td>Método</td><td>Añade o suma cantidad, respetando el stock disponible.</td></tr>
+              <tr><td><code>quitar(id)</code></td><td>Método</td><td>Elimina la línea entera con <code>filter</code>.</td></tr>
+              <tr><td><code>cambiarCantidad(id, n)</code></td><td>Método</td><td>Fija una cantidad exacta; si llega a 0, quita la línea.</td></tr>
+              <tr><td><code>vaciar()</code></td><td>Método</td><td>Deja el carrito sin líneas.</td></tr>
+              <tr><td><code>cantidadTotal</code></td><td>Getter</td><td>Suma de unidades con <code>reduce</code>.</td></tr>
+              <tr><td><code>subtotal</code></td><td>Getter</td><td>Suma de precio × cantidad con <code>reduce</code>.</td></tr>
+              <tr><td><code>iva</code></td><td>Getter</td><td>Subtotal por el porcentaje de impuesto.</td></tr>
+              <tr><td><code>total</code></td><td>Getter</td><td>Subtotal + IVA.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Error común:</strong> guardar el total en una propiedad
+          (<code>this.total = ...</code>) y actualizarlo a mano en cada método.
+          Tarde o temprano alguien olvida actualizarlo y el carrito muestra un
+          precio que no corresponde. Un <em>getter</em> recalcula siempre y no
+          se puede desincronizar.
+        </div>
+
+        <div class="aviso">
+          <strong>Persistencia:</strong> cada cambio del carrito se guarda en
+          <code>localStorage</code> convertido a texto con
+          <code>JSON.stringify()</code>. Al recargar la página se recupera con
+          <code>JSON.parse()</code> y se vuelve a comprobar que los productos
+          sigan existiendo y que la cantidad no supere el stock actual.
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: TEORÍA DEL CHECKOUT
+           ================================================================ -->
+      <section class="seccion" id="checkout-teoria">
+        <h2><span class="indicador">03</span> Checkout: validación con expresiones regulares</h2>
+        <p>
+          El formulario de compra valida cuatro campos. Cada validación es una
+          función independiente que recibe un texto y devuelve
+          <span class="clave">null</span> si está bien o un mensaje de error si
+          está mal. Ese patrón hace que probar las validaciones sea trivial y
+          que añadir un campo nuevo cueste tres líneas.
+        </p>
+
+        <div class="tabla-envoltorio">
+          <table>
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Regla</th>
+                <th>Ejemplo que falla</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Nombre</td><td>Mínimo 3 caracteres, solo letras y espacios (con tildes y ñ).</td><td><code>A1</code></td></tr>
+              <tr><td>Email</td><td>Expresión regular con texto, arroba, dominio y extensión.</td><td><code>ana@correo</code></td></tr>
+              <tr><td>Teléfono</td><td>Entre 7 y 15 dígitos; se permiten espacios, guiones y prefijo <code>+</code>.</td><td><code>12-34</code></td></tr>
+              <tr><td>Dirección</td><td>Mínimo 8 caracteres y al menos un número (la altura de la calle).</td><td><code>Calle sol</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Error común:</strong> confiar solo en los atributos HTML
+          (<code>required</code>, <code>type="email"</code>). Ayudan, pero
+          cualquiera puede quitarlos desde las herramientas del navegador. La
+          validación de verdad se hace <strong>también en el servidor</strong>;
+          la del navegador existe para dar una buena experiencia, no para
+          dar seguridad.
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: LABORATORIO
+           Botones que el docente pulsa a voluntad durante la clase.
+           Ninguno se ejecuta solo al cargar la página.
+           ================================================================ -->
+      <section class="seccion" id="laboratorio">
+        <h2><span class="indicador">04</span> Laboratorio: botones para probar en clase</h2>
+        <p>
+          Estos botones no forman parte de la tienda: existen para poder
+          demostrar en vivo cómo se comporta el código por dentro. Todo lo que
+          hacen se escribe en la bitácora de la sección siguiente.
+        </p>
+
+        <div class="filtros">
+          <button type="button" class="boton secundario" id="btn-recargar">🔄 Recargar el catálogo (ver la promesa)</button>
+          <button type="button" class="boton secundario" id="btn-fallar">💥 Simular un error de red</button>
+          <button type="button" class="boton secundario" id="btn-estado">🔬 Ver el estado interno</button>
+          <button type="button" class="boton secundario" id="btn-llenar-formulario">✍️ Rellenar el formulario con datos válidos</button>
+          <button type="button" class="boton peligro" id="btn-borrar-almacen">🧹 Borrar el carrito guardado</button>
+        </div>
+
+        <div class="aviso buena-practica">
+          <strong>✅ Buena práctica:</strong> nada de <code>alert()</code> ni
+          <code>prompt()</code> al cargar la página. Bloquean el navegador y
+          detienen la ejecución. Para avisar al usuario usamos
+          <em>toasts</em>: aparecen, informan y se van solos.
+        </div>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: CONSOLA VISUAL
+           ================================================================ -->
+      <section class="seccion" id="consola">
+        <h2><span class="indicador">05</span> Bitácora: la consola visual</h2>
+        <p>
+          La aplicación va narrando lo que hace. Cada mensaje se escribe a la
+          vez en la consola del navegador (<kbd>F12</kbd>) y en este bloque,
+          para poder seguirlo en clase sin abrir las herramientas de desarrollo.
+        </p>
+
+        <div class="barra-consola">
+          <span>Bitácora de TechStore</span>
+          <button type="button" class="boton secundario" id="limpiar-consola">Limpiar</button>
+        </div>
+        <pre id="salida" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN: EJERCICIOS
+           ================================================================ -->
+      <section class="seccion" id="ejercicios">
+        <h2><span class="indicador">06</span> Ejercicios propuestos</h2>
+        <p>
+          Cada archivo JavaScript termina con sus propios ejercicios. Estos
+          son los retos globales del proyecto, ordenados de menor a mayor
+          dificultad. Todos se resuelven con lo que ya está en el código.
+        </p>
+
+        <ol class="lista-ejercicios">
+          <li><strong>Nivel 1.</strong> Añade tres productos nuevos al catálogo con una categoría que todavía no exista y comprueba que el botón de filtro aparece solo.</li>
+          <li><strong>Nivel 1.</strong> Cambia el porcentaje de IVA y la moneda del formateador para tu país. Verifica que todos los precios de la página cambian a la vez.</li>
+          <li><strong>Nivel 2.</strong> Añade una opción de orden "Solo disponibles primero" que coloque al final los productos agotados.</li>
+          <li><strong>Nivel 2.</strong> Muestra en la tarjeta una etiqueta "Últimas unidades" cuando el stock sea menor o igual a 3.</li>
+          <li><strong>Nivel 3.</strong> Implementa una lista de favoritos con su propio botón en cada tarjeta, persistida en <code>localStorage</code> con una clave distinta.</li>
+          <li><strong>Nivel 3.</strong> Añade un campo de cupón en el checkout: si el código es <code>ESTUDIANTE10</code>, aplica un 10 % de descuento al subtotal antes del IVA.</li>
+          <li><strong>Nivel 4.</strong> Guarda el historial de pedidos confirmados en <code>localStorage</code> y muéstralo en una tabla nueva bajo el catálogo.</li>
+          <li><strong>Nivel 4.</strong> Sustituye el catálogo local por un archivo <code>productos.json</code> cargado con <code>fetch()</code> (necesitarás servidor local) manteniendo intactos los esqueletos de carga.</li>
+        </ol>
+      </section>
+
+    </main>
+
+    <footer class="pie">
+      Proyecto 11 de 11 · Full Stack 2 — Desarrollo Front End<br>
+      JavaScript puro, sin librerías, sin dependencias y sin Node.
+    </footer>
+
+  </div><!-- /.contenedor -->
+
+
+  <!-- ====================================================================
+       CAPA OSCURA
+       Cubre la página cuando el panel o el modal están abiertos.
+       Al hacer clic sobre ella se cierra lo que esté abierto.
+       ==================================================================== -->
+  <div class="capa-oscura" id="capa-oscura"></div>
+
+
+  <!-- ====================================================================
+       PANEL LATERAL DEL CARRITO
+       Siempre está en el DOM; se muestra y se oculta con la clase .abierto.
+       aria-hidden le dice a los lectores de pantalla si es visible o no.
+       ==================================================================== -->
+  <aside class="panel-carrito" id="panel-carrito" aria-hidden="true" aria-label="Carrito de compras">
+
+    <div class="cabecera-panel">
+      <h2>🛒 Tu carrito</h2>
+      <button type="button" class="boton-cerrar" id="cerrar-carrito" aria-label="Cerrar el carrito">✕</button>
+    </div>
+
+    <!-- Las líneas del carrito las pinta el JavaScript.
+         Los botones de cada línea NO llevan su propio listener: se gestionan
+         todos con DELEGACIÓN desde este <ul>. -->
+    <ul class="lineas-carrito" id="lineas-carrito"></ul>
+
+    <!-- Estado vacío del carrito -->
+    <div class="estado-vacio oculto" id="carrito-vacio">
+      <span class="icono" aria-hidden="true">🛍️</span>
+      <strong>Tu carrito está vacío</strong>
+      Agrega productos desde el catálogo para verlos aquí.
+    </div>
+
+    <div class="totales">
+      <div class="fila-total">
+        <span>Subtotal</span>
+        <span id="subtotal-carrito">—</span>
+      </div>
+      <div class="fila-total">
+        <span id="etiqueta-iva">IVA</span>
+        <span id="iva-carrito">—</span>
+      </div>
+      <div class="fila-total grande">
+        <span>Total</span>
+        <span id="total-carrito">—</span>
+      </div>
+
+      <div class="acciones-panel">
+        <button type="button" class="boton peligro" id="vaciar-carrito">Vaciar</button>
+        <button type="button" class="boton" id="ir-checkout">Finalizar compra</button>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ====================================================================
+       MODAL DE CHECKOUT
+       Contiene dos vistas que se alternan:
+         #vista-formulario  -> el resumen del pedido y el formulario.
+         #vista-confirmacion -> el mensaje de pedido confirmado.
+       ==================================================================== -->
+  <div class="modal" id="modal-checkout" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+    <div class="caja-modal">
+
+      <div class="cabecera-modal">
+        <h2 id="titulo-modal">Finalizar compra</h2>
+        <button type="button" class="boton-cerrar" id="cerrar-modal" aria-label="Cerrar el formulario">✕</button>
+      </div>
+
+      <div class="cuerpo-modal">
+
+        <!-- ---------- VISTA 1: FORMULARIO ---------- -->
+        <div id="vista-formulario">
+
+          <!-- Resumen del pedido; lo rellena el JavaScript -->
+          <div class="resumen-pedido" id="resumen-pedido"></div>
+
+          <!--
+            novalidate desactiva la validación automática del navegador para
+            que se vea la NUESTRA, que es la que estamos enseñando.
+            En un proyecto real se suelen dejar las dos: la del navegador como
+            primera barrera y la propia para los mensajes personalizados.
+          -->
+          <form id="formulario-checkout" novalidate>
+            <div class="rejilla-formulario">
+
+              <div class="campo" data-campo="nombre">
+                <label for="nombre">Nombre completo <span class="obligatorio">*</span></label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ana Martínez" autocomplete="name">
+                <span class="mensaje-error" id="error-nombre"></span>
+              </div>
+
+              <div class="campo" data-campo="email">
+                <label for="email">Correo electrónico <span class="obligatorio">*</span></label>
+                <input type="email" id="email" name="email" placeholder="ana@correo.com" autocomplete="email">
+                <span class="mensaje-error" id="error-email"></span>
+              </div>
+
+              <div class="campo" data-campo="telefono">
+                <label for="telefono">Teléfono <span class="obligatorio">*</span></label>
+                <input type="tel" id="telefono" name="telefono" placeholder="+34 600 123 456" autocomplete="tel">
+                <span class="mensaje-error" id="error-telefono"></span>
+              </div>
+
+              <div class="campo" data-campo="ciudad">
+                <label for="ciudad">Ciudad</label>
+                <input type="text" id="ciudad" name="ciudad" placeholder="Opcional" autocomplete="address-level2">
+                <span class="mensaje-error" id="error-ciudad"></span>
+              </div>
+
+              <div class="campo completo" data-campo="direccion">
+                <label for="direccion">Dirección de envío <span class="obligatorio">*</span></label>
+                <textarea id="direccion" name="direccion" placeholder="Avenida Central 1234, piso 3, puerta B" autocomplete="street-address"></textarea>
+                <span class="mensaje-error" id="error-direccion"></span>
+              </div>
+
+            </div>
+
+            <button type="submit" class="boton ancho" id="confirmar-pedido">
+              Confirmar pedido
+            </button>
+          </form>
+        </div>
+
+        <!-- ---------- VISTA 2: CONFIRMACIÓN ---------- -->
+        <div id="vista-confirmacion" class="confirmacion oculto"></div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       ZONA DE AVISOS EMERGENTES (TOASTS)
+       aria-live="polite" hace que un lector de pantalla anuncie los mensajes
+       que aparezcan aquí, sin interrumpir lo que esté leyendo.
+       ==================================================================== -->
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+</body>
+</html>

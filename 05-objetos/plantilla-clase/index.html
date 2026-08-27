@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>05 · Objetos, JSON, Map y Set | Full Stack 2 · Plantilla de clase</title>
+
+    <!-- Hoja de estilos propia del proyecto (ruta relativa a este archivo). -->
+    <link rel="stylesheet" href="css/estilos.css" />
+
+    <!--
+      Los scripts se cargan con el atributo `defer`:
+        - No bloquean la construcción de la página.
+        - Se ejecutan cuando el HTML ya está listo (por eso podemos usar
+          document.getElementById sin esperar a nada más).
+        - Se ejecutan EN ORDEN, de arriba abajo. Por eso 00-utilidades.js va
+          primero: los demás archivos necesitan window.Utilidades.
+
+      Cada archivo envuelve su contenido en una IIFE  (function(){ ... })();
+      para que las variables de uno no choquen con las de otro. Sin eso, dos
+      archivos que declaren `const estudiante` provocarían el error
+      "Identifier 'estudiante' has already been declared".
+    -->
+    <script src="js/00-utilidades.js" defer></script>
+    <script src="js/01-objetos-basicos.js" defer></script>
+    <script src="js/02-recorrer-y-copiar.js" defer></script>
+    <script src="js/03-destructuring-y-opcional.js" defer></script>
+    <script src="js/04-json.js" defer></script>
+    <script src="js/05-map-y-set.js" defer></script>
+    <script src="js/06-proyecto-fichas.js" defer></script>
+  </head>
+
+  <body>
+    <div class="contenedor">
+      <!-- Aviso propio de la plantilla de clase (no existe en la version resuelta). -->
+      <div class="aviso-modo-clase">
+        <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+        JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+        <a href="../index.html">la carpeta del proyecto</a>.
+      </div>
+
+      <!-- ============================================================
+           CABECERA DEL PROYECTO
+           ============================================================ -->
+      <header class="cabecera">
+        <a class="cabecera__volver" href="../../index.html">← Volver al índice del curso</a>
+        <h1>05 · Objetos, JSON, Map y Set</h1>
+        <p class="cabecera__frase">
+          Aprenderás a modelar datos del mundo real con objetos, a recorrerlos y copiarlos sin
+          efectos secundarios, a extraer su información con destructuring, a sobrevivir a los datos
+          incompletos con <code>?.</code> y <code>??</code>, a hablar JSON con cualquier servidor y
+          a elegir con criterio entre un objeto, un <code>Map</code> y un <code>Set</code>.
+        </p>
+      </header>
+
+      <!-- ============================================================
+           INDICE DE SECCIONES (enlaces ancla a los id de cada bloque)
+           ============================================================ -->
+      <nav class="indice" aria-label="Índice del proyecto">
+        <h2>Índice de secciones</h2>
+        <ol>
+          <li><a href="#objetos-basicos">1. Objetos, acceso, this y métodos</a></li>
+          <li><a href="#recorrer-y-copiar">2. Recorrer, fusionar y copiar</a></li>
+          <li><a href="#destructuring">3. Destructuring, ?. y ??</a></li>
+          <li><a href="#json">4. JSON: stringify y parse</a></li>
+          <li><a href="#map-y-set">5. Map, Set, WeakMap y WeakSet</a></li>
+          <li><a href="#proyecto">6. Proyecto: fichas de estudiantes</a></li>
+        </ol>
+      </nav>
+
+      <!-- ============================================================
+           SECCION 1
+           ============================================================ -->
+      <section class="bloque" id="objetos-basicos">
+        <h2><span class="numero">01</span> Objetos, acceso, this y métodos</h2>
+        <p class="bloque__descripcion">
+          El objeto es la estructura con la que representamos "cosas" del mundo real: un
+          estudiante, un producto, un pedido. Aquí vemos cómo se crea, cómo se leen y modifican sus
+          datos, y cómo se le enseñan acciones (métodos).
+        </p>
+        <ul class="temario">
+          <li>Objeto literal: pares clave-valor.</li>
+          <li>Acceso con punto y con corchetes: cuándo el corchete es obligatorio.</li>
+          <li>Añadir, modificar y eliminar propiedades con <code>delete</code>.</li>
+          <li>Objetos anidados y arrays de objetos.</li>
+          <li>Métodos y la palabra <code>this</code>; por qué una arrow function no sirve.</li>
+          <li>Shorthand de propiedades y métodos, y propiedades computadas <code>[clave]</code>.</li>
+        </ul>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/01-objetos-basicos.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-01">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-01" class="consola" aria-live="polite"></pre>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SECCION 2
+           ============================================================ -->
+      <section class="bloque" id="recorrer-y-copiar">
+        <h2><span class="numero">02</span> Recorrer, fusionar y copiar objetos</h2>
+        <p class="bloque__descripcion">
+          Un objeto no es iterable como un array, así que necesitamos herramientas propias para
+          recorrerlo. Y "copiar" un objeto es más traicionero de lo que parece: aquí está la
+          diferencia entre copia superficial y copia profunda, la fuente de muchísimos errores.
+        </p>
+        <ul class="temario">
+          <li><code>for...in</code> y su trampa: las propiedades heredadas.</li>
+          <li><code>Object.keys</code>, <code>Object.values</code>, <code>Object.entries</code>.</li>
+          <li>Combinarlos con <code>map</code>, <code>filter</code> y <code>reduce</code>.</li>
+          <li><code>Object.assign</code> y el spread <code>{ ...obj }</code>.</li>
+          <li>Copia superficial vs profunda: <code>structuredClone</code> y el truco de JSON.</li>
+          <li><code>Object.freeze</code>, <code>Object.seal</code>, <code>in</code>,
+            <code>hasOwnProperty</code> y <code>Object.hasOwn</code>.</li>
+        </ul>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/02-recorrer-y-copiar.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-02">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-02" class="consola" aria-live="polite"></pre>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SECCION 3
+           ============================================================ -->
+      <section class="bloque" id="destructuring">
+        <h2><span class="numero">03</span> Destructuring, encadenamiento opcional y ??</h2>
+        <p class="bloque__descripcion">
+          Estas tres herramientas son las que más van a cambiar tu forma de escribir JavaScript.
+          Sirven para sacar datos de objetos complicados en una línea y para que el código no se
+          rompa cuando falta información: algo que pasa constantemente con datos reales.
+        </p>
+        <ul class="temario">
+          <li>Destructuring: renombrado, valores por defecto y anidado.</li>
+          <li>Destructuring en los parámetros de una función (el uso más frecuente).</li>
+          <li>El operador <code>rest</code> para quedarse con "todo lo demás".</li>
+          <li>Encadenamiento opcional: <code>?.</code>, <code>?.[ ]</code> y <code>?.()</code>.</li>
+          <li>Fusión nula <code>??</code> frente a <code>||</code>, y el atajo <code>??=</code>.</li>
+        </ul>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/03-destructuring-y-opcional.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-03">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-03" class="consola" aria-live="polite"></pre>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SECCION 4
+           ============================================================ -->
+      <section class="bloque" id="json">
+        <h2><span class="numero">04</span> JSON: el idioma común de la web</h2>
+        <p class="bloque__descripcion">
+          Todo lo que llega de un servidor llega como JSON: texto plano con forma de objeto.
+          Saber convertir en las dos direcciones, y conocer qué se pierde por el camino, es
+          imprescindible antes de trabajar con APIs.
+        </p>
+        <ul class="temario">
+          <li>Qué es JSON y en qué se diferencia de un objeto de JavaScript.</li>
+          <li><code>JSON.stringify</code>: indentación, replacer y <code>toJSON()</code>.</li>
+          <li><code>JSON.parse</code> y el reviver para recuperar fechas.</li>
+          <li>Los errores típicos y por qué hay que usar <code>try/catch</code>.</li>
+          <li>Caso real: guardar y leer datos en <code>localStorage</code>.</li>
+        </ul>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/04-json.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-04">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-04" class="consola" aria-live="polite"></pre>
+        </div>
+
+        <p class="aviso">
+          <strong>Nota:</strong> si abres esta página con doble clic (protocolo
+          <code>file://</code>), algunos navegadores bloquean <code>localStorage</code>. El código
+          está protegido con <code>try/catch</code>, así que verás un aviso en la consola visual
+          en lugar de un error. Con Live Server funcionará con normalidad.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           SECCION 5
+           ============================================================ -->
+      <section class="bloque" id="map-y-set">
+        <h2><span class="numero">05</span> Map, Set, WeakMap y WeakSet</h2>
+        <p class="bloque__descripcion">
+          El objeto plano no siempre es la mejor herramienta. Cuando necesitamos un diccionario
+          que crece, claves que no son texto o una lista sin repetidos, JavaScript tiene
+          estructuras hechas a medida.
+        </p>
+        <ul class="temario">
+          <li><code>Map</code>: diferencias reales con el objeto plano.</li>
+          <li><code>set</code>, <code>get</code>, <code>has</code>, <code>delete</code>,
+            <code>size</code> e iteración.</li>
+          <li>Casos reales: contar frecuencias y agrupar por una propiedad.</li>
+          <li><code>Set</code>: valores únicos y eliminación de duplicados.</li>
+          <li>Unión, intersección y diferencia entre conjuntos.</li>
+          <li><code>WeakMap</code> y <code>WeakSet</code>: para qué existen.</li>
+        </ul>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/05-map-y-set.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-05">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-05" class="consola" aria-live="polite"></pre>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SECCION 6: PROYECTO PRACTICO
+           ============================================================ -->
+      <section class="bloque" id="proyecto">
+        <h2><span class="numero">06</span> Proyecto: fichas de estudiantes</h2>
+        <p class="bloque__descripcion">
+          Aquí se junta todo. Partimos de un array de objetos con datos anidados (contacto,
+          dirección y notas) donde <strong>ninguna ficha está completa</strong>, tal como pasa en
+          la vida real. Cada tarjeta se genera con una función que desestructura en sus parámetros
+          y usa encadenamiento opcional para los datos que pueden faltar.
+        </p>
+
+        <div class="barra-botones">
+          <button class="boton boton--primario" type="button" id="btn-ver-json">
+            📄 Ver el JSON formateado
+          </button>
+          <button class="boton boton--acento" type="button" id="btn-parsear-json">
+            🔄 Volver a parsear el JSON
+          </button>
+          <button class="boton boton--mini" type="button" data-limpiar="salida-proyecto">
+            Limpiar consola
+          </button>
+        </div>
+
+        <!-- Las tarjetas se generan desde JavaScript con map() + innerHTML. -->
+        <div class="fichas" id="lista-fichas"></div>
+
+        <div class="consola-caja">
+          <div class="consola-barra">
+            <span>consola visual · js/06-proyecto-fichas.js</span>
+            <button class="boton boton--mini" type="button" data-limpiar="salida-proyecto">
+              Limpiar
+            </button>
+          </div>
+          <pre id="salida-proyecto" class="consola" aria-live="polite"></pre>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           PIE
+           ============================================================ -->
+      <footer class="pie">
+        <p>
+          Full Stack 2 · Desarrollo Front End — Proyecto 05. Todo el código está comentado en los
+          archivos de la carpeta <code>js/</code>. Abre la consola del navegador con
+          <strong>F12</strong> para ver la misma salida.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- charset UTF-8: imprescindible para que se vean bien las tildes y la eñe -->
+  <meta charset="UTF-8">
+  <!-- viewport: hace que la página se adapte al ancho real del móvil -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07 · Eventos, formularios y almacenamiento · Plantilla de clase</title>
+
+  <!-- Hoja de estilos propia del proyecto (carpeta css/) -->
+  <link rel="stylesheet" href="css/estilos.css">
+
+  <!--
+    Cargamos VARIOS archivos JavaScript, uno por tema.
+    El atributo defer hace dos cosas muy importantes:
+      1) NO bloquea el pintado de la página mientras se descarga el script.
+      2) Ejecuta los scripts CUANDO EL HTML YA ESTÁ COMPLETO (y en este mismo orden).
+    Gracias a defer podemos escribir document.getElementById(...) sin miedo:
+    los elementos ya existen cuando el código se ejecuta.
+  -->
+  <script src="js/01-eventos-basicos.js" defer></script>
+  <script src="js/02-propagacion-y-delegacion.js" defer></script>
+  <script src="js/03-teclado-y-raton.js" defer></script>
+  <script src="js/04-formularios-y-validacion.js" defer></script>
+  <script src="js/05-almacenamiento.js" defer></script>
+  <script src="js/06-proyecto-todo.js" defer></script>
+</head>
+<body>
+
+  <!-- Aviso propio de la PLANTILLA DE CLASE (no existe en la versión resuelta) -->
+  <div class="aviso-modo-clase">
+    <strong>MODO CLASE</strong> — el HTML y el CSS ya están listos. Lo que se escribe en vivo es el
+    JavaScript de la carpeta <code>js/</code>. La versión resuelta está en
+    <a href="../index.html">la carpeta del proyecto</a>.
+  </div>
+
+  <!-- ============================================================
+       CABECERA DEL PROYECTO
+       ============================================================ -->
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="volver" href="../../index.html">← Volver al índice del curso</a>
+      <h1 class="cabecera__titulo">07 · Eventos, formularios y almacenamiento</h1>
+      <p class="cabecera__frase">
+        Aprenderás a <strong>escuchar lo que hace el usuario</strong> (clics, teclas, envíos de
+        formulario), a <strong>validar datos</strong> antes de aceptarlos y a <strong>guardar
+        información en el navegador</strong> para que siga ahí al recargar la página.
+      </p>
+
+      <!-- Índice de secciones con enlaces ancla (#id). Al pulsar, el navegador
+           salta al elemento cuyo id coincide. -->
+      <nav class="indice" aria-label="Índice de secciones">
+        <a href="#s1">1. Eventos básicos</a>
+        <a href="#s2">2. Propagación y delegación</a>
+        <a href="#s3">3. Ratón y teclado</a>
+        <a href="#s4">4. Formularios y validación</a>
+        <a href="#s5">5. localStorage</a>
+        <a href="#s6">6. Proyecto: Lista de tareas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- ============================================================
+         SECCIÓN 1 · EVENTOS BÁSICOS
+         ============================================================ -->
+    <section class="seccion" id="s1">
+      <h2 class="seccion__titulo"><span class="numero">1</span> Eventos básicos</h2>
+      <p class="seccion__intro">
+        Un <em>evento</em> es un aviso que lanza el navegador cuando ocurre algo: un clic, una tecla,
+        el envío de un formulario. Nosotros escribimos funciones (<em>manejadores</em>) que reaccionan
+        a esos avisos. Aquí veremos las tres formas de conectarlas y cuál es la correcta.
+      </p>
+
+      <div class="tarjeta">
+        <h3>1.1 · Las tres formas de asignar un manejador</h3>
+        <div class="fila-botones">
+          <!--
+            FORMA 1 (la más antigua): atributo onclick directamente en el HTML.
+            Llama a una función que debe existir como variable GLOBAL.
+            Se muestra solo para que la reconozcáis en código viejo: NO se recomienda.
+          -->
+          <button type="button" class="btn" onclick="saludarDesdeAtributo(event)">
+            Forma 1: atributo onclick
+          </button>
+
+          <!-- FORMA 2: propiedad .onclick asignada desde JS -->
+          <button type="button" class="btn" id="btn-propiedad">Forma 2: propiedad .onclick</button>
+
+          <!-- FORMA 3: addEventListener (la recomendada) -->
+          <button type="button" class="btn btn--primario" id="btn-listener">
+            Forma 3: addEventListener
+          </button>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>1.2 · Quitar manejadores: removeEventListener</h3>
+        <div class="fila-botones">
+          <button type="button" class="btn" id="btn-contador">
+            Púlsame (clics: <span id="marcador-clics">0</span>)
+          </button>
+          <button type="button" class="btn btn--peligro" id="btn-quitar">
+            Quitar el manejador anterior
+          </button>
+          <button type="button" class="btn btn--fantasma" id="btn-anonimo">
+            Manejador anónimo (no se puede quitar)
+          </button>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>1.3 · El objeto <code>event</code>: target vs currentTarget</h3>
+        <p class="nota">
+          El manejador está puesto en la <strong>caja gris</strong>, no en el botón.
+          Pulsa el botón y observa la diferencia entre <code>target</code> (lo que pulsaste)
+          y <code>currentTarget</code> (dónde está escuchando el manejador).
+        </p>
+        <div class="caja-demo" id="caja-evento">
+          Soy la caja (el <code>currentTarget</code>)
+          <button type="button" class="btn btn--mini" id="btn-interno">Soy el botón (el target)</button>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>1.4 · preventDefault: cancelar el comportamiento por defecto</h3>
+        <p class="nota">
+          Cada elemento trae una acción "de fábrica": un enlace navega, un checkbox se marca.
+          <code>event.preventDefault()</code> la cancela.
+        </p>
+        <div class="fila-botones alinear">
+          <a href="https://developer.mozilla.org" id="enlace-bloqueado" class="enlace-demo">
+            Enlace que NO navegará
+          </a>
+          <label class="etiqueta-inline">
+            <input type="checkbox" id="chk-bloqueado"> Checkbox que no se deja marcar
+          </label>
+        </div>
+      </div>
+
+      <!-- Consola visual de la sección 1 -->
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · sección 1</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-01">Limpiar</button>
+        </div>
+        <pre id="salida-01" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECCIÓN 2 · PROPAGACIÓN Y DELEGACIÓN
+         ============================================================ -->
+    <section class="seccion" id="s2">
+      <h2 class="seccion__titulo"><span class="numero">2</span> Propagación y delegación</h2>
+      <p class="seccion__intro">
+        Cuando pulsas un elemento, el evento no ocurre solo ahí: <strong>viaja</strong>. Baja desde
+        el documento hasta el elemento (fase de captura) y vuelve a subir (fase de burbujeo).
+        Entender ese viaje es lo que permite la técnica más potente del tema: la delegación.
+      </p>
+
+      <div class="tarjeta">
+        <h3>2.1 · Las tres fases: captura, objetivo y burbujeo</h3>
+        <p class="nota">Pulsa el cuadro <strong>hijo</strong> (el morado del centro) y lee el orden en la consola.</p>
+        <div class="cajas-anidadas" id="abuelo">
+          <span class="etiqueta-caja">abuelo</span>
+          <div class="caja-anidada" id="padre">
+            <span class="etiqueta-caja">padre</span>
+            <div class="caja-anidada caja-anidada--hijo" id="hijo">
+              <span class="etiqueta-caja">hijo</span>
+            </div>
+          </div>
+        </div>
+        <div class="fila-botones alinear">
+          <label class="etiqueta-inline">
+            <input type="checkbox" id="chk-stop"> El <strong>padre</strong> corta la propagación
+            (<code>stopPropagation</code>)
+          </label>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>2.2 · Delegación de eventos con <code>closest()</code></h3>
+        <p class="nota">
+          Un <strong>único</strong> manejador en la lista atiende a todos los productos, incluso a los
+          que aún no existen. Añade productos nuevos y verás que los botones funcionan sin registrar
+          nada más.
+        </p>
+        <form class="fila-botones" id="form-producto">
+          <input type="text" id="nuevo-producto" class="campo__control" placeholder="Nombre del producto" autocomplete="off">
+          <button type="submit" class="btn btn--primario">Añadir producto</button>
+        </form>
+        <!-- El manejador vivirá en este <ul>, no en cada <li> -->
+        <ul class="lista-productos" id="lista-productos">
+          <li class="producto" data-id="1">
+            <span class="producto__nombre">Teclado mecánico</span>
+            <span class="producto__acciones">
+              <button type="button" class="btn btn--mini" data-accion="favorito">☆ Favorito</button>
+              <button type="button" class="btn btn--mini btn--peligro" data-accion="eliminar">Eliminar</button>
+            </span>
+          </li>
+          <li class="producto" data-id="2">
+            <span class="producto__nombre">Monitor 27 pulgadas</span>
+            <span class="producto__acciones">
+              <button type="button" class="btn btn--mini" data-accion="favorito">☆ Favorito</button>
+              <button type="button" class="btn btn--mini btn--peligro" data-accion="eliminar">Eliminar</button>
+            </span>
+          </li>
+          <li class="producto" data-id="3">
+            <span class="producto__nombre">Silla ergonómica</span>
+            <span class="producto__acciones">
+              <button type="button" class="btn btn--mini" data-accion="favorito">☆ Favorito</button>
+              <button type="button" class="btn btn--mini btn--peligro" data-accion="eliminar">Eliminar</button>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tarjeta">
+        <h3>2.3 · Opciones <code>once</code> y <code>passive</code></h3>
+        <div class="fila-botones">
+          <button type="button" class="btn" id="btn-una-vez">Solo funciona UNA vez (once)</button>
+        </div>
+        <p class="nota">Haz scroll con la rueda dentro de la caja para ver el listener <code>passive</code>:</p>
+        <div class="zona-scroll" id="zona-scroll">
+          <p>Desplázate con la rueda del ratón dentro de esta caja.</p>
+          <p>Un listener <code>passive: true</code> le promete al navegador que NO llamará a
+             preventDefault, así el scroll no se bloquea nunca y va más fluido.</p>
+          <p>Línea de relleno 1</p><p>Línea de relleno 2</p><p>Línea de relleno 3</p>
+          <p>Línea de relleno 4</p><p>Línea de relleno 5</p><p>Final de la caja.</p>
+        </div>
+      </div>
+
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · sección 2</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-02">Limpiar</button>
+        </div>
+        <pre id="salida-02" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECCIÓN 3 · RATÓN Y TECLADO
+         ============================================================ -->
+    <section class="seccion" id="s3">
+      <h2 class="seccion__titulo"><span class="numero">3</span> Eventos de ratón y teclado</h2>
+      <p class="seccion__intro">
+        El ratón y el teclado son la principal fuente de eventos de una página. Aquí distinguiremos
+        parejas que se confunden mucho: <code>mouseenter</code> vs <code>mouseover</code> y
+        <code>event.key</code> vs <code>event.code</code>.
+      </p>
+
+      <div class="tarjeta">
+        <h3>3.1 · click y dblclick</h3>
+        <div class="caja-demo caja-demo--click" id="caja-click">
+          Un clic me cuenta. Dos clics rápidos me cambian de color.
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>3.2 · mouseenter/mouseleave vs mouseover/mouseout</h3>
+        <p class="nota">
+          Pasa el ratón por encima y luego entra y sal del recuadro interior varias veces.
+          Verás que <code>mouseover</code> se dispara muchísimas más veces.
+        </p>
+        <div class="caja-demo caja-demo--hover" id="zona-enter">
+          Zona exterior
+          <div class="caja-interior" id="hijo-enter">Recuadro interior</div>
+        </div>
+        <p class="marcadores">
+          <span>mouseenter: <strong id="cont-enter">0</strong></span>
+          <span>mouseover: <strong id="cont-over">0</strong></span>
+        </p>
+      </div>
+
+      <div class="tarjeta">
+        <h3>3.3 · mousemove y menú contextual propio</h3>
+        <div class="rejilla-2">
+          <div>
+            <div class="pad-raton" id="pad-raton">Mueve el ratón por aquí</div>
+            <p class="marcadores"><span>Coordenadas: <strong id="coords">x: 0, y: 0</strong></span></p>
+          </div>
+          <div class="zona-contextual" id="zona-contextual">
+            Haz <strong>clic derecho</strong> aquí para ver un menú personalizado.
+            <!-- Menú propio: empieza oculto con la clase "oculto" -->
+            <ul class="menu-contextual oculto" id="menu-contextual">
+              <li data-opcion="copiar">Copiar</li>
+              <li data-opcion="renombrar">Renombrar</li>
+              <li data-opcion="eliminar">Eliminar</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>3.4 · Teclado: <code>key</code> vs <code>code</code> y atajos</h3>
+        <label class="campo">
+          <span class="campo__etiqueta">Escribe aquí y observa la consola</span>
+          <input type="text" id="input-teclas" class="campo__control" placeholder="Prueba con A, ñ, Enter, Escape, Shift..." autocomplete="off">
+        </label>
+        <p class="nota">
+          Atajo global de la sección: pulsa <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd>
+          en cualquier parte de la página para limpiar esta consola.
+        </p>
+        <p class="nota">
+          Haz clic en el tablero para darle el foco y mueve el cuadro con las <strong>flechas</strong>:
+        </p>
+        <div class="tablero" id="tablero" tabindex="0">
+          <div class="cuadrado" id="cuadrado"></div>
+        </div>
+      </div>
+
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · sección 3</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-03">Limpiar</button>
+        </div>
+        <pre id="salida-03" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECCIÓN 4 · FORMULARIOS Y VALIDACIÓN
+         ============================================================ -->
+    <section class="seccion" id="s4">
+      <h2 class="seccion__titulo"><span class="numero">4</span> Formularios y validación</h2>
+      <p class="seccion__intro">
+        Los formularios son la puerta de entrada de los datos. Veremos sus eventos
+        (<code>submit</code>, <code>input</code>, <code>change</code>, <code>focus</code>,
+        <code>blur</code>), cómo leer los valores y cómo validarlos con JavaScript y con HTML5.
+      </p>
+
+      <div class="tarjeta">
+        <h3>4.1 · input vs change vs focus/blur</h3>
+        <div class="rejilla-2">
+          <label class="campo">
+            <span class="campo__etiqueta">Dispara <code>input</code> en cada tecla</span>
+            <input type="text" id="demo-input" class="campo__control" placeholder="Escribe letra a letra" autocomplete="off">
+          </label>
+          <label class="campo">
+            <span class="campo__etiqueta">Dispara <code>change</code> al salir del campo</span>
+            <input type="text" id="demo-change" class="campo__control" placeholder="Escribe y pulsa Tab" autocomplete="off">
+          </label>
+        </div>
+        <label class="campo">
+          <span class="campo__etiqueta">Este campo avisa cuando entra y sale el foco</span>
+          <input type="text" id="campo-focus" class="campo__control" placeholder="Haz clic dentro y luego fuera" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="tarjeta">
+        <h3>4.2 · Leer los datos: value, checked, selected y FormData</h3>
+        <!-- novalidate desactiva la validación automática del navegador en este formulario,
+             porque aquí queremos leer los datos, no validarlos todavía. -->
+        <form id="form-datos" novalidate>
+          <div class="rejilla-2">
+            <label class="campo">
+              <span class="campo__etiqueta">Nombre del estudiante</span>
+              <input type="text" name="nombre" id="dato-nombre" class="campo__control" value="Lucía Fernández" autocomplete="off">
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Curso preferido</span>
+              <select name="curso" id="dato-curso" class="campo__control">
+                <option value="html">HTML y CSS</option>
+                <option value="js" selected>JavaScript</option>
+                <option value="react">React</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="grupo">
+            <legend>Modalidad</legend>
+            <label class="etiqueta-inline"><input type="radio" name="modalidad" value="presencial" checked> Presencial</label>
+            <label class="etiqueta-inline"><input type="radio" name="modalidad" value="online"> Online</label>
+            <label class="etiqueta-inline"><input type="radio" name="modalidad" value="mixta"> Mixta</label>
+          </fieldset>
+
+          <label class="campo">
+            <span class="campo__etiqueta">Tecnologías (Ctrl o Cmd para elegir varias)</span>
+            <select name="tecnologias" id="dato-tecnologias" class="campo__control" multiple size="4">
+              <option value="js" selected>JavaScript</option>
+              <option value="css">CSS</option>
+              <option value="git">Git</option>
+              <option value="sql">SQL</option>
+            </select>
+          </label>
+
+          <label class="etiqueta-inline">
+            <input type="checkbox" name="boletin" id="dato-boletin" checked> Quiero recibir el boletín
+          </label>
+
+          <div class="fila-botones">
+            <button type="submit" class="btn btn--primario">Leer con .value / .checked</button>
+            <button type="button" class="btn" id="btn-formdata">Leer con FormData</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tarjeta">
+        <h3>4.3 · Validación manual con mensajes personalizados</h3>
+        <!-- novalidate: apagamos la validación nativa para hacerla nosotros en JavaScript -->
+        <form id="form-registro" novalidate>
+          <div class="rejilla-2">
+            <label class="campo">
+              <span class="campo__etiqueta">Nombre completo</span>
+              <input type="text" id="reg-nombre" class="campo__control" placeholder="Ana Torres" autocomplete="off">
+              <span class="error" id="error-reg-nombre"></span>
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Correo electrónico</span>
+              <input type="text" id="reg-email" class="campo__control" placeholder="ana@correo.com" autocomplete="off">
+              <span class="error" id="error-reg-email"></span>
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Edad</span>
+              <input type="text" id="reg-edad" class="campo__control" placeholder="18" autocomplete="off">
+              <span class="error" id="error-reg-edad"></span>
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Contraseña (mínimo 8 caracteres)</span>
+              <input type="password" id="reg-clave" class="campo__control" autocomplete="new-password">
+              <span class="error" id="error-reg-clave"></span>
+            </label>
+          </div>
+          <label class="etiqueta-inline">
+            <input type="checkbox" id="reg-terminos"> Acepto las condiciones del curso
+          </label>
+          <span class="error" id="error-reg-terminos"></span>
+          <div class="fila-botones">
+            <button type="submit" class="btn btn--primario">Registrarme</button>
+          </div>
+          <p class="aviso-exito oculto" id="registro-ok">Formulario válido. Datos listos para enviar.</p>
+        </form>
+      </div>
+
+      <div class="tarjeta">
+        <h3>4.4 · Validación nativa HTML5: required, pattern, min, max</h3>
+        <p class="nota">
+          Aquí NO ponemos <code>novalidate</code>: el navegador valida solo. Con
+          <code>setCustomValidity()</code> cambiamos el texto del globo de error.
+        </p>
+        <form id="form-nativo">
+          <div class="rejilla-2">
+            <label class="campo">
+              <span class="campo__etiqueta">Usuario (3-12 letras minúsculas)</span>
+              <input type="text" id="nat-usuario" class="campo__control" required
+                     pattern="[a-z]{3,12}" placeholder="anatorres" autocomplete="off">
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Correo</span>
+              <input type="email" id="nat-email" class="campo__control" required placeholder="ana@correo.com" autocomplete="off">
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Nota final (1 a 10)</span>
+              <input type="number" id="nat-nota" class="campo__control" required min="1" max="10" step="0.5" placeholder="7.5">
+            </label>
+            <label class="campo">
+              <span class="campo__etiqueta">Fecha de matrícula</span>
+              <input type="date" id="nat-fecha" class="campo__control" required>
+            </label>
+          </div>
+          <div class="fila-botones">
+            <button type="submit" class="btn btn--primario">Enviar (validación nativa)</button>
+            <button type="button" class="btn" id="btn-checkvalidity">Comprobar con checkValidity()</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · sección 4</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-04">Limpiar</button>
+        </div>
+        <pre id="salida-04" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECCIÓN 5 · ALMACENAMIENTO EN EL NAVEGADOR
+         ============================================================ -->
+    <section class="seccion" id="s5">
+      <h2 class="seccion__titulo"><span class="numero">5</span> localStorage y sessionStorage</h2>
+      <p class="seccion__intro">
+        El navegador nos presta un pequeño almacén de texto por cada sitio web.
+        <code>localStorage</code> guarda para siempre (hasta que se borre) y
+        <code>sessionStorage</code> solo mientras la pestaña esté abierta.
+      </p>
+
+      <div class="tarjeta">
+        <h3>5.1 · Preferencias que sobreviven a la recarga</h3>
+        <div class="rejilla-2">
+          <label class="campo">
+            <span class="campo__etiqueta">Tu nombre</span>
+            <input type="text" id="pref-nombre" class="campo__control" placeholder="Escribe tu nombre" autocomplete="off">
+          </label>
+          <label class="campo">
+            <span class="campo__etiqueta">Color de acento</span>
+            <select id="pref-color" class="campo__control">
+              <option value="#38bdf8">Azul cielo</option>
+              <option value="#4ade80">Verde</option>
+              <option value="#c084fc">Morado</option>
+              <option value="#fbbf24">Ámbar</option>
+            </select>
+          </label>
+        </div>
+        <label class="campo">
+          <span class="campo__etiqueta">Tamaño de letra de las consolas: <strong id="pref-tamano-valor">16</strong> px</span>
+          <input type="range" id="pref-tamano" class="campo__control" min="12" max="22" step="1" value="16">
+        </label>
+        <div class="fila-botones">
+          <button type="button" class="btn btn--primario" id="btn-guardar-pref">Guardar preferencias</button>
+          <button type="button" class="btn" id="btn-leer-pref">Leer (getItem)</button>
+          <button type="button" class="btn" id="btn-listar-claves">Listar claves</button>
+          <button type="button" class="btn btn--peligro" id="btn-borrar-pref">Borrar (removeItem)</button>
+        </div>
+        <p class="nota" id="saludo-guardado">Todavía no hay preferencias guardadas.</p>
+      </div>
+
+      <div class="tarjeta">
+        <h3>5.2 · sessionStorage y el peligro de <code>clear()</code></h3>
+        <div class="fila-botones">
+          <button type="button" class="btn" id="btn-visitas">Contar visitas de ESTA pestaña</button>
+          <button type="button" class="btn btn--peligro" id="btn-clear">Vaciar TODO con clear()</button>
+        </div>
+        <p class="nota">
+          ⚠️ <code>clear()</code> borra absolutamente todas las claves del sitio, incluidas
+          las tareas del proyecto de abajo. Por eso pediremos confirmación.
+        </p>
+      </div>
+
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · sección 5</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-05">Limpiar</button>
+        </div>
+        <pre id="salida-05" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECCIÓN 6 · PROYECTO PRÁCTICO: LISTA DE TAREAS
+         ============================================================ -->
+    <section class="seccion seccion--proyecto" id="s6">
+      <h2 class="seccion__titulo"><span class="numero">6</span> Proyecto: Lista de tareas (To-Do)</h2>
+      <p class="seccion__intro">
+        Todo lo anterior, junto y funcionando: formulario con validación, delegación de eventos,
+        edición en línea, filtros y persistencia en <code>localStorage</code>.
+        <strong>Recarga la página (F5) y comprueba que tus tareas siguen ahí.</strong>
+      </p>
+
+      <div class="todo">
+        <!-- Formulario de alta -->
+        <form class="todo__form" id="form-tarea" novalidate>
+          <input type="text" id="input-tarea" class="todo__input"
+                 placeholder="¿Qué tienes que hacer? (mínimo 3 caracteres)"
+                 autocomplete="off" maxlength="80">
+          <button type="submit" class="btn btn--primario">Añadir</button>
+        </form>
+        <p class="error error--todo" id="error-tarea"></p>
+
+        <!-- Filtros: cada botón lleva su valor en un data-atributo -->
+        <div class="todo__filtros" id="filtros" role="group" aria-label="Filtros de tareas">
+          <button type="button" class="filtro filtro--activo" data-filtro="todas">Todas</button>
+          <button type="button" class="filtro" data-filtro="pendientes">Pendientes</button>
+          <button type="button" class="filtro" data-filtro="completadas">Completadas</button>
+        </div>
+
+        <!-- Aquí se pinta la lista desde JavaScript -->
+        <ul class="todo__lista" id="lista-tareas"></ul>
+
+        <!-- Mensaje que se muestra cuando no hay nada que pintar -->
+        <p class="todo__vacio oculto" id="estado-vacio">No hay tareas que mostrar.</p>
+
+        <!-- Pie con contador y acción de limpieza -->
+        <footer class="todo__pie">
+          <span id="contador-pendientes">0 tareas pendientes</span>
+          <button type="button" class="btn btn--mini btn--peligro" id="btn-borrar-completadas">
+            Borrar completadas
+          </button>
+        </footer>
+
+        <p class="nota">
+          Doble clic sobre el texto de una tarea para <strong>editarla</strong>.
+          <kbd>Enter</kbd> guarda, <kbd>Esc</kbd> cancela.
+        </p>
+      </div>
+
+      <div class="bloque-consola">
+        <div class="bloque-consola__barra">
+          <span>Consola visual · proyecto</span>
+          <button type="button" class="btn btn--mini btn--fantasma" id="limpiar-06">Limpiar</button>
+        </div>
+        <pre id="salida-06" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>Full Stack 2 · Desarrollo Front End — Proyecto 07 · Eventos, formularios y almacenamiento</p>
+      <p><a class="volver" href="../../index.html">← Volver al índice del curso</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

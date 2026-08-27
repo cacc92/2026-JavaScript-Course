@@ -1,0 +1,555 @@
+/* ============================================================================
+   ARCHIVO: css/estilos.css
+   PROYECTO: 09 - Asincronia (callbacks, promesas, async/await y fetch)
+
+   QUE HACE ESTE ARCHIVO
+   Define TODA la apariencia del proyecto: colores, tipografia, tarjetas,
+   botones, la "consola visual" donde imprimimos resultados y el spinner
+   de carga que usaremos para el estado "cargando" de fetch.
+
+   COMO LEERLO EN CLASE
+   El archivo esta dividido en secciones numeradas. Cada seccion explica
+   POR QUE se toma cada decision, no solo QUE hace la regla CSS.
+   ========================================================================== */
+
+/* ============================================================
+   1. TOKENS DE DISENO (VARIABLES CSS)
+   ============================================================
+   Una "variable CSS" (o custom property) es un valor con nombre
+   que podemos reutilizar en todo el archivo. Se declaran dentro
+   de :root, que representa al elemento <html> (la raiz del documento).
+
+   Ventaja practica: si el dia de manana queremos cambiar el color
+   principal del curso, tocamos UNA linea y cambia toda la pagina.
+   Es el mismo sistema visual compartido por todos los proyectos. */
+:root {
+  --fondo: #0f172a;          /* fondo general de la pagina (azul casi negro) */
+  --superficie: #1e293b;     /* fondo de las tarjetas */
+  --superficie-2: #273449;   /* fondo de elementos secundarios dentro de tarjetas */
+  --borde: #334155;          /* color de los bordes suaves */
+  --texto: #e2e8f0;          /* color del texto normal */
+  --texto-suave: #94a3b8;    /* texto secundario, menos contraste */
+  --primario: #38bdf8;       /* azul celeste: acciones principales y enlaces */
+  --exito: #4ade80;          /* verde: todo salio bien */
+  --alerta: #fbbf24;         /* amarillo: avisos */
+  --error: #f87171;          /* rojo: errores */
+  --acento: #c084fc;         /* violeta: destacados y titulos de seccion */
+  --radio: 12px;             /* redondeo estandar de esquinas */
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ============================================================
+   2. REINICIO BASICO (RESET)
+   ============================================================
+   Los navegadores traen margenes y rellenos por defecto que varian
+   entre unos y otros. Los reseteamos para partir siempre del mismo sitio.
+
+   box-sizing: border-box hace que el padding y el borde se cuenten DENTRO
+   del ancho declarado. Sin esto, un elemento con width:100% + padding
+   se sale de la pantalla. Es el ajuste mas util del CSS moderno. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* scroll suave cuando se pulsa un enlace del indice (#ancla) */
+html {
+  scroll-behavior: smooth;
+  /* ⚠️ DETALLE IMPORTANTE: el tamano base va en <html>, NO en <body>.
+     La unidad rem SIEMPRE se mide contra el elemento RAIZ (<html>), asi que
+     poniendo 17px aqui todos los tamanos escritos en rem crecen con el.
+     Si lo pusieramos en body, el texto de body si cambiaria, pero cada rem
+     seguiria valiendo 16px y la pagina se veria mas pequena de lo previsto
+     al proyectarla. */
+  font-size: 17px;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  line-height: 1.65;
+  padding: 24px 16px 80px;
+}
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL
+   ============================================================
+   max-width limita el ancho de la lectura (lineas muy largas cansan la
+   vista) y margin: 0 auto centra el bloque horizontalmente. */
+.contenedor {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   4. CABECERA DEL PROYECTO
+   ============================================================ */
+.cabecera {
+  background: linear-gradient(140deg, var(--superficie), var(--superficie-2));
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 28px 28px 24px;
+  margin-bottom: 28px;
+}
+
+/* El enlace "Volver al indice" aparece DOS veces: en la cabecera y en el pie.
+   Por eso la regla NO se limita a .cabecera: si lo hicieramos, el enlace del
+   pie se quedaria con el azul por defecto del navegador (#0000EE), que sobre
+   un fondo azul casi negro es practicamente ilegible en un proyector. */
+.volver {
+  display: inline-block;
+  color: var(--primario);
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;   /* un radio enorme convierte el rectangulo en pildora */
+  padding: 4px 14px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.volver:hover {
+  background: var(--primario);
+  color: #06283d;
+}
+
+/* Separaciones propias de cada sitio donde aparece el enlace. */
+.cabecera .volver { margin-bottom: 14px; }
+.pie .volver { margin-top: 8px; }
+
+.cabecera h1 {
+  font-size: 2rem;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+
+.cabecera .lema {
+  color: var(--texto-suave);
+  max-width: 70ch;   /* la unidad "ch" mide anchos de caracter: linea comoda */
+}
+
+/* Etiquetas pequenas para marcar dificultad o requisitos */
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.etiqueta {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  color: var(--texto-suave);
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+
+/* ============================================================
+   5. INDICE DE SECCIONES
+   ============================================================
+   Usamos CSS Grid con "auto-fit" y "minmax": el navegador crea tantas
+   columnas como quepan, con un ancho minimo de 220px. Es responsive
+   sin escribir ni una sola media query. */
+.indice {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 20px 22px;
+  margin-bottom: 32px;
+}
+
+.indice h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--texto-suave);
+  margin-bottom: 14px;
+}
+
+.indice ol {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.indice a {
+  display: block;
+  color: var(--texto);
+  text-decoration: none;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--primario);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.indice a:hover {
+  transform: translateX(4px);   /* micro-animacion: da sensacion de "clicable" */
+  border-left-color: var(--acento);
+}
+
+/* ============================================================
+   6. SECCIONES Y TARJETAS
+   ============================================================ */
+.seccion {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 26px;
+  margin-bottom: 32px;
+  /* scroll-margin-top evita que el titulo quede pegado al borde superior
+     cuando llegamos a la seccion desde un enlace ancla */
+  scroll-margin-top: 18px;
+}
+
+.seccion > h2 {
+  font-size: 1.5rem;
+  color: var(--acento);
+  margin-bottom: 6px;
+}
+
+.seccion > .descripcion {
+  color: var(--texto-suave);
+  margin-bottom: 20px;
+  max-width: 75ch;
+}
+
+.seccion h3 {
+  font-size: 1.1rem;
+  margin: 22px 0 8px;
+  color: var(--primario);
+}
+
+.seccion p {
+  margin-bottom: 10px;
+}
+
+/* Bloque destacado para conceptos clave o advertencias */
+.nota {
+  border-left: 4px solid var(--primario);
+  background: var(--superficie-2);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+
+.nota.aviso   { border-left-color: var(--alerta); }
+.nota.peligro { border-left-color: var(--error); }
+.nota.ok      { border-left-color: var(--exito); }
+
+.nota strong { color: var(--texto); }
+
+/* Texto en linea con aspecto de codigo */
+code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  background: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--primario);
+}
+
+/* ============================================================
+   7. BOTONES
+   ============================================================
+   Todos los ejemplos se disparan con botones: asi el docente controla
+   el ritmo de la clase y nada se ejecuta solo al cargar la pagina. */
+.botonera {
+  display: flex;
+  flex-wrap: wrap;   /* si no caben, saltan de linea en pantallas pequenas */
+  gap: 10px;
+  margin: 16px 0;
+}
+
+button {
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #06283d;
+  background: var(--primario);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover  { filter: brightness(1.12); }
+button:active { transform: translateY(1px); }   /* efecto "se hunde" al pulsar */
+
+/* Accesibilidad: marcamos claramente el foco del teclado (tabulador) */
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Un boton deshabilitado debe VERSE deshabilitado */
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+/* Variantes de color segun la intencion del boton */
+button.secundario { background: var(--superficie-2); color: var(--texto); border: 1px solid var(--borde); }
+button.peligro    { background: var(--error);  color: #3b0a0a; }
+button.exito      { background: var(--exito);  color: #052e16; }
+button.alerta     { background: var(--alerta); color: #422006; }
+
+/* ============================================================
+   8. CONSOLA VISUAL
+   ============================================================
+   Los estudiantes no siempre tienen abierto DevTools (F12). Por eso todo
+   lo que imprimimos con console.log lo duplicamos en este bloque <pre>.
+
+   - <pre> respeta los saltos de linea y los espacios tal cual.
+   - white-space: pre-wrap ademas parte las lineas muy largas.
+   - max-height + overflow-y: auto le dan su propio scroll para que la
+     consola nunca estire la pagina hasta el infinito. */
+.consola {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  background: #0b1220;
+  color: #d6e2f0;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px 18px;
+  min-height: 90px;
+  max-height: 340px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 12px;
+}
+
+/* Pequena etiqueta encima de la consola, para saber que consola es cada una */
+.etiqueta-consola {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-top: 18px;
+}
+
+/* ============================================================
+   9. SPINNER DE CARGA
+   ============================================================
+   Un spinner CSS puro: un circulo con el borde superior de otro color
+   que gira sin parar. No necesita imagenes ni librerias.
+
+   @keyframes define la animacion; animation la aplica al elemento. */
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid var(--borde);
+  border-top-color: var(--primario);   /* solo un lado de color = efecto de giro */
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+/* Respeto por quien configura su sistema para reducir animaciones:
+   si el usuario pide menos movimiento, ralentizamos mucho el giro. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 3s; }
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   10. ESTADOS DE INTERFAZ (cargando / error / vacio)
+   ============================================================
+   Toda pantalla que pide datos a un servidor tiene CUATRO estados.
+   Disenarlos desde el principio evita pantallas en blanco confusas. */
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  min-height: 180px;
+  padding: 24px;
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio);
+  color: var(--texto-suave);
+}
+
+.estado-error   { border-color: var(--error);  color: var(--error); }
+.estado-vacio   { border-color: var(--alerta); color: var(--alerta); }
+.estado .icono  { font-size: 2rem; line-height: 1; }
+.estado p       { margin: 0; max-width: 46ch; }
+
+/* ============================================================
+   11. INSIGNIA DE ORIGEN DE LOS DATOS
+   ============================================================
+   Muestra si los usuarios llegaron de la API real o del modo simulado.
+   Es la pieza que hace que la clase funcione con o sin internet. */
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  border-radius: 999px;
+  padding: 5px 14px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto-suave);
+}
+
+.insignia::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;   /* toma el color del texto del propio elemento */
+}
+
+.insignia.real     { color: var(--exito);  border-color: var(--exito); }
+.insignia.simulado { color: var(--alerta); border-color: var(--alerta); }
+.insignia.fallo    { color: var(--error);  border-color: var(--error); }
+
+/* ============================================================
+   12. TARJETAS DE USUARIO
+   ============================================================ */
+.tarjetas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.tarjeta-usuario {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px 18px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.tarjeta-usuario:hover {
+  transform: translateY(-3px);
+  border-color: var(--primario);
+}
+
+.tarjeta-usuario .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primario);
+  color: #06283d;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.tarjeta-usuario h4 { font-size: 1.02rem; margin-bottom: 2px; }
+.tarjeta-usuario .dato {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  font-family: var(--mono);
+  word-break: break-word;
+}
+
+/* ============================================================
+   13. BARRAS DE MEDICION DE TIEMPO
+   ============================================================
+   Se usan en la seccion de async/await para comparar visualmente
+   cuanto tarda el codigo secuencial frente al paralelo. */
+.medidor { margin-top: 14px; display: grid; gap: 10px; }
+
+.medida { display: grid; grid-template-columns: 130px 1fr 90px; align-items: center; gap: 10px; font-size: 0.88rem; }
+.medida .pista { background: var(--superficie-2); border-radius: 999px; height: 14px; overflow: hidden; }
+.medida .barra { height: 100%; border-radius: 999px; background: var(--primario); width: 0; transition: width 0.6s ease; }
+.medida.paralelo .barra { background: var(--exito); }
+.medida .ms { font-family: var(--mono); color: var(--texto-suave); text-align: right; }
+
+/* ============================================================
+   14. CAMPO DE FILTRO
+   ============================================================ */
+input[type="search"],
+input[type="text"] {
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  background: #0b1220;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 9px 14px;
+  min-width: 240px;
+}
+
+input:focus-visible { outline: 2px solid var(--primario); outline-offset: 1px; }
+
+/* ============================================================
+   15. TABLA COMPARATIVA (combinadores de promesas)
+   ============================================================ */
+.tabla-wrapper { overflow-x: auto; }   /* en moviles la tabla scrollea sola */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 0.92rem;
+  min-width: 560px;
+}
+
+th, td {
+  border: 1px solid var(--borde);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th { background: var(--superficie-2); color: var(--primario); }
+tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+
+/* ============================================================
+   16. PIE DE PAGINA
+   ============================================================ */
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  padding-top: 10px;
+}
+
+/* ============================================================
+   17. AJUSTES RESPONSIVE
+   ============================================================
+   Una media query aplica reglas solo cuando se cumple una condicion.
+   Aqui: pantallas de 640px o menos (moviles). */
+@media (max-width: 640px) {
+  html { font-size: 16px; }
+  body { padding: 16px 12px 60px; }
+  .cabecera { padding: 20px; }
+  .cabecera h1 { font-size: 1.5rem; }
+  .seccion { padding: 18px; }
+  .botonera button { flex: 1 1 100%; }   /* botones a ancho completo: mas faciles de tocar */
+  .medida { grid-template-columns: 1fr; }
+  .medida .ms { text-align: left; }
+}

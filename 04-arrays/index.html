@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>04 · Arrays y métodos funcionales</title>
+
+    <!--
+      Enlazamos la hoja de estilos propia del proyecto.
+      La ruta es RELATIVA a este archivo: css/estilos.css
+    -->
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+
+  <body>
+    <!-- ==========================================================
+         CABECERA COMÚN DEL PROYECTO
+         ========================================================== -->
+    <header class="cabecera">
+      <div class="contenedor">
+        <a class="volver" href="../index.html">&larr; Volver al índice del curso</a>
+
+        <p class="numero-proyecto">Proyecto 04</p>
+        <h1>Arrays y métodos funcionales</h1>
+        <p class="lema">
+          Aprenderás a guardar colecciones de datos en arrays y a transformarlas con los métodos
+          que usan todos los días los desarrolladores front end:
+          <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>sort</code> y compañía.
+        </p>
+
+        <!--
+          La "consola visual": los ejemplos escriben su resultado tanto en la consola
+          del navegador (F12) como en los bloques <pre> de cada sección, para que se
+          vea proyectado en clase sin abrir las herramientas de desarrollo.
+        -->
+        <p class="aviso">
+          💡 Abre también la consola del navegador con <kbd>F12</kbd>: todo lo que ves en los
+          bloques oscuros de esta página se imprime además ahí.
+        </p>
+      </div>
+    </header>
+
+    <main class="contenedor">
+      <!-- ==========================================================
+           ÍNDICE DE SECCIONES (enlaces ancla)
+           ========================================================== -->
+      <nav class="indice" aria-label="Índice de secciones">
+        <h2>Índice de la clase</h2>
+        <ol>
+          <li><a href="#seccion-1">Fundamentos, matrices y métodos mutadores</a></li>
+          <li><a href="#seccion-2">Búsqueda, comprobación e iteración</a></li>
+          <li><a href="#seccion-3">map, filter y reduce</a></li>
+          <li><a href="#seccion-4">sort, destructuring, spread y Set</a></li>
+          <li><a href="#seccion-5">Proyecto práctico: Analizador de calificaciones</a></li>
+        </ol>
+      </nav>
+
+      <!-- ==========================================================
+           SECCIÓN 1
+           ========================================================== -->
+      <section id="seccion-1" class="tarjeta">
+        <h2><span class="numero">01</span> Fundamentos, matrices y métodos mutadores</h2>
+        <p class="descripcion">
+          Qué es un array, cómo se crea (literal y <code>new Array</code>), por qué los índices
+          empiezan en <strong>0</strong>, la propiedad <code>length</code>, las matrices
+          (arrays dentro de arrays) y la gran división del temario:
+          métodos que <strong>modifican</strong> el array original
+          (<code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>,
+          <code>splice</code>, <code>reverse</code>, <code>fill</code>)
+          frente a métodos que <strong>devuelven uno nuevo</strong>
+          (<code>slice</code>, <code>concat</code>, <code>join</code>, <code>flat</code>,
+          <code>flatMap</code>).
+        </p>
+        <p class="archivo">Archivo: <code>js/01-basicos-y-mutadores.js</code></p>
+        <pre id="salida-1" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ==========================================================
+           SECCIÓN 2
+           ========================================================== -->
+      <section id="seccion-2" class="tarjeta">
+        <h2><span class="numero">02</span> Búsqueda, comprobación e iteración</h2>
+        <p class="descripcion">
+          Cómo encontrar cosas dentro de un array: <code>indexOf</code>,
+          <code>lastIndexOf</code>, <code>includes</code>, <code>find</code>,
+          <code>findIndex</code> y <code>findLast</code>. Cómo responder preguntas de sí/no con
+          <code>some</code> y <code>every</code>. Y cómo recorrer con <code>forEach</code>
+          entendiendo su gran limitación: <strong>no se puede cortar con <code>break</code></strong>.
+        </p>
+        <p class="archivo">Archivo: <code>js/02-busqueda-y-comprobacion.js</code></p>
+        <pre id="salida-2" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ==========================================================
+           SECCIÓN 3
+           ========================================================== -->
+      <section id="seccion-3" class="tarjeta">
+        <h2><span class="numero">03</span> Transformar, filtrar y reducir</h2>
+        <p class="descripcion">
+          El trío que convierte a JavaScript en un lenguaje de datos: <code>map</code> transforma,
+          <code>filter</code> selecciona y <code>reduce</code> resume una lista entera en un solo
+          valor. Veremos <code>reduce</code> paso a paso con una tabla de iteraciones, sus cuatro
+          usos clásicos (suma, máximo, agrupar y contar), <code>reduceRight</code> y el
+          <strong>encadenamiento</strong> como tubería de datos.
+        </p>
+        <p class="archivo">Archivo: <code>js/03-map-filter-reduce.js</code></p>
+        <pre id="salida-3" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ==========================================================
+           SECCIÓN 4
+           ========================================================== -->
+      <section id="seccion-4" class="tarjeta">
+        <h2><span class="numero">04</span> Ordenar, desestructurar y copiar</h2>
+        <p class="descripcion">
+          Por qué <code>sort</code> ordena mal los números y cómo se escribe un comparador
+          correcto; ordenar objetos por una propiedad y textos con <code>localeCompare</code>.
+          Después: <em>destructuring</em> con valores por defecto, saltos e intercambio de
+          variables; el operador <em>spread</em> (<code>...</code>) para copiar y combinar
+          (copia superficial vs. profunda); <code>Array.from</code>, <code>Array.of</code> y
+          <code>Set</code> para eliminar duplicados.
+        </p>
+        <p class="archivo">Archivo: <code>js/04-ordenar-y-destructuring.js</code></p>
+        <pre id="salida-4" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ==========================================================
+           SECCIÓN 5 · PROYECTO PRÁCTICO
+           ========================================================== -->
+      <section id="seccion-5" class="tarjeta tarjeta-proyecto">
+        <h2><span class="numero">05</span> Proyecto práctico: Analizador de calificaciones</h2>
+        <p class="descripcion">
+          Todo lo anterior aplicado a un caso real. Partimos de un array de objetos
+          <code>{ nombre, curso, nota, edad }</code>, dibujamos la tabla con
+          <code>map</code> + <code>join</code>, filtramos con <code>filter</code>,
+          ordenamos con <code>sort</code> y calculamos las estadísticas con <code>reduce</code>.
+        </p>
+        <p class="archivo">Archivo: <code>js/05-analizador-calificaciones.js</code></p>
+
+        <!-- ---------- Panel de controles ---------- -->
+        <div class="panel-controles" id="panel-controles">
+          <div class="grupo-control">
+            <span class="etiqueta-grupo">Filtrar por estado</span>
+            <div class="botonera">
+              <button type="button" class="boton activo" data-filtro="todos">Todos</button>
+              <button type="button" class="boton" data-filtro="aprobados">Aprobados</button>
+              <button type="button" class="boton" data-filtro="reprobados">Reprobados</button>
+              <button type="button" class="boton" data-filtro="destacados">Nota &ge; 9</button>
+            </div>
+          </div>
+
+          <div class="grupo-control">
+            <span class="etiqueta-grupo">Ordenar</span>
+            <div class="botonera">
+              <button type="button" class="boton activo" data-orden="original">Sin ordenar</button>
+              <button type="button" class="boton" data-orden="nota-desc">Nota &darr;</button>
+              <button type="button" class="boton" data-orden="nota-asc">Nota &uarr;</button>
+              <button type="button" class="boton" data-orden="nombre-asc">Nombre A-Z</button>
+              <button type="button" class="boton" data-orden="edad-asc">Edad &uarr;</button>
+            </div>
+          </div>
+
+          <div class="grupo-control">
+            <label class="etiqueta-grupo" for="filtro-curso">Filtrar por curso</label>
+            <!--
+              Este <select> se rellena desde JavaScript usando un Set para obtener
+              los cursos SIN repetir. Empieza vacío a propósito.
+            -->
+            <select id="filtro-curso" class="selector"></select>
+          </div>
+
+          <div class="grupo-control">
+            <span class="etiqueta-grupo">Acciones</span>
+            <div class="botonera">
+              <button type="button" class="boton boton-secundario" id="btn-restablecer">
+                Restablecer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- Estadísticas calculadas con reduce ---------- -->
+        <p class="estado-tabla" id="estado-tabla">Cargando datos...</p>
+        <div class="panel-estadisticas" id="panel-estadisticas"></div>
+
+        <!-- ---------- Tabla generada con map + join ---------- -->
+        <div class="tabla-scroll">
+          <div id="contenedor-tabla"></div>
+        </div>
+
+        <!-- ---------- Cantidad por curso (reduce a objeto) ---------- -->
+        <div class="panel-cursos" id="panel-cursos"></div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="contenedor">
+        <p>Full Stack 2 · Desarrollo Front End &middot; Proyecto 04 · Arrays y métodos funcionales</p>
+        <p class="pie-suave">
+          Todo el código de esta página es JavaScript puro (sin librerías) y funciona abriendo
+          <code>index.html</code> directamente en el navegador.
+        </p>
+      </div>
+    </footer>
+
+    <!--
+      ==========================================================
+      CARGA DE LOS ARCHIVOS JAVASCRIPT
+      ==========================================================
+      El atributo "defer" hace dos cosas importantes:
+        1. Descarga el script en paralelo mientras se lee el HTML (no bloquea la página).
+        2. Lo EJECUTA cuando el HTML ya está completamente construido, así que dentro
+           del JS podemos usar document.getElementById(...) sin miedo a que devuelva null.
+      Los scripts con defer se ejecutan EN ORDEN, de arriba hacia abajo.
+    -->
+    <script src="js/01-basicos-y-mutadores.js" defer></script>
+    <script src="js/02-busqueda-y-comprobacion.js" defer></script>
+    <script src="js/03-map-filter-reduce.js" defer></script>
+    <script src="js/04-ordenar-y-destructuring.js" defer></script>
+    <script src="js/05-analizador-calificaciones.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10 · JavaScript moderno (ES6+) y módulos · Plantilla de clase</title>
+  <meta name="description" content="Proyecto 10 del curso Full Stack 2: repaso avanzado de ES6+ y módulos ES nativos del navegador.">
+  <!-- Icono de la pestana escrito EN LINEA con un data URI (un SVG diminuto
+       con un emoji dentro). Sin esta linea el navegador pide /favicon.ico por
+       su cuenta y, como ese archivo no existe, deja un 404 rojo en la consola
+       justo cuando estamos ensenando a leerla. Asi no hace falta ningun
+       archivo extra ni ninguna peticion de red. -->
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48dGV4dCB5PScuOWVtJyBmb250LXNpemU9Jzg4Jz7wn5OmPC90ZXh0Pjwvc3ZnPg==">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       CABECERA FIJA
+       ============================================================ -->
+  <header class="cabecera">
+    <div class="cabecera__interior">
+      <p class="cabecera__titulo"><span>10 ·</span> JavaScript moderno (ES6+) y módulos</p>
+      <a class="volver" href="../../index.html">← Volver al índice del curso</a>
+    </div>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- ============================================================
+         AVISO DE MODO CLASE
+         ------------------------------------------------------------
+         Este bloque SOLO existe en la plantilla, no en la version
+         resuelta del proyecto. Deja claro que el HTML y el CSS ya
+         estan hechos y que lo unico que se escribe en vivo es el
+         JavaScript de la carpeta js/.
+         ============================================================ -->
+    <div class="aviso-modo-clase">
+      <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+      JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+      <a href="../index.html">la carpeta del proyecto</a>.
+    </div>
+
+    <!-- ============================================================
+         PORTADA
+         ============================================================ -->
+    <section class="portada">
+      <h1>JavaScript moderno (ES6+) y módulos</h1>
+      <p>
+        En este proyecto repasamos a fondo todo lo que el lenguaje ha incorporado desde 2015
+        (declaraciones, plantillas, destructuring, spread, encadenamiento opcional, generadores…)
+        y damos el salto definitivo: organizar el código en <strong>módulos ES nativos</strong>,
+        con <code>import</code> y <code>export</code>, tal y como se trabaja hoy en cualquier
+        proyecto profesional de front end.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         AVISO CRÍTICO: ESTE PROYECTO NECESITA UN SERVIDOR LOCAL
+         ------------------------------------------------------------
+         Este aviso lo muestra un script CLÁSICO (no un módulo) que va
+         al final del documento. Tiene que ser clásico porque, si la
+         página se abre con doble clic, los módulos NO llegan a
+         ejecutarse y nadie podría avisar al estudiante.
+         ============================================================ -->
+    <div class="aviso aviso--critico oculto" id="aviso-file">
+      <h2>⚠️ Este proyecto NO funciona abriéndolo con doble clic</h2>
+      <p>
+        Has abierto la página con el protocolo <code>file://</code>. Los módulos ES están sujetos a
+        la política <strong>CORS</strong> del navegador, que solo permite orígenes
+        <code>http://</code> o <code>https://</code>. Con <code>file://</code> el navegador
+        bloquea todos los <code>import</code> y verás la página en blanco de contenido dinámico.
+      </p>
+      <p><strong>Soluciones (elige una):</strong></p>
+      <ol>
+        <li>
+          <strong>Live Server (recomendado en clase).</strong> En Visual Studio Code instala la
+          extensión <em>Live Server</em>, haz clic derecho sobre <code>index.html</code> y elige
+          <em>Open with Live Server</em>.
+        </li>
+        <li>
+          <strong>Python.</strong> Abre una terminal dentro de esta carpeta y ejecuta
+          <code>python3 -m http.server 8000</code>. Después visita
+          <code>http://localhost:8000</code>.
+        </li>
+      </ol>
+    </div>
+
+    <!-- Estado de carga de los módulos: empieza en rojo y main.js lo pone en verde. -->
+    <div class="aviso aviso--critico" id="estado-modulos">
+      <h3>Los módulos ES todavía no se han cargado</h3>
+      <p>
+        Si este mensaje sigue en rojo después de unos segundos, los <code>import</code> no se
+        resolvieron. Revisa el aviso de arriba y la consola del navegador (F12 → Consola).
+      </p>
+    </div>
+
+    <!-- ============================================================
+         ÍNDICE DE SECCIONES
+         ============================================================ -->
+    <nav class="indice" aria-label="Índice de secciones">
+      <h2>Índice del proyecto</h2>
+      <ol>
+        <li><a href="#registro"><span class="numero">00</span>Registro general</a></li>
+        <li><a href="#declaraciones"><span class="numero">01</span>let, const y la TDZ</a></li>
+        <li><a href="#plantillas"><span class="numero">02</span>Template literals y tagged templates</a></li>
+        <li><a href="#destructuring"><span class="numero">03</span>Destructuring avanzado</a></li>
+        <li><a href="#spread-rest"><span class="numero">04</span>Spread y rest</a></li>
+        <li><a href="#parametros"><span class="numero">05</span>Parámetros por defecto</a></li>
+        <li><a href="#opcional"><span class="numero">06</span>?. y ??</a></li>
+        <li><a href="#logicos"><span class="numero">07</span>||=, &amp;&amp;= y ??=</a></li>
+        <li><a href="#metodos-array"><span class="numero">08</span>Métodos de Array y Object</a></li>
+        <li><a href="#metodos-texto"><span class="numero">09</span>String, Number y structuredClone</a></li>
+        <li><a href="#iteradores"><span class="numero">10</span>Iterables y Symbol.iterator</a></li>
+        <li><a href="#generadores"><span class="numero">11</span>Generadores y yield</a></li>
+        <li><a href="#numeros"><span class="numero">12</span>Separadores numéricos</a></li>
+        <li><a href="#modulos"><span class="numero">13</span>Cómo funcionan los módulos ES</a></li>
+        <li><a href="#almacen"><span class="numero">14</span>Estado compartido (singleton)</a></li>
+        <li><a href="#dinamico"><span class="numero">15</span>import() dinámico</a></li>
+        <li><a href="#herramientas"><span class="numero">16</span>Caja de herramientas</a></li>
+        <li><a href="#ejercicios"><span class="numero">17</span>Ejercicios propuestos</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============================================================
+         00. REGISTRO GENERAL
+         ============================================================ -->
+    <section class="seccion" id="registro">
+      <h2><span class="numero">00</span> Registro general</h2>
+      <p class="bajada">
+        Esta consola visual reproduce lo que aparece en las herramientas de desarrollo (F12),
+        pero dentro de la página para poder proyectarla. Cada sección tiene además su propia
+        consola independiente.
+      </p>
+
+      <div class="tarjeta">
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar-todo">Ejecutar todas las demostraciones</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar-todo">Limpiar todas las consolas</button>
+        </div>
+        <div class="consola-barra">
+          <span class="etiqueta">salida general</span>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida">Limpiar</button>
+        </div>
+        <pre id="salida" class="consola consola--general" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         01. LET, CONST Y LA TDZ
+         ============================================================ -->
+    <section class="seccion" id="declaraciones">
+      <h2><span class="numero">01</span> let, const y la zona muerta temporal</h2>
+      <p class="bajada">
+        Por qué <code>var</code> quedó atrás, qué es exactamente el <em>hoisting</em>, qué significa
+        que una variable esté en la <strong>TDZ</strong> y por qué <code>const</code> no significa
+        «inmutable».
+      </p>
+
+      <div class="tarjeta">
+        <ul>
+          <li><code>var</code> se eleva y arranca valiendo <code>undefined</code>.</li>
+          <li><code>let</code> y <code>const</code> también se elevan, pero quedan sin inicializar.</li>
+          <li>Dentro de la TDZ hasta <code>typeof</code> lanza <code>ReferenceError</code>.</li>
+          <li>Ámbito de bloque frente a ámbito de función, y el clásico bucle con funciones.</li>
+          <li><code>const</code> fija la etiqueta, no el contenido: para eso está <code>Object.freeze</code>.</li>
+        </ul>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="declaraciones">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-declaraciones">Limpiar</button>
+        </div>
+
+        <pre id="salida-declaraciones" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         02. TEMPLATE LITERALS
+         ============================================================ -->
+    <section class="seccion" id="plantillas">
+      <h2><span class="numero">02</span> Template literals y tagged templates</h2>
+      <p class="bajada">
+        Interpolación de expresiones, cadenas multilínea y el mecanismo menos conocido y más
+        potente: las <strong>plantillas etiquetadas</strong>, una función que intercepta el texto
+        y los valores antes de unirlos.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>// Una plantilla etiquetada es una función delante de las comillas invertidas
+function dinero(trozos, ...valores) { /* ... */ }
+
+dinero`Subtotal: ${24990} y envío ${3500}`;
+// -> "Subtotal: $24.990 y envío $3.500"</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="plantillas">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-plantillas">Limpiar</button>
+        </div>
+
+        <pre id="salida-plantillas" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         03. DESTRUCTURING
+         ============================================================ -->
+    <section class="seccion" id="destructuring">
+      <h2><span class="numero">03</span> Destructuring avanzado y combinado</h2>
+      <p class="bajada">
+        Arrays, objetos, anidamiento, renombrado, valores por defecto, rest… y el caso que de
+        verdad aparece a diario: <strong>arrays dentro de objetos</strong> y destructuring en los
+        parámetros de una función.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>const {
+  exito,
+  resultados: [
+    primerProducto,
+    { producto: nombreSegundo, precio: precioSegundo },
+  ],
+} = respuestaDelServidor;</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="destructuring">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-destructuring">Limpiar</button>
+        </div>
+
+        <pre id="salida-destructuring" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         04. SPREAD Y REST
+         ============================================================ -->
+    <section class="seccion" id="spread-rest">
+      <h2><span class="numero">04</span> Spread y rest en todos sus contextos</h2>
+      <p class="bajada">
+        Los mismos tres puntos significan cosas opuestas según dónde estén: <strong>rest</strong>
+        empaqueta, <strong>spread</strong> desempaqueta. Incluye el aviso más importante: el spread
+        hace copias <em>superficiales</em>.
+      </p>
+
+      <div class="tarjeta">
+        <ul>
+          <li>Copiar, unir e intercalar arrays; convertir strings, <code>Set</code> y <code>NodeList</code>.</li>
+          <li>Mezclar objetos y por qué gana el de la derecha.</li>
+          <li>Copia superficial frente a <code>structuredClone()</code>.</li>
+          <li><code>Math.max(...numeros)</code> y los parámetros rest.</li>
+          <li>Quitar propiedades sensibles con rest de objeto.</li>
+        </ul>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="spread">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-spread">Limpiar</button>
+        </div>
+
+        <pre id="salida-spread" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         05. PARÁMETROS POR DEFECTO
+         ============================================================ -->
+    <section class="seccion" id="parametros">
+      <h2><span class="numero">05</span> Parámetros por defecto evaluados en tiempo de llamada</h2>
+      <p class="bajada">
+        Un detalle que sorprende a quien viene de otros lenguajes: el valor por defecto se calcula
+        <strong>en cada llamada</strong>, no una sola vez al definir la función.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>function emitirBoleta(monto, folio = siguienteFolio()) { /* ... */ }
+
+emitirBoleta(1990);                 // falta el folio -> llama a siguienteFolio()
+emitirBoleta(3100, 'FOLIO-MANUAL'); // llega el folio -> NO la llama nunca</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="parametros">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-parametros">Limpiar</button>
+        </div>
+
+        <pre id="salida-parametros" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         06. ENCADENAMIENTO OPCIONAL Y FUSIÓN NULA
+         ============================================================ -->
+    <section class="seccion" id="opcional">
+      <h2><span class="numero">06</span> Encadenamiento opcional <code>?.</code> y fusión nula <code>??</code></h2>
+      <p class="bajada">
+        Las dos herramientas que eliminan las cascadas de <code>if (objeto &amp;&amp; objeto.propiedad)</code>.
+        Incluye la tabla comparativa entre <code>||</code> y <code>??</code>, imprescindible para no
+        perder los ceros y las cadenas vacías.
+      </p>
+
+      <div class="tarjeta">
+        <ul>
+          <li><code>objeto?.propiedad</code>, <code>objeto?.[clave]</code> y <code>objeto.metodo?.()</code>.</li>
+          <li>El cortocircuito total: nada de lo que sigue se evalúa.</li>
+          <li><code>??</code> solo salta con <code>null</code> y <code>undefined</code>.</li>
+          <li>Por qué mezclar <code>??</code> con <code>||</code> sin paréntesis es un error de sintaxis.</li>
+        </ul>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="opcional">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-opcional">Limpiar</button>
+        </div>
+
+        <pre id="salida-opcional" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         07. OPERADORES LÓGICOS DE ASIGNACIÓN
+         ============================================================ -->
+    <section class="seccion" id="logicos">
+      <h2><span class="numero">07</span> Operadores lógicos de asignación</h2>
+      <p class="bajada">
+        <code>||=</code>, <code>&amp;&amp;=</code> y <code>??=</code>: azúcar sintáctico con una
+        particularidad importante, el <strong>cortocircuito</strong>. Si no toca asignar, la
+        asignación ni siquiera se intenta.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>preferencias.tema    ??= 'oscuro'; // era null      -> asigna
+preferencias.volumen ??= 50;       // era 0 (válido) -> NO asigna
+grupos[curso]        ??= [];       // crea el grupo solo si falta</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="logicos">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-logicos">Limpiar</button>
+        </div>
+
+        <pre id="salida-logicos" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         08. MÉTODOS DE ARRAY Y OBJECT
+         ============================================================ -->
+    <section class="seccion" id="metodos-array">
+      <h2><span class="numero">08</span> Métodos modernos de Array y Object</h2>
+      <p class="bajada">
+        <code>at()</code>, <code>findLast()</code>, <code>flat()</code>, <code>flatMap()</code>,
+        <code>Object.entries/fromEntries</code>, <code>Object.groupBy()</code> (con su plan B),
+        <code>Object.hasOwn()</code> y los métodos no destructivos de ES2023.
+      </p>
+
+      <div class="tarjeta">
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="metodos-array">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-metodos-array">Limpiar</button>
+        </div>
+
+        <pre id="salida-metodos-array" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         09. STRING, NUMBER Y STRUCTUREDCLONE
+         ============================================================ -->
+    <section class="seccion" id="metodos-texto">
+      <h2><span class="numero">09</span> String, Number y structuredClone</h2>
+      <p class="bajada">
+        <code>replaceAll</code>, <code>trimStart</code>/<code>trimEnd</code>,
+        <code>padStart</code>/<code>padEnd</code>, <code>Number.isInteger</code> frente a los
+        viejos globales, y la copia profunda nativa <code>structuredClone()</code>.
+      </p>
+
+      <div class="tarjeta">
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="metodos-texto">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-metodos-texto">Limpiar</button>
+        </div>
+
+        <pre id="salida-metodos-texto" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         10. ITERABLES
+         ============================================================ -->
+    <section class="seccion" id="iteradores">
+      <h2><span class="numero">10</span> Iterables y <code>Symbol.iterator</code></h2>
+      <p class="bajada">
+        Por qué <code>for...of</code> funciona con arrays y strings pero no con objetos planos,
+        qué contrato cumple un iterador (<code>next()</code> → <code>{ value, done }</code>) y cómo
+        implementarlo a mano en un objeto y en una clase.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>const rango = {
+  [Symbol.iterator]() {
+    let actual = 1;
+    return { next: () =&gt; actual &lt;= 5
+      ? { value: actual++, done: false }
+      : { value: undefined, done: true } };
+  },
+};
+
+[...rango]; // [1, 2, 3, 4, 5]</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="iteradores">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-iteradores">Limpiar</button>
+        </div>
+
+        <pre id="salida-iteradores" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         11. GENERADORES
+         ============================================================ -->
+    <section class="seccion" id="generadores">
+      <h2><span class="numero">11</span> Funciones generadoras <code>function*</code> y <code>yield</code></h2>
+      <p class="bajada">
+        Un generador de identificadores, un generador <strong>infinito</strong> de Fibonacci que no
+        cuelga el navegador, delegación con <code>yield*</code>, envío de valores con
+        <code>next(valor)</code> y un recorrido recursivo del temario del curso.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>function* fibonacci() {
+  let anterior = 0, actual = 1;
+  while (true) {
+    yield anterior;                        // entrega y se congela aquí
+    [anterior, actual] = [actual, anterior + actual];
+  }
+}
+
+tomar(fibonacci(), 12); // solo calcula 12 números</code></pre>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="generadores">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-generadores">Limpiar</button>
+        </div>
+
+        <pre id="salida-generadores" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         12. NÚMEROS
+         ============================================================ -->
+    <section class="seccion" id="numeros">
+      <h2><span class="numero">12</span> Separadores numéricos y números en general</h2>
+      <p class="bajada">
+        <code>1_000_000</code> se lee muchísimo mejor que <code>1000000</code> y para el motor es
+        exactamente el mismo número. Además: <code>BigInt</code>, el entero seguro máximo y el
+        clásico <code>0.1 + 0.2</code>.
+      </p>
+
+      <div class="tarjeta">
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="numeros">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-numeros">Limpiar</button>
+        </div>
+
+        <pre id="salida-numeros" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         13. MÓDULOS ES
+         ============================================================ -->
+    <section class="seccion" id="modulos">
+      <h2><span class="numero">13</span> Cómo funcionan los módulos ES</h2>
+      <p class="bajada">
+        La parte central del proyecto: ámbito propio, modo estricto automático, carga diferida,
+        evaluación única y enlaces vivos. Todo demostrado en vivo con el código de esta misma página.
+      </p>
+
+      <div class="tarjeta">
+        <h3>Las cinco formas de importar y exportar</h3>
+        <pre class="codigo"><code>// ---- Exportar ----
+export const NOTA_APROBACION = 4.0;        // nombrada, en línea
+export function sumar(...numeros) { }      // nombrada, en línea
+export { calcularPromedio as promedio };   // nombrada, con renombrado
+export default formatearMoneda;            // por defecto (solo UNA por archivo)
+
+// ---- Importar ----
+import { sumar, NOTA_APROBACION } from './modulos/matematicas.js';
+import { validarContrasena as revisarClave } from './modulos/validaciones.js';
+import precio from './modulos/formato.js';                   // por defecto: el nombre lo eliges tú
+import formatearMoneda, { formatearFecha } from './modulos/formato.js'; // por defecto + nombradas
+import * as matematicas from './modulos/matematicas.js';
+const modulo = await import('./extras/reporte-avanzado.js'); // dinámico
+
+// ⚠️ Las dos líneas del `export default` se muestran juntas solo para comparar
+// la sintaxis: en un mismo archivo NO se puede declarar dos veces el mismo
+// nombre («Identifier 'formatearMoneda' has already been declared»).</code></pre>
+
+        <h3>Cómo se declara en el HTML</h3>
+        <pre class="codigo"><code>&lt;!-- Script CLÁSICO: ámbito global compartido, ejecución inmediata --&gt;
+&lt;script src="js/app.js"&gt;&lt;/script&gt;
+
+&lt;!-- MÓDULO: ámbito propio, modo estricto y carga diferida --&gt;
+&lt;script type="module" src="js/main.js"&gt;&lt;/script&gt;</code></pre>
+
+        <h3>Scripts clásicos frente a módulos ES</h3>
+        <div class="envoltorio-tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Aspecto</th>
+                <th>Script clásico</th>
+                <th>Módulo ES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ámbito</td>
+                <td>Global compartido: hacía falta una IIFE para no chocar</td>
+                <td>Propio de cada archivo: nada se filtra a <code>window</code></td>
+              </tr>
+              <tr>
+                <td>Modo estricto</td>
+                <td>Opcional, hay que escribir <code>'use strict'</code></td>
+                <td>Siempre activo, sin escribir nada</td>
+              </tr>
+              <tr>
+                <td>Momento de ejecución</td>
+                <td>Inmediato y bloqueante (salvo <code>defer</code>/<code>async</code>)</td>
+                <td>Siempre diferido, como si llevara <code>defer</code></td>
+              </tr>
+              <tr>
+                <td>Orden de carga</td>
+                <td>El del HTML; hay que ordenar los <code>&lt;script&gt;</code> a mano</td>
+                <td>Lo resuelve el grafo de dependencias automáticamente</td>
+              </tr>
+              <tr>
+                <td>Repetición</td>
+                <td>Si lo incluyes dos veces, se ejecuta dos veces</td>
+                <td>Se evalúa una sola vez y se cachea (singleton)</td>
+              </tr>
+              <tr>
+                <td><code>this</code> en el nivel superior</td>
+                <td><code>window</code></td>
+                <td><code>undefined</code></td>
+              </tr>
+              <tr>
+                <td>Protocolo <code>file://</code></td>
+                <td>Funciona con doble clic</td>
+                <td><strong>No funciona</strong>: bloqueado por CORS</td>
+              </tr>
+              <tr>
+                <td>Carga bajo demanda</td>
+                <td>No existe de forma nativa</td>
+                <td><code>import()</code> devuelve una promesa</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="modulos">Ejecutar demostración</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-modulos">Limpiar</button>
+        </div>
+
+        <pre id="salida-modulos" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         14. ALMACÉN COMPARTIDO
+         ============================================================ -->
+    <section class="seccion" id="almacen">
+      <h2><span class="numero">14</span> Estado compartido: el módulo como singleton</h2>
+      <p class="bajada">
+        <code>js/modulos/almacen.js</code> guarda el estado de toda la aplicación.
+        Lo importan <code>main.js</code>, <code>validaciones.js</code> y el módulo dinámico
+        <code>reporte-avanzado.js</code>… y los tres ven <strong>exactamente el mismo objeto</strong>.
+      </p>
+
+      <div class="tarjeta">
+        <p>
+          <span class="insignia insignia--info">Comprueba en la consola del navegador (F12)</span>
+          que el mensaje <code>[almacen.js] Módulo evaluado 1 vez</code> aparece
+          <strong>una sola vez</strong>, por muchos archivos que lo importen.
+        </p>
+
+        <div class="grupo-botones">
+          <button class="boton" type="button" data-accion="ejecutar" data-demo="almacen">Ver el estado del almacén</button>
+          <button class="boton boton--secundario" type="button" data-accion="reiniciar-almacen">Reiniciar el almacén</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-almacen">Limpiar</button>
+        </div>
+
+        <pre id="salida-almacen" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         15. IMPORT DINÁMICO
+         ============================================================ -->
+    <section class="seccion" id="dinamico">
+      <h2><span class="numero">15</span> Importación dinámica y <em>code splitting</em></h2>
+      <p class="bajada">
+        El módulo <code>js/extras/reporte-avanzado.js</code> <strong>no</strong> se descarga al
+        abrir la página. Solo llega cuando pulsas el botón. Eso es dividir el código
+        (<em>code splitting</em>) y es la razón de que una aplicación grande arranque rápido.
+      </p>
+
+      <div class="tarjeta">
+        <pre class="codigo"><code>// import() se escribe como una función y devuelve una PROMESA
+boton.addEventListener('click', async () =&gt; {
+  const modulo = await import('./extras/reporte-avanzado.js');
+  const generarReporte = modulo.default;  // la exportación por defecto
+  generarReporte(consola);
+});</code></pre>
+
+        <p>
+          <strong>Compruébalo en clase:</strong> abre F12 → pestaña <em>Red</em>, recarga la página
+          y busca <code>reporte-avanzado.js</code>: no aparece. Pulsa el botón y aparecerá. Pulsa
+          otra vez: ya no se vuelve a descargar, sale de la caché de módulos.
+        </p>
+
+        <div class="grupo-botones">
+          <button class="boton boton--acento" type="button" id="boton-dinamico" data-accion="cargar-dinamico">Cargar el módulo del reporte</button>
+          <button class="boton boton--secundario" type="button" data-accion="limpiar" data-consola="salida-dinamico">Limpiar</button>
+          <span class="insignia" id="estado-dinamico">Módulo aún no descargado</span>
+        </div>
+
+        <pre id="salida-dinamico" class="consola" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         16. CAJA DE HERRAMIENTAS (PARTE PRÁCTICA)
+         ============================================================ -->
+    <section class="seccion" id="herramientas">
+      <h2><span class="numero">16</span> Caja de herramientas</h2>
+      <p class="bajada">
+        Aquí todo lo anterior se pone a trabajar: cada resultado sale de una función importada de
+        un módulo distinto. Escribe en los campos y observa la consola general y el almacén.
+      </p>
+
+      <div class="rejilla">
+
+        <!-- Herramienta 1: moneda -->
+        <div class="tarjeta">
+          <h3>💰 Formatear moneda · <code>formato.js</code></h3>
+          <p class="texto-suave">Usa la exportación <strong>por defecto</strong> del módulo de formato.</p>
+
+          <div class="fila-campos">
+            <div class="campo">
+              <label for="entrada-monto">Monto</label>
+              <input type="number" id="entrada-monto" value="149990" step="0.01" min="0">
+            </div>
+            <div class="campo">
+              <label for="entrada-moneda">Moneda</label>
+              <!-- Las opciones las rellena main.js a partir del objeto MONEDAS. -->
+              <select id="entrada-moneda"></select>
+            </div>
+          </div>
+
+          <div class="grupo-botones">
+            <button class="boton" type="button" data-accion="herramienta-moneda">Formatear</button>
+          </div>
+
+          <div class="resultado" id="resultado-moneda"></div>
+        </div>
+
+        <!-- Herramienta 2: fechas -->
+        <div class="tarjeta">
+          <h3>📅 Formatear fechas · <code>formato.js</code></h3>
+          <p class="texto-suave">Exportaciones nombradas: <code>formatearFecha</code> y <code>fechaRelativa</code>.</p>
+
+          <div class="campo">
+            <label for="entrada-fecha">Fecha</label>
+            <input type="date" id="entrada-fecha">
+          </div>
+
+          <div class="grupo-botones">
+            <button class="boton" type="button" data-accion="herramienta-fecha">Formatear</button>
+          </div>
+
+          <div class="resultado" id="resultado-fecha"></div>
+        </div>
+
+        <!-- Herramienta 3: validaciones -->
+        <div class="tarjeta">
+          <h3>🔐 Validar acceso · <code>validaciones.js</code></h3>
+          <p class="texto-suave">
+            Importado con renombrado: <code>validarContrasena as revisarClave</code>.
+          </p>
+
+          <div class="campo">
+            <label for="entrada-email">Correo electrónico</label>
+            <input type="email" id="entrada-email" value="camila.rojas@instituto.cl" autocomplete="off">
+          </div>
+
+          <div class="campo">
+            <label for="entrada-clave">Contraseña (escribe y mira la barra)</label>
+            <input type="text" id="entrada-clave" value="FullStack2026!" autocomplete="off">
+          </div>
+
+          <div class="barra-fuerza" aria-hidden="true">
+            <div class="barra-fuerza__relleno" id="barra-fuerza-relleno"></div>
+          </div>
+
+          <div class="grupo-botones">
+            <button class="boton" type="button" data-accion="herramienta-validacion">Validar</button>
+          </div>
+
+          <div class="resultado" id="resultado-validacion"></div>
+        </div>
+
+        <!-- Herramienta 4: estadísticas -->
+        <div class="tarjeta">
+          <h3>📊 Estadísticas de notas · <code>matematicas.js</code></h3>
+          <p class="texto-suave">Importado completo con <code>import * as matematicas</code>.</p>
+
+          <div class="campo">
+            <label for="entrada-notas">Notas separadas por comas o espacios</label>
+            <textarea id="entrada-notas" rows="3">6.5, 4.8, 3.2, 7.0, 5.5, 2.9, 6.1, 4.0</textarea>
+          </div>
+
+          <div class="grupo-botones">
+            <button class="boton" type="button" data-accion="herramienta-estadisticas">Calcular</button>
+          </div>
+
+          <div class="resultado" id="resultado-estadisticas"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         17. EJERCICIOS
+         ============================================================ -->
+    <section class="seccion ejercicios" id="ejercicios">
+      <h2><span class="numero">17</span> Ejercicios propuestos</h2>
+      <p class="bajada">
+        Cada archivo <code>.js</code> del proyecto termina con su propio bloque de ejercicios.
+        Estos son los seis retos integradores que cierran la unidad.
+      </p>
+
+      <div class="tarjeta">
+        <ol>
+          <li>
+            <strong>Módulo de conversiones.</strong> Crea <code>js/modulos/conversiones.js</code>
+            con exportaciones nombradas (kilómetros a millas, Celsius a Fahrenheit, kilos a libras)
+            y una exportación por defecto que convierta según una unidad recibida. Añádelo como
+            quinta herramienta de la caja.
+          </li>
+          <li>
+            <strong>Generador de paginación.</strong> Escribe <code>function* paginar(lista, tamano)</code>
+            que entregue bloques de N elementos. Úsalo para mostrar las notas de 5 en 5 con un botón
+            «siguiente página».
+          </li>
+          <li>
+            <strong>Iterable propio.</strong> Convierte el almacén en iterable implementando
+            <code>[Symbol.iterator]</code> para recorrer sus eventos con <code>for...of</code>
+            del más reciente al más antiguo.
+          </li>
+          <li>
+            <strong>Carga dinámica por selección.</strong> Añade un <code>&lt;select&gt;</code> con
+            tres nombres de módulo y un botón que haga
+            <code>await import(`./extras/${elegido}.js`)</code>. Explica qué riesgo hay al construir
+            rutas de importación con datos del usuario.
+          </li>
+          <li>
+            <strong>Informe con tagged template.</strong> Crea la etiqueta <code>informe</code> que
+            formatee automáticamente números como moneda, fechas con <code>formatearFecha</code> y
+            arrays con <code>join(', ')</code>, todo en una sola plantilla.
+          </li>
+          <li>
+            <strong>Refactor completo.</strong> Toma el proyecto anterior del curso (scripts clásicos
+            con IIFE) y conviértelo a módulos ES: elimina todas las IIFE, reparte el código en al
+            menos tres módulos y documenta en el README qué IIFE dejaron de ser necesarias y por qué.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="pie">
+      <p>Full Stack 2 · Desarrollo Front End · Proyecto 10 de la serie · JavaScript puro, sin librerías.</p>
+      <p><a class="volver" href="../../index.html">← Volver al índice del curso</a></p>
+    </footer>
+
+  </main>
+
+  <!-- ============================================================
+       SCRIPT CLÁSICO DE DETECCIÓN
+       ------------------------------------------------------------
+       IMPORTANTE: este NO es un módulo, es un script clásico en línea.
+       Se ejecuta SIEMPRE, incluso cuando los módulos están bloqueados
+       por la política CORS del protocolo file://. Su única misión es
+       avisar al estudiante de que necesita un servidor local.
+       ============================================================ -->
+  <script>
+    (function () {
+      // location.protocol vale 'file:' cuando la página se abrió con doble clic.
+      if (window.location.protocol === 'file:') {
+        var aviso = document.getElementById('aviso-file');
+        if (aviso) aviso.classList.remove('oculto');
+
+        // Dejamos también un rastro claro en la consola del navegador.
+        console.warn(
+          'Este proyecto usa módulos ES y necesita un servidor local. ' +
+          'Ejecuta "python3 -m http.server 8000" en esta carpeta, o usa Live Server.'
+        );
+      }
+    })();
+  </script>
+
+  <!-- ============================================================
+       EL MÓDULO PRINCIPAL
+       ------------------------------------------------------------
+       type="module" cambia tres cosas de golpe:
+         1. El archivo obtiene su propio ámbito (nada toca window).
+         2. Se ejecuta en modo estricto automáticamente.
+         3. Se carga de forma diferida, como si llevara defer.
+       Por eso el <script> puede ir aquí abajo o arriba en el <head>:
+       en ambos casos el DOM ya estará listo cuando se ejecute.
+       ============================================================ -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

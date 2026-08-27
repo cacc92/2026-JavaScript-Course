@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 · Funciones a fondo | Full Stack 2 · Plantilla de clase</title>
+  <meta name="description" content="Proyecto 3 del curso Full Stack 2: funciones, parámetros, scope, closures, callbacks, recursión, this y funciones puras.">
+
+  <!-- Estilos propios de este proyecto. La ruta es relativa a este archivo. -->
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+  <div class="contenedor">
+
+    <!-- ============================================================
+         AVISO DE MODO CLASE
+         Solo aparece en la plantilla. La version resuelta del proyecto
+         (la carpeta padre) no lo lleva.
+         ============================================================ -->
+    <div class="aviso-modo-clase">
+      <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+      JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+      <a href="../index.html">la carpeta del proyecto</a>.
+    </div>
+
+    <!-- ============================================================
+         CABECERA DEL PROYECTO
+         ============================================================ -->
+    <header class="cabecera">
+      <a class="enlace-volver" href="../../index.html">← Volver al índice del curso</a>
+
+      <h1>03 · Funciones a fondo</h1>
+
+      <p class="subtitulo">
+        Aprenderás a encapsular lógica en funciones para no repetir código, a controlar
+        qué entra y qué sale de ellas, a entender dónde vive cada variable y por qué
+        las funciones tienen memoria (closures), y a usar funciones como valores que
+        se pasan y se devuelven.
+      </p>
+
+      <div class="etiquetas">
+        <span class="etiqueta">DRY</span>
+        <span class="etiqueta">hoisting</span>
+        <span class="etiqueta">parámetros por defecto</span>
+        <span class="etiqueta">rest / spread</span>
+        <span class="etiqueta">scope</span>
+        <span class="etiqueta">closures</span>
+        <span class="etiqueta">callbacks</span>
+        <span class="etiqueta">recursión</span>
+        <span class="etiqueta">this</span>
+        <span class="etiqueta">funciones puras</span>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         ÍNDICE CON ENLACES ANCLA
+         Cada href="#id" salta al elemento con ese id en esta página.
+         ============================================================ -->
+    <nav class="indice" aria-label="Índice de secciones">
+      <h2>Índice de secciones</h2>
+      <ol>
+        <li><a href="#seccion-1">1 · Declaración, expresión y flechas</a></li>
+        <li><a href="#seccion-2">2 · Parámetros, rest y spread</a></li>
+        <li><a href="#seccion-3">3 · Scope, shadowing y closures</a></li>
+        <li><a href="#seccion-4">4 · Callbacks y orden superior</a></li>
+        <li><a href="#seccion-5">5 · Recursión</a></li>
+        <li><a href="#seccion-6">6 · this y funciones puras</a></li>
+        <li><a href="#seccion-7">7 · Demos: calculadora y contador</a></li>
+        <li><a href="#chuleta">8 · Chuleta final</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============================================================
+         SECCIÓN 1
+         ============================================================ -->
+    <section class="seccion" id="seccion-1">
+      <h2><span class="numero">01</span> Declaración, expresión y funciones flecha</h2>
+
+      <p>
+        Una función es una receta con nombre: se escribe una vez y se ejecuta tantas veces
+        como haga falta. Aquí vemos las tres formas de crearla, el <code>hoisting</code>
+        (por qué una se puede llamar antes de escribirla y otra no), qué devuelve una
+        función sin <code>return</code>, y por qué decimos que una función es un valor más.
+      </p>
+
+      <div class="aviso">
+        <p>
+          <strong>Idea central:</strong> en JavaScript una función se puede guardar en una
+          variable, meter en un array, pasar como argumento y devolver como resultado.
+          Todo lo demás del proyecto sale de ahí.
+        </p>
+      </div>
+
+      <div class="aviso alerta">
+        <p>
+          <strong>⚠️ Error común:</strong> confundir <code>saludar</code> con
+          <code>saludar()</code>. Sin paréntesis es la función; con paréntesis es el
+          resultado de ejecutarla.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/01-declaracion-y-tipos.js</span>
+      <pre id="salida-01" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 2
+         ============================================================ -->
+    <section class="seccion" id="seccion-2">
+      <h2><span class="numero">02</span> Parámetros, argumentos, rest y spread</h2>
+
+      <p>
+        Los <strong>parámetros</strong> son los huecos que declaras; los
+        <strong>argumentos</strong>, los valores que envías. Veremos qué ocurre cuando
+        faltan o sobran, cómo poner valores por defecto, cómo recoger un número
+        indefinido de argumentos con <code>...rest</code> y cómo repartir un array en
+        argumentos sueltos con <code>...spread</code>.
+      </p>
+
+      <div class="aviso">
+        <p>
+          <strong>Truco para no confundir rest y spread:</strong> los tres puntos en la
+          <em>definición</em> de la función AGRUPAN (rest); en la <em>llamada</em>
+          REPARTEN (spread).
+        </p>
+      </div>
+
+      <div class="aviso alerta">
+        <p>
+          <strong>⚠️ Error común:</strong> creer que un parámetro por defecto también
+          cubre a <code>null</code>. Solo se activa con <code>undefined</code>.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/02-parametros.js</span>
+      <pre id="salida-02" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 3
+         ============================================================ -->
+    <section class="seccion" id="seccion-3">
+      <h2><span class="numero">03</span> Ámbito, shadowing y closures</h2>
+
+      <p>
+        El ámbito es la zona donde una variable existe: global, de función o de bloque.
+        JavaScript la busca siempre de dentro hacia fuera, nunca al revés. Cuando una
+        función devuelve otra que usa las variables de su alrededor, esas variables
+        siguen vivas: eso es un <strong>closure</strong>, y es el mecanismo que permite
+        tener datos verdaderamente privados.
+      </p>
+
+      <div class="aviso bien">
+        <p>
+          <strong>✅ Buena práctica:</strong> declara con <code>const</code> por defecto,
+          con <code>let</code> solo si el valor debe cambiar, y con <code>var</code>
+          prácticamente nunca en código nuevo.
+        </p>
+      </div>
+
+      <div class="aviso alerta">
+        <p>
+          <strong>⚠️ Error común:</strong> el bucle con <code>var</code> cuyas funciones
+          acaban compartiendo el mismo valor de <code>i</code>. En la consola de abajo se
+          ve el antes y el después.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/03-scope-y-closures.js</span>
+      <pre id="salida-03" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 4
+         ============================================================ -->
+    <section class="seccion" id="seccion-4">
+      <h2><span class="numero">04</span> Callbacks y funciones de orden superior</h2>
+
+      <p>
+        Una función de orden superior es la que recibe funciones como argumento o
+        devuelve una función. Escribiremos nuestras propias versiones de
+        <code>map</code>, <code>filter</code> y <code>reduce</code> para ver que no
+        tienen ninguna magia, fabricaremos validadores a medida y comprobaremos por qué
+        el orden de la consola con <code>setTimeout</code> sorprende siempre.
+      </p>
+
+      <div class="aviso alerta">
+        <p>
+          <strong>⚠️ Error común:</strong> pasar el callback con paréntesis.
+          <code>boton.addEventListener('click', calcular)</code> es correcto;
+          <code>calcular()</code> ejecutaría la función de inmediato y pasaría su
+          resultado.
+        </p>
+      </div>
+
+      <div class="aviso">
+        <p>
+          <strong>Atención en clase:</strong> el último mensaje de esta consola aparece
+          un segundo más tarde. Es un <code>setTimeout</code> y es el ejemplo perfecto de
+          que JavaScript no espera.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/04-callbacks-y-orden-superior.js</span>
+      <pre id="salida-04" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 5
+         ============================================================ -->
+    <section class="seccion" id="seccion-5">
+      <h2><span class="numero">05</span> Recursión</h2>
+
+      <p>
+        Una función recursiva se llama a sí misma con un problema más pequeño hasta
+        llegar al <strong>caso base</strong>, que la detiene. Veremos el conteo
+        regresivo, el factorial, Fibonacci (y por qué la versión ingenua es lentísima),
+        qué pasa exactamente si falta el caso base, y un caso real donde la recursión
+        gana de calle: recorrer un árbol de categorías anidadas.
+      </p>
+
+      <div class="demo">
+        <h3>Demo · Fibonacci: ingenuo contra memoizado</h3>
+        <p>
+          Calcula el mismo número con las dos versiones y compara cuántas llamadas
+          necesita cada una. Prueba con 10, con 20 y con 30 para ver cómo se dispara.
+        </p>
+
+        <div class="fila-controles">
+          <div>
+            <label for="fib-numero">Número (0 a 30)</label>
+            <input type="number" id="fib-numero" value="20" min="0" max="30" step="1">
+          </div>
+          <button type="button" class="boton" id="fib-boton">Calcular Fibonacci</button>
+        </div>
+
+        <div class="resultado" id="fib-resultado">Elige un número y pulsa Calcular.</div>
+      </div>
+
+      <div class="aviso peligro">
+        <p>
+          <strong>Cuidado:</strong> la versión ingenua con números por encima de 40
+          bloquea el navegador varios segundos. Por eso el campo está limitado a 30.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/05-recursion.js</span>
+      <pre id="salida-05" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 6
+         ============================================================ -->
+    <section class="seccion" id="seccion-6">
+      <h2><span class="numero">06</span> Introducción a this y funciones puras</h2>
+
+      <p>
+        En una función normal, <code>this</code> no depende de dónde se escribió la
+        función sino de <strong>cómo se la llama</strong>. Las funciones flecha no tienen
+        <code>this</code> propio: heredan el del lugar donde fueron escritas. Después
+        veremos qué es una función pura, qué son los efectos secundarios y por qué
+        conviene separar el cálculo de la acción.
+      </p>
+
+      <div class="aviso bien">
+        <p>
+          <strong>✅ Regla de bolsillo:</strong> función normal para los
+          <em>métodos</em> de un objeto; función flecha para los <em>callbacks</em> que
+          van dentro de esos métodos.
+        </p>
+      </div>
+
+      <div class="aviso alerta">
+        <p>
+          <strong>⚠️ Error común:</strong> pensar que "impura" significa "mal escrita".
+          Sin efectos secundarios nadie vería nunca el resultado; la clave está en
+          aislarlos y darles un nombre que los anuncie.
+        </p>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/06-this-y-pureza.js</span>
+      <pre id="salida-06" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 7 · DEMOS INTERACTIVAS
+         ============================================================ -->
+    <section class="seccion" id="seccion-7">
+      <h2><span class="numero">07</span> Demos: calculadora y contador con closure</h2>
+
+      <p>
+        Las dos demos aplican todo lo anterior. La calculadora guarda cada operador
+        como una función dentro de un objeto, así que elegir la operación es
+        simplemente leer una propiedad: ni un solo <code>if</code>. El contador esconde
+        su variable en un closure, de modo que es imposible tocarla desde fuera.
+      </p>
+
+      <!-- DEMO 1 · CALCULADORA -->
+      <div class="demo">
+        <h3>Demo 1 · Calculadora hecha con un objeto de funciones</h3>
+        <p>
+          El desplegable se rellena solo a partir de las claves del objeto
+          <code>operaciones</code>. Si añades una operación al objeto, aparece aquí sin
+          tocar el HTML.
+        </p>
+
+        <div class="fila-controles">
+          <div>
+            <label for="calc-a">Primer número</label>
+            <input type="number" id="calc-a" value="12" step="any">
+          </div>
+
+          <div>
+            <label for="calc-operador">Operación</label>
+            <!-- Este <select> se llena desde JavaScript, por eso está vacío. -->
+            <select id="calc-operador"></select>
+          </div>
+
+          <div>
+            <label for="calc-b">Segundo número</label>
+            <input type="number" id="calc-b" value="4" step="any">
+          </div>
+
+          <button type="button" class="boton" id="calc-calcular">Calcular</button>
+          <button type="button" class="boton secundario" id="calc-limpiar">Limpiar historial</button>
+        </div>
+
+        <div class="resultado" id="calc-resultado">Introduce dos números y pulsa Calcular.</div>
+
+        <ul class="historial" id="calc-historial"></ul>
+      </div>
+
+      <!-- DEMO 2 · CONTADOR CON CLOSURE -->
+      <div class="demo">
+        <h3>Demo 2 · Contador con closure (variable privada)</h3>
+        <p>
+          La cuenta vive dentro de la función que creó este contador. Los botones solo
+          pueden pedirle que suba o baje: no hay forma de escribir directamente en ella.
+          Pulsa <strong>Intentar espiar</strong> y mira la consola de abajo.
+        </p>
+
+        <div class="controles">
+          <button type="button" class="boton circular" id="contador-menos" aria-label="Restar uno">−</button>
+          <span class="marcador" id="contador-valor">0</span>
+          <button type="button" class="boton circular" id="contador-mas" aria-label="Sumar uno">+</button>
+
+          <button type="button" class="boton secundario" id="contador-reiniciar">Reiniciar</button>
+          <button type="button" class="boton secundario" id="contador-espiar">Intentar espiar la variable</button>
+        </div>
+      </div>
+
+      <!-- DEMO 3 · alert / prompt -->
+      <div class="demo">
+        <h3>Demo 3 · alert() y prompt() bajo demanda</h3>
+        <p>
+          Estas dos funciones detienen el navegador hasta que el usuario responde, así
+          que nunca se ponen en la carga de la página. Aquí se ejecutan solo al pulsar
+          el botón.
+        </p>
+
+        <div class="controles">
+          <button type="button" class="boton" id="saludo-boton">Saludar con prompt()</button>
+        </div>
+      </div>
+
+      <span class="etiqueta-consola">Salida · js/07-demos-interactivas.js</span>
+      <pre id="salida-07" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         SECCIÓN 8 · CHULETA
+         ============================================================ -->
+    <section class="seccion" id="chuleta">
+      <h2><span class="numero">08</span> Chuleta final</h2>
+
+      <p>Resumen para tener a mano mientras se practica.</p>
+
+      <h3>Formas de escribir una función</h3>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Forma</th>
+              <th>Sintaxis</th>
+              <th>¿Hoisting?</th>
+              <th>this propio</th>
+              <th>arguments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Declaración</td>
+              <td><code>function f(a) { return a; }</code></td>
+              <td>Sí, se puede llamar antes</td>
+              <td>Sí</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td>Expresión</td>
+              <td><code>const f = function (a) { return a; };</code></td>
+              <td>No, error si la llamas antes</td>
+              <td>Sí</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td>Flecha</td>
+              <td><code>const f = (a) =&gt; a;</code></td>
+              <td>No</td>
+              <td>No, hereda el de fuera</td>
+              <td>No, usa <code>...rest</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Los tres puntos: rest o spread según dónde estén</h3>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Dónde aparece</th>
+              <th>Cómo se llama</th>
+              <th>Qué hace</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>En la definición</td>
+              <td>rest</td>
+              <td>Agrupa muchos argumentos en un array</td>
+              <td><code>function sumar(...n) {}</code></td>
+            </tr>
+            <tr>
+              <td>En la llamada</td>
+              <td>spread</td>
+              <td>Reparte un array en argumentos sueltos</td>
+              <td><code>Math.max(...notas)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>¿A qué apunta this?</h3>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Cómo se llama la función</th>
+              <th>Valor de this</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>objeto.metodo()</code></td>
+              <td>El objeto que está delante del punto</td>
+            </tr>
+            <tr>
+              <td><code>funcionSuelta()</code></td>
+              <td><code>undefined</code> en modo estricto</td>
+            </tr>
+            <tr>
+              <td><code>funcion.call(obj)</code> / <code>.apply(obj)</code></td>
+              <td>El objeto que le indicas</td>
+            </tr>
+            <tr>
+              <td><code>funcion.bind(obj)</code></td>
+              <td>Devuelve una copia con el this fijado</td>
+            </tr>
+            <tr>
+              <td><code>() =&gt; {}</code></td>
+              <td>El del lugar donde se escribió la flecha</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="aviso bien">
+        <p>
+          <strong>✅ Antes de dar una función por terminada:</strong> ¿tiene un nombre que
+          empieza por verbo? ¿hace una sola cosa? ¿devuelve un valor en lugar de solo
+          imprimirlo? ¿evita modificar lo que recibe?
+        </p>
+      </div>
+    </section>
+
+    <footer class="pie">
+      <p>Full Stack 2 · Desarrollo Front End — Proyecto 03 · Funciones a fondo</p>
+      <p>Abre la consola del navegador con F12 para ver la misma salida en su sitio original.</p>
+      <p><a class="enlace-volver" href="../../index.html">← Volver al índice del curso</a></p>
+    </footer>
+
+  </div>
+
+  <!-- ============================================================
+       CARGA DE LOS ARCHIVOS JAVASCRIPT
+       ------------------------------------------------------------
+       El atributo `defer` hace dos cosas importantes:
+         1. Descarga el archivo sin frenar el dibujado de la página.
+         2. Lo ejecuta cuando el HTML ya está completo, así que el DOM
+            existe y document.getElementById() encuentra los elementos.
+       Además, con defer los scripts se ejecutan EN ORDEN, de arriba
+       abajo: por eso 00-utilidades.js puede ir primero y los demás
+       usarlo sin problemas.
+
+       Cada archivo envuelve su contenido en una IIFE para que sus
+       variables no choquen con las de los otros.
+       ============================================================ -->
+  <script src="js/00-utilidades.js" defer></script>
+  <script src="js/01-declaracion-y-tipos.js" defer></script>
+  <script src="js/02-parametros.js" defer></script>
+  <script src="js/03-scope-y-closures.js" defer></script>
+  <script src="js/04-callbacks-y-orden-superior.js" defer></script>
+  <script src="js/05-recursion.js" defer></script>
+  <script src="js/06-this-y-pureza.js" defer></script>
+  <script src="js/07-demos-interactivas.js" defer></script>
+</body>
+
+</html>

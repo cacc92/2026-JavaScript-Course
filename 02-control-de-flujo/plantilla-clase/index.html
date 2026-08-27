@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02 · Control de flujo: condicionales y bucles · Plantilla de clase</title>
+
+    <!-- Enlazamos la hoja de estilos propia del proyecto.
+         La ruta es relativa a este archivo: carpeta css, archivo estilos.css -->
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+
+  <body>
+    <div class="contenedor">
+      <!-- Aviso de MODO CLASE: solo existe en la plantilla, no en la version resuelta. -->
+      <div class="aviso-modo-clase">
+        <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+        JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+        <a href="../index.html">la carpeta del proyecto</a>.
+      </div>
+
+      <!-- ============================================================
+           CABECERA DEL PROYECTO
+           ============================================================ -->
+      <header class="cabecera">
+        <a class="enlace-volver" href="../../index.html">← Volver al índice del curso</a>
+
+        <h1>02 · Control de flujo: condicionales y bucles</h1>
+
+        <p class="subtitulo">
+          Aprenderás a que tu programa <strong>tome decisiones</strong> (if, else,
+          ternario, switch) y a que <strong>repita trabajo</strong> sin escribir la
+          misma línea mil veces (for, while, do...while, for...of, for...in). Cerramos
+          resolviendo los ejercicios clásicos de entrevista y de clase.
+        </p>
+
+        <div class="etiquetas">
+          <span class="etiqueta">if / else</span>
+          <span class="etiqueta">truthy / falsy</span>
+          <span class="etiqueta">ternario</span>
+          <span class="etiqueta">switch</span>
+          <span class="etiqueta">for</span>
+          <span class="etiqueta">while</span>
+          <span class="etiqueta">do...while</span>
+          <span class="etiqueta">for...of</span>
+          <span class="etiqueta">for...in</span>
+          <span class="etiqueta">break / continue</span>
+        </div>
+      </header>
+
+      <!-- ============================================================
+           ÍNDICE CON ENLACES ANCLA
+           Un enlace que empieza por # salta al elemento cuyo id coincide.
+           ============================================================ -->
+      <nav class="indice" aria-label="Índice de secciones">
+        <h2>Índice de secciones</h2>
+        <ol>
+          <li><a href="#condicionales">Condicionales: if, else if, else</a></li>
+          <li><a href="#switch">La sentencia switch</a></li>
+          <li><a href="#bucles">Bucles: for, while, do...while</a></li>
+          <li><a href="#ejercicios">Ejercicios clásicos resueltos</a></li>
+          <li><a href="#clasificador">Clasificador de notas interactivo</a></li>
+          <li><a href="#tabla">Tabla de multiplicar dinámica</a></li>
+        </ol>
+      </nav>
+
+      <!-- ============================================================
+           SECCIÓN 1 - CONDICIONALES
+           ============================================================ -->
+      <section class="tarjeta" id="condicionales">
+        <h2><span class="numero-seccion">01</span> Condicionales: if, else if, else</h2>
+
+        <p>
+          Un condicional es una bifurcación en el camino: el programa evalúa una
+          expresión, obtiene <code>true</code> o <code>false</code>, y ejecuta un bloque
+          u otro. Aquí vemos el <code>if</code> simple, la cadena
+          <code>if / else if / else</code>, los condicionales anidados, los valores
+          <em>truthy</em> y <em>falsy</em>, y el operador ternario.
+        </p>
+
+        <div class="aviso aviso--peligro">
+          <strong>Error clásico de principiante:</strong> escribir <code>=</code> (asignar)
+          donde hace falta <code>==</code> o <code>===</code> (comparar). En clase lo veremos
+          en vivo: <code>if (nota = 10)</code> siempre entra, porque asigna y devuelve 10,
+          que es <em>truthy</em>.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · 01-condicionales.js</span>
+          <button class="boton boton--secundario" id="btn-limpiar-condicionales" type="button">
+            Limpiar consola
+          </button>
+        </div>
+        <pre id="salida-condicionales" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ============================================================
+           SECCIÓN 2 - SWITCH
+           ============================================================ -->
+      <section class="tarjeta" id="switch">
+        <h2><span class="numero-seccion">02</span> La sentencia switch</h2>
+
+        <p>
+          <code>switch</code> compara UN valor contra varios casos posibles. Es la
+          herramienta ideal cuando tenemos muchas opciones cerradas (un menú, un día de
+          la semana, un código de estado). Veremos <code>case</code>, <code>break</code>,
+          <code>default</code>, el peligro del <em>fall-through</em>, un caso donde el
+          <em>fall-through</em> es justo lo que queremos, y cuándo conviene más un
+          <code>if / else</code>.
+        </p>
+
+        <div class="controles">
+          <!-- Este botón existe para mostrar alert() SIN bloquear la carga de la
+               página. Nunca se llama a alert() al cargar: solo si el docente pulsa. -->
+          <button class="boton" id="btn-alert-demo" type="button">
+            Ver un alert() de ejemplo
+          </button>
+          <button class="boton boton--secundario" id="btn-limpiar-switch" type="button">
+            Limpiar consola
+          </button>
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · 02-switch.js</span>
+        </div>
+        <pre id="salida-switch" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ============================================================
+           SECCIÓN 3 - BUCLES
+           ============================================================ -->
+      <section class="tarjeta" id="bucles">
+        <h2><span class="numero-seccion">03</span> Bucles: for, while, do...while y familia</h2>
+
+        <p>
+          Un bucle repite un bloque de código mientras se cumpla una condición. Vamos a
+          desmontar el <code>for</code> clásico pieza a pieza, compararlo con
+          <code>while</code> y <code>do...while</code>, recorrer arrays y textos con
+          <code>for...of</code>, recorrer objetos con <code>for...in</code>, y usar
+          <code>break</code> y <code>continue</code> para controlar la repetición desde
+          dentro.
+        </p>
+
+        <div class="aviso aviso--peligro">
+          <strong>Bucle infinito:</strong> si la condición nunca se vuelve falsa, la pestaña
+          se congela. En la sección 13 de <code>js/03-bucles.js</code> lo provocamos
+          <em>de forma controlada</em> con un contador de seguridad (el botón de aquí abajo),
+          para verlo sin bloquear el navegador.
+        </div>
+
+        <div class="controles">
+          <button class="boton" id="btn-bucle-guardado" type="button">
+            Ejecutar bucle con guarda de seguridad
+          </button>
+          <button class="boton boton--secundario" id="btn-limpiar-bucles" type="button">
+            Limpiar consola
+          </button>
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · 03-bucles.js</span>
+        </div>
+        <pre id="salida-bucles" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ============================================================
+           SECCIÓN 4 - EJERCICIOS CLÁSICOS
+           ============================================================ -->
+      <section class="tarjeta" id="ejercicios">
+        <h2><span class="numero-seccion">04</span> Ejercicios clásicos resueltos</h2>
+
+        <p>
+          Estos ocho ejercicios aparecen en todos los cursos y en muchas entrevistas
+          técnicas: FizzBuzz, contar vocales, detectar primos, factorial, mayor de una
+          lista, suma de pares e impares, pirámide de asteriscos y tabla de multiplicar.
+          Todos usan únicamente lo aprendido en las secciones anteriores.
+        </p>
+
+        <div class="barra-consola">
+          <span>Consola visual · 04-ejercicios-clasicos.js</span>
+          <button class="boton boton--secundario" id="btn-limpiar-ejercicios" type="button">
+            Limpiar consola
+          </button>
+        </div>
+        <pre id="salida-ejercicios" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ============================================================
+           SECCIÓN 5 - CLASIFICADOR DE NOTAS INTERACTIVO
+           ============================================================ -->
+      <section class="tarjeta" id="clasificador">
+        <h2><span class="numero-seccion">05</span> Clasificador de notas interactivo</h2>
+
+        <p>
+          Escribe una nota del 0 al 10 y pulsa el botón. El mismo problema se resuelve
+          <strong>dos veces</strong>: una con una cadena <code>if / else if / else</code> y
+          otra con <code>switch (true)</code>. Compara los dos resultados y decide cuál te
+          resulta más legible.
+        </p>
+
+        <div class="controles">
+          <div class="grupo-campo">
+            <label for="nota-input">Nota del estudiante (0 a 10)</label>
+            <input
+              class="campo"
+              id="nota-input"
+              type="number"
+              min="0"
+              max="10"
+              step="0.1"
+              value="7.5"
+            />
+          </div>
+          <button class="boton" id="btn-clasificar" type="button">Clasificar nota</button>
+        </div>
+
+        <div class="rejilla-doble">
+          <div class="resultado" id="resultado-if">
+            <strong>Versión if / else if / else</strong>
+            <span>Escribe una nota y pulsa "Clasificar nota".</span>
+          </div>
+          <div class="resultado" id="resultado-switch">
+            <strong>Versión switch (true)</strong>
+            <span>Escribe una nota y pulsa "Clasificar nota".</span>
+          </div>
+        </div>
+
+        <div class="aviso aviso--consejo">
+          <strong>Buena práctica:</strong> el orden de las condiciones importa. Si preguntas
+          primero por <code>nota >= 5</code>, un 10 también cumple esa condición y nunca
+          llegarías a "Excelente". Siempre de la condición más restrictiva a la más amplia.
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SECCIÓN 6 - TABLA DE MULTIPLICAR DINÁMICA
+           ============================================================ -->
+      <section class="tarjeta" id="tabla">
+        <h2><span class="numero-seccion">06</span> Tabla de multiplicar dinámica</h2>
+
+        <p>
+          Elige un número del 1 al 12 en el desplegable. JavaScript construye la tabla
+          completa con un bucle <code>for</code> y la inserta en la página. Ni una sola
+          fila está escrita a mano en el HTML: todas nacen del bucle.
+        </p>
+
+        <div class="controles">
+          <div class="grupo-campo">
+            <label for="select-tabla">Tabla del número</label>
+            <!-- Las opciones también se generan por JavaScript con un bucle,
+                 para no escribir doce <option> a mano. -->
+            <select id="select-tabla"></select>
+          </div>
+          <button class="boton boton--secundario" id="btn-tabla-completa" type="button">
+            Ver rejilla completa 1 al 12
+          </button>
+        </div>
+
+        <div class="contenedor-tabla" id="contenedor-tabla"></div>
+      </section>
+
+      <footer class="pie">
+        <p>
+          Full Stack 2 · Desarrollo Front End — Proyecto 02 de la serie de JavaScript.
+          <br />
+          Abre la consola del navegador con <strong>F12</strong> para ver la misma salida
+          en DevTools.
+        </p>
+      </footer>
+    </div>
+
+    <!-- ============================================================
+         CARGA DE LOS ARCHIVOS JAVASCRIPT
+         ------------------------------------------------------------
+         defer significa: "descarga el script mientras se lee el HTML,
+         pero ejecútalo cuando el documento esté completo".
+         Gracias a defer podemos usar document.getElementById sin
+         preocuparnos de si el elemento ya existe, y los scripts se
+         ejecutan en el mismo orden en el que están escritos aquí.
+
+         Cada archivo envuelve su contenido en una IIFE, así que
+         pueden repetir nombres como "imprimir" sin chocar entre ellos.
+         ============================================================ -->
+    <script src="js/01-condicionales.js" defer></script>
+    <script src="js/02-switch.js" defer></script>
+    <script src="js/03-bucles.js" defer></script>
+    <script src="js/04-ejercicios-clasicos.js" defer></script>
+  </body>
+</html>

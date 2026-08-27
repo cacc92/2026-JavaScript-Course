@@ -1,0 +1,680 @@
+/* ============================================================
+   ESTILOS DEL PROYECTO 10 - JavaScript moderno (ES6+) y modulos
+   ------------------------------------------------------------
+   Este archivo esta comentado a proposito: muchos estudiantes
+   recien empiezan con CSS y conviene explicar POR QUE se toma
+   cada decision, no solo QUE se escribe.
+   ============================================================ */
+
+/* ============================================================
+   1. TOKENS DE DISENO (variables CSS)
+   ------------------------------------------------------------
+   Una "variable CSS" es un valor con nombre que podemos reutilizar
+   en todo el archivo. Se declaran dentro de :root (la raiz del
+   documento) para que esten disponibles en TODA la pagina.
+   Ventaja: si manana queremos cambiar el color primario, lo
+   cambiamos en UN solo lugar y se actualiza toda la interfaz.
+   ============================================================ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ============================================================
+   2. REINICIO BASICO
+   ------------------------------------------------------------
+   Los navegadores traen margenes y rellenos por defecto que
+   varian entre uno y otro. Los neutralizamos para partir todos
+   desde el mismo punto.
+   box-sizing: border-box hace que el padding y el borde queden
+   INCLUIDOS dentro del ancho declarado (mucho mas intuitivo).
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Tamano base grande: esta pagina se proyecta en clase.
+   Va en <html> y no en <body> porque la unidad rem se mide SIEMPRE contra
+   el elemento raiz: asi todos los tamanos en rem escalan con este valor. */
+html {
+  font-size: 17px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  line-height: 1.65;
+  color: var(--texto);
+  background-color: var(--fondo);
+  /* Un degradado muy sutil para que el fondo plano no canse la vista. */
+  background-image:
+    radial-gradient(circle at 12% -10%, rgba(56, 189, 248, 0.12), transparent 45%),
+    radial-gradient(circle at 90% 0%, rgba(192, 132, 252, 0.10), transparent 40%);
+  background-attachment: fixed;
+}
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL
+   ------------------------------------------------------------
+   max-width evita lineas de texto larguisimas (incomodas de leer)
+   y "margin: 0 auto" centra el bloque horizontalmente.
+   ============================================================ */
+.contenedor {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ============================================================
+   4. CABECERA DEL PROYECTO
+   ============================================================ */
+.cabecera {
+  border-bottom: 1px solid var(--borde);
+  background-color: rgba(15, 23, 42, 0.85);
+  /* backdrop-filter difumina lo que queda detras: efecto "vidrio". */
+  backdrop-filter: blur(8px);
+  position: sticky; /* la cabecera se queda pegada arriba al hacer scroll */
+  top: 0;
+  z-index: 10;
+}
+
+.cabecera__interior {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cabecera__titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.cabecera__titulo span {
+  color: var(--primario);
+}
+
+/* Enlace "volver al indice": se ve como un boton discreto. */
+.volver {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 999px; /* radio enorme = pastilla */
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.volver:hover {
+  color: var(--fondo);
+  background-color: var(--primario);
+  border-color: var(--primario);
+}
+
+/* ============================================================
+   5. PORTADA (titulo grande + frase de que se aprende)
+   ============================================================ */
+.portada {
+  padding: 40px 0 8px;
+}
+
+.portada h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.9rem, 4vw, 2.9rem); /* clamp = tamano fluido y seguro */
+  line-height: 1.15;
+  background: linear-gradient(90deg, var(--primario), var(--acento));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent; /* el texto muestra el degradado de fondo */
+}
+
+.portada p {
+  margin: 0;
+  max-width: 70ch;
+  color: var(--texto-suave);
+  font-size: 1.05rem;
+}
+
+/* ============================================================
+   6. AVISOS (cajas de mensaje destacado)
+   ------------------------------------------------------------
+   Se usan para advertencias importantes. El borde izquierdo
+   grueso es un patron muy comun y muy legible.
+   ============================================================ */
+.aviso {
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--primario);
+  background-color: var(--superficie);
+  border-radius: var(--radio);
+  padding: 18px 22px;
+  margin: 24px 0;
+  box-shadow: var(--sombra);
+}
+
+.aviso h2,
+.aviso h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.aviso p:last-child {
+  margin-bottom: 0;
+}
+
+.aviso--critico {
+  border-left-color: var(--error);
+  background-color: rgba(248, 113, 113, 0.08);
+}
+
+.aviso--alerta {
+  border-left-color: var(--alerta);
+  background-color: rgba(251, 191, 36, 0.08);
+}
+
+.aviso--exito {
+  border-left-color: var(--exito);
+  background-color: rgba(74, 222, 128, 0.08);
+}
+
+/* La clase .oculto sirve para mostrar/ocultar desde JavaScript. */
+.oculto {
+  display: none !important;
+}
+
+/* ============================================================
+   7. INDICE DE SECCIONES
+   ------------------------------------------------------------
+   Grid "auto-fill + minmax" = tantas columnas como quepan, cada
+   una de al menos 220px. Es responsive sin escribir media queries.
+   ============================================================ */
+.indice {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 20px 22px;
+  margin: 28px 0 40px;
+  box-shadow: var(--sombra);
+}
+
+.indice h2 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.indice ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+}
+
+.indice a {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--texto);
+  text-decoration: none;
+  background-color: var(--superficie-2);
+  border: 1px solid transparent;
+  font-size: 0.94rem;
+  transition: all 0.18s ease;
+}
+
+.indice a:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+  transform: translateX(3px);
+}
+
+.indice a .numero {
+  color: var(--acento);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  margin-right: 6px;
+}
+
+/* ============================================================
+   8. SECCIONES Y TARJETAS
+   ============================================================ */
+.seccion {
+  margin: 0 0 46px;
+  /* scroll-margin-top evita que la cabecera pegajosa tape el titulo
+     cuando saltamos con un enlace ancla (#seccion). */
+  scroll-margin-top: 80px;
+}
+
+.seccion > h2 {
+  font-size: 1.5rem;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.seccion > h2 .numero {
+  font-family: var(--mono);
+  color: var(--acento);
+  font-size: 1rem;
+  background-color: rgba(192, 132, 252, 0.12);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 8px;
+  padding: 2px 9px;
+}
+
+.seccion > .bajada {
+  margin: 0 0 18px;
+  color: var(--texto-suave);
+  max-width: 78ch;
+}
+
+.tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 22px;
+  box-shadow: var(--sombra);
+}
+
+.tarjeta h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  color: var(--primario);
+}
+
+.tarjeta ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+
+.tarjeta li {
+  margin-bottom: 6px;
+}
+
+/* ============================================================
+   9. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Es el corazon didactico del proyecto: replica lo que se ve en
+   DevTools (F12) pero DENTRO de la pagina, para poder proyectarlo.
+   - font-family monoespaciada: cada caracter ocupa lo mismo, asi
+     las columnas de texto quedan alineadas.
+   - white-space: pre-wrap conserva los saltos de linea del texto
+     pero permite que las lineas largas se corten solas.
+   ============================================================ */
+.consola {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  background-color: #0b1220;
+  color: #d7e3f4;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 14px 0 0;
+  max-height: 380px;
+  overflow: auto;          /* scroll propio si el contenido es largo */
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+
+/* Consola general (la del registro global): un poco mas baja. */
+.consola--general {
+  max-height: 240px;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.consola:empty::before {
+  content: "(sin salida todavia)";
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+/* Barra superior de la consola con su etiqueta y el boton limpiar. */
+.consola-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.consola-barra .etiqueta {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+/* ============================================================
+   10. CODIGO EN LINEA Y BLOQUES DE CODIGO
+   ============================================================ */
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--primario);
+}
+
+pre.codigo {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--acento);
+  border-radius: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;   /* si la linea es larga, scroll horizontal SOLO aqui */
+  color: #d7e3f4;
+}
+
+pre.codigo code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* ============================================================
+   11. INSIGNIAS (badges) Y NOTAS CORTAS
+   ============================================================ */
+.insignia {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background-color: var(--superficie-2);
+  color: var(--texto-suave);
+  vertical-align: middle;
+}
+
+.insignia--exito { color: var(--exito); border-color: rgba(74, 222, 128, 0.45); }
+.insignia--error { color: var(--error); border-color: rgba(248, 113, 113, 0.45); }
+.insignia--alerta { color: var(--alerta); border-color: rgba(251, 191, 36, 0.45); }
+.insignia--info { color: var(--primario); border-color: rgba(56, 189, 248, 0.45); }
+
+/* ============================================================
+   12. FORMULARIOS DE LA CAJA DE HERRAMIENTAS
+   ============================================================ */
+.rejilla {
+  display: grid;
+  /* Dos columnas en pantallas anchas, una sola cuando no cabe. */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.campo label {
+  font-size: 0.88rem;
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  font-family: var(--fuente);
+  font-size: 1rem;
+  color: var(--texto);
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+textarea {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 90px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  /* Nunca quitamos el foco sin reemplazarlo: es clave para accesibilidad. */
+  outline: none;
+  border-color: var(--primario);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+.fila-campos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fila-campos > .campo {
+  flex: 1 1 150px;
+}
+
+/* ============================================================
+   13. BOTONES
+   ============================================================ */
+.boton {
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #06263a;
+  background-color: var(--primario);
+  border: 1px solid var(--primario);
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.18s ease;
+}
+
+.boton:hover { filter: brightness(1.1); }
+.boton:active { transform: translateY(1px); } /* micro feedback al pulsar */
+
+.boton--secundario {
+  color: var(--texto);
+  background-color: transparent;
+  border-color: var(--borde);
+}
+
+.boton--secundario:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+.boton--acento {
+  color: #2a0b45;
+  background-color: var(--acento);
+  border-color: var(--acento);
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.grupo-botones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   14. RESULTADOS DE LA CAJA DE HERRAMIENTAS
+   ============================================================ */
+.resultado {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  min-height: 56px;
+  font-size: 0.95rem;
+}
+
+.resultado .linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.18);
+  flex-wrap: wrap;
+}
+
+.resultado .linea:last-child { border-bottom: none; }
+
+.resultado .clave { color: var(--texto-suave); }
+
+.resultado .valor {
+  font-family: var(--mono);
+  color: var(--texto);
+  text-align: right;
+}
+
+.texto-exito { color: var(--exito); }
+.texto-error { color: var(--error); }
+.texto-alerta { color: var(--alerta); }
+.texto-suave { color: var(--texto-suave); }
+
+/* Barra de fuerza de contrasena: un div que cambia de ancho y color. */
+.barra-fuerza {
+  height: 10px;
+  border-radius: 999px;
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.barra-fuerza__relleno {
+  height: 100%;
+  width: 0%;
+  background-color: var(--error);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* ============================================================
+   15. TABLA COMPARATIVA (scripts clasicos vs modulos)
+   ============================================================ */
+.envoltorio-tabla {
+  overflow-x: auto; /* el scroll horizontal vive AQUI, no en el body */
+  margin-top: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+  min-width: 560px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: top;
+}
+
+thead th {
+  color: var(--primario);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+tbody tr:hover { background-color: rgba(56, 189, 248, 0.05); }
+
+/* ============================================================
+   16. LISTA DE EJERCICIOS
+   ============================================================ */
+.ejercicios ol {
+  padding-left: 22px;
+}
+
+.ejercicios li {
+  margin-bottom: 12px;
+}
+
+.ejercicios li strong { color: var(--primario); }
+
+/* ============================================================
+   17. PIE DE PAGINA
+   ============================================================ */
+.pie {
+  border-top: 1px solid var(--borde);
+  margin-top: 40px;
+  padding-top: 20px;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ============================================================
+   18. AJUSTES RESPONSIVE
+   ------------------------------------------------------------
+   Una media query aplica reglas solo cuando se cumple una
+   condicion (aqui: pantallas de 640px o menos).
+   ============================================================ */
+@media (max-width: 640px) {
+  html { font-size: 16px; }
+  .contenedor { padding: 16px 14px 60px; }
+  .cabecera__interior { padding: 12px 14px; }
+  .tarjeta { padding: 16px; }
+  .consola { font-size: 0.82rem; max-height: 300px; }
+}
+
+/* Respetamos a quien pidio "menos animaciones" en su sistema
+   operativo: es una buena practica de accesibilidad. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

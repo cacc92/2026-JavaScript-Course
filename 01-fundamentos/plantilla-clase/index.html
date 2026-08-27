@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- charset UTF-8: permite acentos, enies y simbolos sin que se vean caracteres raros -->
+  <meta charset="UTF-8">
+  <!-- viewport: hace que la pagina se adapte al ancho real del dispositivo (responsive) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01 · Fundamentos de JavaScript · Plantilla de clase</title>
+
+  <!-- Hoja de estilos propia del proyecto (ruta relativa a este index.html) -->
+  <link rel="stylesheet" href="css/estilos.css">
+
+  <!--
+    FORMA EXTERNA de incluir JavaScript: la correcta.
+    El atributo defer hace dos cosas muy importantes:
+      1) descarga el archivo en paralelo mientras el navegador sigue leyendo el HTML;
+      2) lo EJECUTA solo cuando el HTML ya esta completamente construido.
+    Gracias a defer podemos usar document.getElementById() sin miedo:
+    los elementos ya existen cuando el script corre.
+    Ademas, los scripts con defer se ejecutan EN ORDEN, de arriba hacia abajo.
+  -->
+  <script src="js/01-variables-y-tipos.js" defer></script>
+  <script src="js/02-operadores.js" defer></script>
+  <script src="js/03-conversion-de-tipos.js" defer></script>
+  <script src="js/04-interaccion.js" defer></script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       AVISO DE MODO CLASE (solo existe en la plantilla)
+       ============================================================ -->
+  <div class="aviso-modo-clase">
+    <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+    JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+    <a href="../index.html">la carpeta del proyecto</a>.
+  </div>
+
+  <!-- ============================================================
+       CABECERA COMUN DEL PROYECTO
+       ============================================================ -->
+  <header class="cabecera">
+    <div class="contenedor cabecera__interior">
+      <a class="enlace-volver" href="../../index.html">← Volver al índice del curso</a>
+      <span class="cabecera__marca">Full Stack 2 · Front End</span>
+    </div>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- ============================================================
+         PORTADA / HERO
+         ============================================================ -->
+    <section class="hero">
+      <p class="hero__etiqueta">Proyecto 01</p>
+      <h1 class="hero__titulo">01 · Fundamentos de JavaScript</h1>
+      <p class="hero__frase">
+        Aprenderás qué es JavaScript y dónde se ejecuta, cómo se declara y se nombra una variable,
+        qué tipos de datos existen, cómo el lenguaje convierte unos tipos en otros
+        y cómo funcionan todos los operadores del día a día.
+      </p>
+      <ul class="hero__datos">
+        <li><strong>Nivel:</strong> inicial</li>
+        <li><strong>Duración estimada:</strong> 3 sesiones</li>
+        <li><strong>Archivos JS:</strong> 4</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================
+         INDICE DE SECCIONES (enlaces ancla)
+         ============================================================ -->
+    <nav class="indice" aria-label="Índice de secciones">
+      <h2 class="indice__titulo">Índice de la clase</h2>
+      <ol class="indice__lista">
+        <li><a href="#consola-visual">Consola visual del proyecto</a></li>
+        <li><a href="#que-es-javascript">¿Qué es JavaScript y dónde se ejecuta?</a></li>
+        <li><a href="#incluir-js">Las 3 formas de incluir JS en HTML</a></li>
+        <li><a href="#comentarios">Comentarios y objeto console</a></li>
+        <li><a href="#variables">Variables: var, let y const</a></li>
+        <li><a href="#tipos">Tipos de datos y typeof</a></li>
+        <li><a href="#operadores">Operadores</a></li>
+        <li><a href="#comparacion">Tabla: == frente a ===</a></li>
+        <li><a href="#conversion">Conversión de tipos y coerción</a></li>
+        <li><a href="#interaccion">Interacción: alert, prompt y confirm</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============================================================
+         CONSOLA VISUAL
+         Todo lo que imprimen los archivos JS aparece aqui, para poder
+         explicarlo en clase sin tener que abrir DevTools.
+         ============================================================ -->
+    <section id="consola-visual" class="tarjeta">
+      <div class="tarjeta__cabecera">
+        <h2>1 · Consola visual del proyecto</h2>
+        <div class="barra-botones">
+          <button type="button" id="btn-limpiar" class="boton boton--fantasma">Limpiar consola</button>
+        </div>
+      </div>
+      <p class="parrafo">
+        Esta caja negra es una copia de la consola del navegador. Todo lo que los archivos JavaScript
+        envían con <code>console.log()</code> se muestra también aquí gracias a una función auxiliar
+        llamada <code>imprimir()</code>. Abre igualmente DevTools con <kbd>F12</kbd> para comparar.
+      </p>
+
+      <!--
+        aria-live="polite" avisa a los lectores de pantalla de que este bloque
+        cambia solo y que deben anunciar el contenido nuevo sin interrumpir.
+      -->
+      <pre id="salida" class="consola" aria-live="polite"></pre>
+    </section>
+
+    <!-- ============================================================
+         QUE ES JAVASCRIPT
+         ============================================================ -->
+    <section id="que-es-javascript" class="tarjeta">
+      <h2>2 · ¿Qué es JavaScript y dónde se ejecuta?</h2>
+      <p class="parrafo">
+        JavaScript es un lenguaje de programación <strong>interpretado</strong> que se ejecuta dentro de
+        un programa llamado <em>motor</em>. En el navegador Chrome ese motor se llama V8; en Firefox,
+        SpiderMonkey. El motor lee tu código y lo va ejecutando línea por línea.
+      </p>
+      <div class="rejilla rejilla--3">
+        <article class="mini-tarjeta">
+          <h3>HTML</h3>
+          <p>Es la <strong>estructura</strong>: títulos, párrafos, botones. Responde a “qué hay”.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>CSS</h3>
+          <p>Es la <strong>presentación</strong>: colores, tamaños, posiciones. Responde a “cómo se ve”.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>JavaScript</h3>
+          <p>Es el <strong>comportamiento</strong>: qué pasa al pulsar, calcular o pedir datos.</p>
+        </article>
+      </div>
+      <p class="parrafo">
+        Hoy JavaScript también se ejecuta <strong>fuera</strong> del navegador (en servidores, con Node.js),
+        pero en este curso trabajamos siempre en el navegador, que es donde vive el Front End.
+      </p>
+      <p class="nota nota--alerta">
+        <strong>Ojo:</strong> JavaScript y Java son lenguajes distintos, sin relación técnica.
+        El nombre fue una decisión comercial de 1995.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         LAS 3 FORMAS DE INCLUIR JS
+         ============================================================ -->
+    <section id="incluir-js" class="tarjeta">
+      <h2>3 · Las 3 formas de incluir JavaScript en HTML</h2>
+
+      <h3 class="subtitulo">a) En línea (inline) — no recomendada</h3>
+      <p class="parrafo">El código va dentro de un atributo del elemento HTML.</p>
+      <pre class="codigo"><code>&lt;button onclick="alert('Hola')"&gt;Pulsa&lt;/button&gt;</code></pre>
+      <p class="parrafo">
+        Mezcla estructura y comportamiento, no se puede reutilizar y es muy difícil de mantener.
+        En la sección 10 hay un botón de ejemplo marcado como “así NO se hace”.
+      </p>
+
+      <h3 class="subtitulo">b) Interna (embebida) — útil solo para pruebas rápidas</h3>
+      <p class="parrafo">El código va dentro de una etiqueta <code>&lt;script&gt;</code> del propio HTML.</p>
+      <pre class="codigo"><code>&lt;script&gt;
+  console.log('Hola desde un script interno');
+&lt;/script&gt;</code></pre>
+
+      <h3 class="subtitulo">c) Externa con defer — la correcta ✅</h3>
+      <p class="parrafo">El código vive en su propio archivo <code>.js</code> y el HTML solo lo enlaza.</p>
+      <pre class="codigo"><code>&lt;script src="js/01-variables-y-tipos.js" defer&gt;&lt;/script&gt;</code></pre>
+      <ul class="lista">
+        <li>Separa responsabilidades: HTML estructura, JS comportamiento.</li>
+        <li>El navegador puede <strong>cachear</strong> el archivo y reutilizarlo entre páginas.</li>
+        <li><code>defer</code> descarga en paralelo y ejecuta cuando el HTML ya está listo.</li>
+        <li>Los scripts con <code>defer</code> se ejecutan <strong>en orden</strong>, de arriba abajo.</li>
+      </ul>
+      <p class="nota nota--exito">
+        Regla práctica del curso: <strong>siempre externa + defer</strong>.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         COMENTARIOS Y CONSOLE
+         ============================================================ -->
+    <section id="comentarios" class="tarjeta">
+      <h2>4 · Comentarios y el objeto console</h2>
+      <p class="parrafo">
+        Un comentario es texto que el motor <strong>ignora</strong>. Sirve para explicar el porqué del código,
+        no el qué (el qué ya lo dice el propio código).
+      </p>
+      <pre class="codigo"><code>// Comentario de una sola línea
+
+/*
+  Comentario de bloque:
+  ocupa varias líneas.
+*/</code></pre>
+      <p class="parrafo">El objeto <code>console</code> tiene varios métodos, no solo <code>log</code>:</p>
+      <ul class="lista">
+        <li><code>console.log()</code> — mensaje normal.</li>
+        <li><code>console.info()</code> — información.</li>
+        <li><code>console.warn()</code> — advertencia (amarillo).</li>
+        <li><code>console.error()</code> — error (rojo).</li>
+        <li><code>console.table()</code> — dibuja una tabla con arreglos de objetos.</li>
+      </ul>
+      <p class="nota">
+        Los colores de <code>warn</code> y <code>error</code> solo se ven en DevTools
+        (<kbd>F12</kbd>), no en la consola visual de esta página.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         VARIABLES + TABLA COMPARATIVA
+         ============================================================ -->
+    <section id="variables" class="tarjeta">
+      <h2>5 · Variables: var, let y const</h2>
+      <p class="parrafo">
+        Una variable es una <strong>caja con etiqueta</strong> donde guardamos un valor para usarlo después.
+        JavaScript tiene tres formas de crear esa caja, y no son equivalentes.
+      </p>
+
+      <div class="tabla-scroll">
+        <table class="tabla">
+          <caption>Comparativa de <code>var</code>, <code>let</code> y <code>const</code></caption>
+          <thead>
+            <tr>
+              <th scope="col">Característica</th>
+              <th scope="col">var</th>
+              <th scope="col">let</th>
+              <th scope="col">const</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Ámbito (dónde vive)</th>
+              <td class="malo">Función</td>
+              <td class="bueno">Bloque <code>{ }</code></td>
+              <td class="bueno">Bloque <code>{ }</code></td>
+            </tr>
+            <tr>
+              <th scope="row">¿Se puede reasignar?</th>
+              <td>Sí</td>
+              <td>Sí</td>
+              <td class="bueno">No</td>
+            </tr>
+            <tr>
+              <th scope="row">¿Se puede redeclarar?</th>
+              <td class="malo">Sí (peligroso)</td>
+              <td class="bueno">No</td>
+              <td class="bueno">No</td>
+            </tr>
+            <tr>
+              <th scope="row">¿Obliga a dar valor inicial?</th>
+              <td>No</td>
+              <td>No</td>
+              <td class="bueno">Sí</td>
+            </tr>
+            <tr>
+              <th scope="row">Hoisting (elevación)</th>
+              <td class="malo">Sí, vale <code>undefined</code></td>
+              <td>Sí, pero en zona muerta</td>
+              <td>Sí, pero en zona muerta</td>
+            </tr>
+            <tr>
+              <th scope="row">¿Crea propiedad en <code>window</code>?</th>
+              <td class="malo">Sí</td>
+              <td class="bueno">No</td>
+              <td class="bueno">No</td>
+            </tr>
+            <tr>
+              <th scope="row">¿Cuándo usarlo?</th>
+              <td class="malo">Nunca en código nuevo</td>
+              <td>Si el valor va a cambiar</td>
+              <td class="bueno">Por defecto, siempre</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="nota nota--exito">
+        Regla del curso: empieza siempre con <code>const</code>. Solo cambia a <code>let</code>
+        cuando el propio código te obligue a reasignar. <code>var</code> se queda en el pasado.
+      </p>
+      <p class="nota nota--alerta">
+        <strong>Cuidado:</strong> <code>const</code> significa “no puedo reasignar la caja”,
+        <em>no</em> “el contenido es inmutable”. Un objeto declarado con <code>const</code>
+        sí puede cambiar por dentro.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         TIPOS DE DATOS
+         ============================================================ -->
+    <section id="tipos" class="tarjeta">
+      <h2>6 · Tipos de datos y typeof</h2>
+      <p class="parrafo">
+        JavaScript tiene <strong>7 tipos primitivos</strong> (valores simples e inmutables) y los
+        <strong>tipos de referencia</strong> (objetos, arreglos y funciones).
+      </p>
+      <div class="rejilla rejilla--4">
+        <article class="mini-tarjeta"><h3>string</h3><p>Texto: <code>'Ana'</code></p></article>
+        <article class="mini-tarjeta"><h3>number</h3><p>Números: <code>7</code>, <code>3.5</code></p></article>
+        <article class="mini-tarjeta"><h3>boolean</h3><p><code>true</code> / <code>false</code></p></article>
+        <article class="mini-tarjeta"><h3>undefined</h3><p>Aún sin valor asignado</p></article>
+        <article class="mini-tarjeta"><h3>null</h3><p>Vacío a propósito</p></article>
+        <article class="mini-tarjeta"><h3>symbol</h3><p>Identificador único</p></article>
+        <article class="mini-tarjeta"><h3>bigint</h3><p>Enteros enormes: <code>10n</code></p></article>
+        <article class="mini-tarjeta"><h3>object</h3><p><strong>No es primitivo:</strong> es el tipo de referencia (objetos, arreglos, funciones)</p></article>
+      </div>
+      <p class="nota">
+        Las siete primeras tarjetas son los <strong>tipos primitivos</strong>; la octava,
+        <code>object</code>, agrupa los <strong>tipos de referencia</strong>. La diferencia
+        práctica se ve en la consola: un primitivo se copia por valor y un objeto, por referencia.
+      </p>
+      <p class="nota nota--alerta">
+        La rareza más famosa del lenguaje: <code>typeof null</code> devuelve <code>"object"</code>.
+        Es un error de 1995 que no se corrige para no romper millones de páginas.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         OPERADORES
+         ============================================================ -->
+    <section id="operadores" class="tarjeta">
+      <h2>7 · Operadores</h2>
+      <div class="rejilla rejilla--2">
+        <article class="mini-tarjeta">
+          <h3>Aritméticos</h3>
+          <p><code>+ - * / % **</code> — el <code>%</code> da el resto y <code>**</code> la potencia.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>Asignación</h3>
+          <p><code>= += -= *= /= %=</code> y los incrementos <code>++</code> / <code>--</code>.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>Comparación</h3>
+          <p><code>== === != !== &gt; &lt; &gt;= &lt;=</code> — siempre devuelven un booleano.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>Lógicos</h3>
+          <p><code>&amp;&amp; || !</code> y el cortocircuito, que evita evaluar de más.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>Ternario</h3>
+          <p><code>condición ? siEsVerdad : siEsFalso</code> — un <em>if</em> en una sola línea.</p>
+        </article>
+        <article class="mini-tarjeta">
+          <h3>Precedencia</h3>
+          <p>El orden en que se resuelven. Ante la duda, usa paréntesis.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TABLA == vs ===
+         ============================================================ -->
+    <section id="comparacion" class="tarjeta">
+      <h2>8 · Tabla comparativa: <code>==</code> frente a <code>===</code></h2>
+      <p class="parrafo">
+        <code>==</code> compara <strong>solo el valor</strong> y convierte tipos antes de comparar (coerción).
+        <code>===</code> compara <strong>valor y tipo</strong>, sin convertir nada.
+      </p>
+
+      <div class="tabla-scroll">
+        <table class="tabla">
+          <caption>Casos reales que verás en clase</caption>
+          <thead>
+            <tr>
+              <th scope="col">Expresión</th>
+              <th scope="col">Con <code>==</code></th>
+              <th scope="col">Con <code>===</code></th>
+              <th scope="col">Qué está pasando</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><code>5 · '5'</code></th>
+              <td class="alerta">true</td>
+              <td class="bueno">false</td>
+              <td>El texto <code>'5'</code> se convierte al número <code>5</code>.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>0 · false</code></th>
+              <td class="alerta">true</td>
+              <td class="bueno">false</td>
+              <td><code>false</code> se convierte en <code>0</code>.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>'' · false</code></th>
+              <td class="alerta">true</td>
+              <td class="bueno">false</td>
+              <td>Ambos se convierten en <code>0</code>.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>null · undefined</code></th>
+              <td class="alerta">true</td>
+              <td class="bueno">false</td>
+              <td>Regla especial: solo se parecen entre ellos.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>null · 0</code></th>
+              <td>false</td>
+              <td>false</td>
+              <td><code>null</code> NO se convierte a número al comparar con <code>==</code>.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>[] · false</code></th>
+              <td class="alerta">true</td>
+              <td class="bueno">false</td>
+              <td>El arreglo vacío se vuelve <code>''</code> y luego <code>0</code>.</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>NaN · NaN</code></th>
+              <td class="error">false</td>
+              <td class="error">false</td>
+              <td><code>NaN</code> no es igual ni a sí mismo. Usa <code>Number.isNaN()</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="nota">
+        En la tabla, el punto “·” representa el operador de la columna
+        (<code>==</code> o <code>===</code>). Los resultados exactos se imprimen también
+        en la consola visual con <code>console.table()</code>.
+      </p>
+      <p class="nota nota--exito">
+        Regla del curso: usa <strong>siempre</strong> <code>===</code> y <code>!==</code>.
+        La única excepción aceptada es <code>valor == null</code> para detectar
+        <code>null</code> y <code>undefined</code> a la vez.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         CONVERSION DE TIPOS
+         ============================================================ -->
+    <section id="conversion" class="tarjeta">
+      <h2>9 · Conversión de tipos y coerción</h2>
+      <p class="parrafo">
+        <strong>Explícita:</strong> la pides tú con <code>Number()</code>, <code>String()</code>,
+        <code>Boolean()</code>, <code>parseInt()</code> o <code>parseFloat()</code>.
+        <strong>Implícita (coerción):</strong> la hace el motor por su cuenta cuando mezclas tipos.
+      </p>
+      <pre class="codigo"><code>'5' * 2   // 10   -> el * convierte el texto a número
+'5' + 2   // '52' -> el + con texto CONCATENA
+'5' - 2   // 3    -> el - siempre es aritmético
+[] + {}   // '[object Object]'</code></pre>
+      <p class="nota nota--alerta">
+        Todo lo que escribe el usuario en un <code>&lt;input&gt;</code> o en un <code>prompt()</code>
+        llega como <strong>texto</strong>. Si no lo conviertes, <code>'2' + '3'</code> te dará
+        <code>'23'</code> en vez de <code>5</code>.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         INTERACCION CON BOTONES
+         ============================================================ -->
+    <section id="interaccion" class="tarjeta">
+      <h2>10 · Interacción: alert, prompt y confirm</h2>
+      <p class="parrafo">
+        Estas tres ventanas son <strong>bloqueantes</strong>: mientras están abiertas, la página se congela.
+        Por eso nunca se llaman al cargar; aquí van dentro de botones que el docente pulsa cuando quiere.
+      </p>
+
+      <div class="barra-botones">
+        <button type="button" id="btn-alert" class="boton">Probar alert()</button>
+        <button type="button" id="btn-prompt" class="boton boton--acento">Probar prompt()</button>
+        <button type="button" id="btn-confirm" class="boton boton--exito">Probar confirm()</button>
+      </div>
+
+      <h3 class="subtitulo">Ejemplo de lo que NO se debe hacer</h3>
+      <p class="parrafo">
+        Este botón usa JavaScript <strong>en línea</strong> dentro del atributo <code>onclick</code>.
+        Funciona, pero mezcla HTML con comportamiento y obliga a ensuciar el ámbito global.
+      </p>
+      <!-- La funcion demoInlineEjemplo se define en js/04-interaccion.js y se expone como global. -->
+      <button type="button" class="boton boton--fantasma" onclick="demoInlineEjemplo()">
+        Botón con onclick en línea (mal ejemplo)
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       PIE DE PAGINA
+       ============================================================ -->
+  <footer class="pie">
+    <div class="contenedor">
+      <p>Full Stack 2 · Desarrollo Front End — Proyecto 01: Fundamentos de JavaScript</p>
+      <p class="pie__suave">Material de clase. Abre DevTools con <kbd>F12</kbd> para comparar con la consola visual.</p>
+    </div>
+  </footer>
+
+  <!--
+    EJEMPLO DE SCRIPT INTERNO (solo demostrativo, para ver las 3 formas en vivo).
+    Este bloque se ejecuta MIENTRAS el HTML se lee, es decir ANTES que los scripts con defer.
+    Por eso esperamos al evento DOMContentLoaded, que ocurre despues de los defer,
+    y comprobamos con typeof que la funcion imprimir ya exista.
+  -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('Hola desde un script INTERNO (etiqueta script dentro del HTML).');
+      if (typeof window.imprimir === 'function') {
+        window.imprimir('[script interno] Esta linea la escribio un <script> dentro del HTML.');
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  ARCHIVO: index.html
+  PROYECTO: 08 · Programación Orientada a Objetos (POO)
+  ----------------------------------------------------------------------------
+  Página del proyecto. Contiene:
+    - La cabecera con el título y el enlace de vuelta al índice del curso.
+    - Un índice de secciones con enlaces ancla (#).
+    - Una sección por cada archivo JS, con su "consola visual".
+    - El proyecto práctico: el sistema de biblioteca.
+
+  Los scripts se cargan con `defer`: el navegador los descarga mientras lee el
+  HTML y los ejecuta EN ORDEN justo antes de terminar de cargar la página.
+  Gracias a eso, cuando el JavaScript se ejecuta, todos los elementos del DOM
+  ya existen y document.getElementById() los encuentra sin problema.
+  ============================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>08 · Programación Orientada a Objetos | Full Stack 2 · Plantilla de clase</title>
+
+  <!-- Hoja de estilos propia del proyecto (carpeta css de esta misma carpeta) -->
+  <link rel="stylesheet" href="css/estilos.css">
+
+  <!--
+    Un archivo JS por tema. El orden importa solo para la lectura en clase:
+    cada archivo está envuelto en su propia IIFE y no depende de los demás.
+  -->
+  <script src="js/01-objetos-y-constructores.js" defer></script>
+  <script src="js/02-prototipos.js" defer></script>
+  <script src="js/03-clases.js" defer></script>
+  <script src="js/04-herencia-y-polimorfismo.js" defer></script>
+  <script src="js/05-this-bind-call-apply.js" defer></script>
+  <script src="js/06-proyecto-biblioteca.js" defer></script>
+</head>
+
+<body>
+
+  <!-- ==================================================================
+       AVISO DE MODO CLASE (solo existe en la plantilla, no en la versión
+       resuelta). Explica al estudiantado qué parte se escribe en vivo.
+       ================================================================== -->
+  <div class="aviso-modo-clase">
+    <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+    JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+    <a href="../index.html">la carpeta del proyecto</a>.
+  </div>
+
+  <div class="contenedor">
+
+    <!-- ==================================================================
+         CABECERA
+         ================================================================== -->
+    <header class="cabecera">
+      <a class="volver" href="../../index.html">&larr; Volver al índice del curso</a>
+
+      <h1><span class="numero">08</span> · Programación Orientada a Objetos</h1>
+
+      <p class="subtitulo">
+        Aprenderás a organizar el código en objetos que guardan datos y saben
+        actuar sobre ellos: desde los objetos literales y el prototipo que hay
+        debajo de todo, hasta las clases modernas de ES6 con campos privados,
+        herencia y polimorfismo. Terminamos construyendo un sistema de
+        biblioteca completo y funcional. 📚
+      </p>
+
+      <div class="etiquetas">
+        <span class="etiqueta">4 pilares</span>
+        <span class="etiqueta">new</span>
+        <span class="etiqueta">prototype</span>
+        <span class="etiqueta">class</span>
+        <span class="etiqueta">get / set</span>
+        <span class="etiqueta">static</span>
+        <span class="etiqueta">#privados</span>
+        <span class="etiqueta">extends / super</span>
+        <span class="etiqueta">this</span>
+        <span class="etiqueta">bind · call · apply</span>
+      </div>
+    </header>
+
+    <!-- ==================================================================
+         ÍNDICE DE SECCIONES (enlaces ancla)
+         Cada href="#id" salta al elemento con ese id dentro de la página.
+         ================================================================== -->
+    <nav class="indice" aria-label="Índice del proyecto">
+      <h2>Índice de secciones</h2>
+      <ol>
+        <li><a href="#objetos">Objetos y funciones constructoras</a></li>
+        <li><a href="#prototipos">Prototipos y la cadena de prototipos</a></li>
+        <li><a href="#clases">Clases, getters, setters y privados</a></li>
+        <li><a href="#herencia">Herencia, polimorfismo y mixins</a></li>
+        <li><a href="#this">this, bind, call y apply</a></li>
+        <li><a href="#proyecto">Proyecto: sistema de biblioteca</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ================================================================
+           SECCIÓN 1
+           ================================================================ -->
+      <section class="seccion" id="objetos">
+        <h2><span class="indicador">01</span> Objetos y funciones constructoras</h2>
+        <p>
+          Los cuatro pilares de la POO, el objeto literal como punto de partida
+          y su gran limitación (la repetición), las funciones fábrica, las
+          funciones constructoras y qué hace exactamente el operador
+          <span class="clave">new</span> paso a paso.
+        </p>
+
+        <div class="aviso">
+          <strong>Idea central:</strong> un objeto agrupa lo que una cosa
+          <em>sabe</em> (propiedades) con lo que <em>sabe hacer</em> (métodos).
+          Una función constructora es el molde del que salen muchos objetos
+          iguales en forma y distintos en contenido.
+        </div>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Error común:</strong> olvidar el <span class="clave">new</span>.
+          Sin él no se crea ningún objeto y <span class="clave">this</span> vale
+          <span class="clave">undefined</span> en modo estricto.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · archivo 01</span>
+          <button class="boton secundario" id="limpiar-01" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-01" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN 2
+           ================================================================ -->
+      <section class="seccion" id="prototipos">
+        <h2><span class="indicador">02</span> Prototipos y la cadena de prototipos</h2>
+        <p>
+          El mecanismo real que hay debajo de las clases. Veremos
+          <span class="clave">__proto__</span>,
+          <span class="clave">Object.getPrototypeOf()</span>, la propiedad
+          <span class="clave">prototype</span> de las funciones constructoras,
+          por qué poner los métodos en el prototipo ahorra memoria, y cómo se
+          hacía la herencia antes de que existiera <span class="clave">class</span>.
+        </p>
+
+        <div class="tabla-envoltorio">
+          <table>
+            <thead>
+              <tr>
+                <th>Expresión</th>
+                <th>¿Quién la tiene?</th>
+                <th>¿Qué significa?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Perro.prototype</code></td>
+                <td>Solo las funciones</td>
+                <td>El prototipo que <em>dará</em> a sus instancias</td>
+              </tr>
+              <tr>
+                <td><code>miPerro.__proto__</code></td>
+                <td>Todos los objetos</td>
+                <td>El prototipo que ese objeto <em>tiene</em> (obsoleto)</td>
+              </tr>
+              <tr>
+                <td><code>Object.getPrototypeOf(x)</code></td>
+                <td>Función estándar</td>
+                <td>La forma correcta de leer el prototipo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="aviso buena-practica">
+          <strong>✅ Buena práctica:</strong> define los métodos en el
+          <span class="clave">prototype</span> (o usa <span class="clave">class</span>,
+          que lo hace por ti). Así existe una sola función compartida por todas
+          las instancias en lugar de una copia por objeto.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · archivo 02</span>
+          <button class="boton secundario" id="limpiar-02" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-02" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN 3
+           ================================================================ -->
+      <section class="seccion" id="clases">
+        <h2><span class="indicador">03</span> Clases, getters, setters y privados</h2>
+        <p>
+          La sintaxis <span class="clave">class</span> de ES6 como azúcar
+          sintáctico sobre los prototipos: constructor, métodos de instancia,
+          campos de clase, getters y setters con validación, miembros
+          <span class="clave">static</span> y campos privados con
+          <span class="clave">#</span>.
+        </p>
+
+        <div class="aviso">
+          <strong>Azúcar sintáctico:</strong> <span class="clave">typeof Clase</span>
+          sigue devolviendo <span class="clave">"function"</span> y los métodos
+          siguen viviendo en <span class="clave">Clase.prototype</span>. Cambia
+          la comodidad de escritura, no el motor.
+        </div>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Error común:</strong> escribir <span class="clave">this.celsius = valor</span>
+          dentro de <span class="clave">set celsius</span>. El setter se llama a
+          sí mismo infinitamente ("Maximum call stack size exceeded"). El setter
+          debe guardar en un campo distinto, como <span class="clave">#celsius</span>.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · archivo 03</span>
+          <button class="boton secundario" id="limpiar-03" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-03" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN 4
+           ================================================================ -->
+      <section class="seccion" id="herencia">
+        <h2><span class="indicador">04</span> Herencia, polimorfismo y mixins</h2>
+        <p>
+          <span class="clave">extends</span> y <span class="clave">super</span>,
+          sobrescritura de métodos, <span class="clave">instanceof</span>,
+          clases abstractas simuladas con <span class="clave">new.target</span>
+          y, sobre todo, cuándo <em>no</em> conviene heredar: la composición y
+          los mixins.
+        </p>
+
+        <div class="tabla-envoltorio">
+          <table>
+            <thead>
+              <tr>
+                <th>Si la frase natural es...</th>
+                <th>Usa...</th>
+                <th>Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>"X <strong>ES UN</strong> Y"</td>
+                <td><code>class X extends Y</code></td>
+                <td>Un Profesor es una Persona</td>
+              </tr>
+              <tr>
+                <td>"X <strong>TIENE UN</strong> Y"</td>
+                <td>Composición (propiedad)</td>
+                <td>Un Coche tiene un Motor</td>
+              </tr>
+              <tr>
+                <td>"X <strong>SABE HACER</strong> Y"</td>
+                <td>Mixin con <code>Object.assign</code></td>
+                <td>Un Repartidor sabe conducir</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Error común:</strong> usar <span class="clave">this</span>
+          antes de llamar a <span class="clave">super()</span> en el constructor
+          de la clase hija. Hasta que <span class="clave">super()</span> no se
+          ejecuta, <span class="clave">this</span> ni siquiera existe.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · archivo 04</span>
+          <button class="boton secundario" id="limpiar-04" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-04" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN 5
+           ================================================================ -->
+      <section class="seccion" id="this">
+        <h2><span class="indicador">05</span> this, bind, call y apply</h2>
+        <p>
+          La regla de oro: <span class="clave">this</span> no depende de dónde
+          se escribe la función, sino de <strong>cómo se llama</strong>. Aquí
+          está el error más frecuente de toda la POO en JavaScript: la pérdida
+          de contexto en los callbacks, y sus tres soluciones.
+        </p>
+
+        <p>
+          Pulsa los tres botones y compara lo que imprime cada uno. El primero
+          usa una <span class="clave">function</span> normal como manejador (y
+          por eso <span class="clave">this</span> es el botón), el segundo usa
+          <span class="clave">.bind()</span> y el tercero una función flecha.
+        </p>
+
+        <div class="fila-botones">
+          <button class="boton alerta" id="btn-this-roto" type="button">
+            this con function (roto)
+          </button>
+          <button class="boton exito" id="btn-this-bind" type="button">
+            this con .bind()
+          </button>
+          <button class="boton acento" id="btn-this-arrow" type="button">
+            this con arrow function
+          </button>
+        </div>
+
+        <div class="aviso buena-practica">
+          <strong>✅ Buena práctica:</strong> dentro de una clase, usa una
+          función flecha para los callbacks. Hereda el
+          <span class="clave">this</span> del método donde está escrita y no hay
+          que acordarse de nada más.
+        </div>
+
+        <div class="barra-consola">
+          <span>Consola visual · archivo 05</span>
+          <button class="boton secundario" id="limpiar-05" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-05" class="consola" aria-live="polite"></pre>
+      </section>
+
+      <!-- ================================================================
+           SECCIÓN 6: PROYECTO PRÁCTICO
+           ================================================================ -->
+      <section class="seccion" id="proyecto">
+        <h2><span class="indicador">06</span> Proyecto: sistema de biblioteca</h2>
+        <p>
+          Todo lo anterior junto en una aplicación real. La clase abstracta
+          <span class="clave">Publicacion</span> guarda sus datos en campos
+          privados y los expone con getters; <span class="clave">Libro</span> y
+          <span class="clave">Revista</span> heredan de ella y sobrescriben
+          <span class="clave">descripcion()</span>; la clase
+          <span class="clave">Biblioteca</span> gestiona la colección y los
+          contadores viven en propiedades <span class="clave">static</span>.
+        </p>
+
+        <div class="aviso">
+          <strong>Fíjate en esto:</strong> la función que dibuja las tarjetas
+          llama a <span class="clave">publicacion.descripcion()</span> sin
+          preguntar nunca si es un libro o una revista. Eso es
+          <strong>polimorfismo</strong>: podrías añadir mañana una clase
+          <span class="clave">Audiolibro</span> y la interfaz seguiría
+          funcionando sin cambiar ni una línea.
+        </div>
+
+        <!-- ---------- Panel de métricas (propiedades estáticas) ---------- -->
+        <h3>Estado del sistema</h3>
+        <div class="panel-estadisticas">
+          <div class="metrica">
+            <span class="valor" id="metrica-total">0</span>
+            <span class="etiqueta-metrica">En catálogo</span>
+          </div>
+          <div class="metrica">
+            <span class="valor" id="metrica-disponibles">0</span>
+            <span class="etiqueta-metrica">Disponibles</span>
+          </div>
+          <div class="metrica">
+            <span class="valor" id="metrica-prestadas">0</span>
+            <span class="etiqueta-metrica">Prestadas</span>
+          </div>
+          <div class="metrica">
+            <span class="valor" id="metrica-creadas">0</span>
+            <span class="etiqueta-metrica">Objetos creados</span>
+          </div>
+          <div class="metrica">
+            <span class="valor" id="metrica-prestamos">0</span>
+            <span class="etiqueta-metrica">Préstamos totales</span>
+          </div>
+        </div>
+
+        <!-- ---------- Formulario de alta ---------- -->
+        <h3>Dar de alta una publicación</h3>
+        <form class="formulario" id="form-publicacion">
+          <div class="campo">
+            <label for="campo-tipo">Tipo</label>
+            <select id="campo-tipo">
+              <option value="libro">Libro</option>
+              <option value="revista">Revista</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="campo-titulo">Título</label>
+            <input type="text" id="campo-titulo" placeholder="El Quijote">
+          </div>
+
+          <div class="campo">
+            <label for="campo-autor">Autoría / editorial</label>
+            <input type="text" id="campo-autor" placeholder="Miguel de Cervantes">
+          </div>
+
+          <div class="campo">
+            <label for="campo-anio">Año</label>
+            <input type="number" id="campo-anio" placeholder="2025" min="1400" max="2100">
+          </div>
+
+          <div class="campo">
+            <label for="campo-extra" id="etiqueta-extra">Páginas</label>
+            <input type="number" id="campo-extra" placeholder="320" min="1">
+          </div>
+
+          <div class="campo">
+            <button class="boton" type="submit">Agregar al catálogo</button>
+          </div>
+        </form>
+
+        <div class="aviso error-comun">
+          <strong>⚠️ Prueba en clase:</strong> pulsa "Agregar al catálogo" con el
+          título vacío. El constructor lanza un error de validación y la
+          aplicación lo captura sin romperse: el objeto nunca llega a existir
+          con datos inválidos. Eso es <strong>encapsulamiento</strong>.
+        </div>
+
+        <!-- ---------- Buscador y filtros ---------- -->
+        <h3>Catálogo</h3>
+        <div class="barra-herramientas">
+          <input type="search" id="buscador" placeholder="Buscar por título o autoría..."
+                 aria-label="Buscar publicaciones">
+          <div class="fila-botones" id="grupo-filtros">
+            <button class="boton secundario filtro-activo" data-filtro="todas" type="button">Todas</button>
+            <button class="boton secundario" data-filtro="disponibles" type="button">Disponibles</button>
+            <button class="boton secundario" data-filtro="prestadas" type="button">Prestadas</button>
+            <button class="boton secundario" data-filtro="libros" type="button">Libros</button>
+            <button class="boton secundario" data-filtro="revistas" type="button">Revistas</button>
+          </div>
+        </div>
+
+        <div class="barra-herramientas">
+          <div class="campo" style="flex: 1 1 240px;">
+            <label for="campo-lector">Persona que se lleva la publicación</label>
+            <input type="text" id="campo-lector" placeholder="Ana Torres">
+          </div>
+          <button class="boton secundario" id="btn-reiniciar-biblioteca" type="button">
+            Devolver todo
+          </button>
+        </div>
+
+        <!-- Aquí el JavaScript inyecta las tarjetas -->
+        <div class="rejilla-publicaciones" id="rejilla-publicaciones"></div>
+
+        <div class="barra-consola">
+          <span>Registro de operaciones · proyecto</span>
+          <button class="boton secundario" id="limpiar-06" type="button">Limpiar</button>
+        </div>
+        <pre id="salida-06" class="consola" aria-live="polite"></pre>
+      </section>
+
+    </main>
+
+    <!-- ==================================================================
+         PIE
+         ================================================================== -->
+    <footer class="pie">
+      <p>Full Stack 2 · Desarrollo Front End — Proyecto 08 · Programación Orientada a Objetos</p>
+      <p><a class="volver" href="../../index.html">&larr; Volver al índice del curso</a></p>
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,831 @@
+/* ============================================================
+   PROYECTO 07 · Eventos, formularios y almacenamiento
+   Hoja de estilos propia del proyecto.
+   Está comentada para que se entienda POR QUÉ se toma cada decisión,
+   no solo qué hace cada propiedad.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. VARIABLES CSS (tokens de diseño)
+   :root es el elemento raíz (<html>). Definir aquí los colores
+   permite cambiarlos en UN solo sitio y que se actualice todo.
+   Se usan con var(--nombre).
+   ------------------------------------------------------------ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+
+  /* Tamaño de letra de las consolas visuales.
+     16px es el mínimo cómodo para leer código PROYECTADO desde el fondo del
+     aula; la sección 5 lo cambia desde JavaScript (12-22 px) para demostrar
+     cómo se guardan las preferencias en localStorage. */
+  --tamano-consola: 16px;
+}
+
+/* ------------------------------------------------------------
+   2. REGLAS BASE
+   box-sizing: border-box hace que el padding y el borde queden
+   DENTRO del ancho declarado. Sin esto, los cálculos de anchura
+   se descuadran constantemente.
+   ------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  /* 17px de base: pensado para que se lea bien PROYECTADO en clase */
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* scroll suave al pulsar los enlaces ancla del índice */
+html {
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+code {
+  font-family: var(--mono);
+  background: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+  font-size: 0.9em;
+  color: var(--primario);
+}
+
+kbd {
+  font-family: var(--mono);
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  padding: 0.1em 0.5em;
+  font-size: 0.85em;
+}
+
+/* Clase de utilidad: esconder un elemento sin borrarlo del DOM.
+   JavaScript la añade y la quita con classList.toggle('oculto'). */
+.oculto {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------
+   3. LAYOUT GENERAL
+   Un contenedor centrado con ancho máximo evita que las líneas
+   de texto sean tan largas que cansen la vista.
+   ------------------------------------------------------------ */
+.contenedor {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* ------------------------------------------------------------
+   4. CABECERA
+   ------------------------------------------------------------ */
+.cabecera {
+  /* Degradado sutil para separar visualmente la cabecera del contenido */
+  background: linear-gradient(180deg, #16233d 0%, var(--fondo) 100%);
+  border-bottom: 1px solid var(--borde);
+  padding: 2rem 0 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cabecera__titulo {
+  font-size: clamp(1.8rem, 4vw, 2.6rem); /* clamp: crece con la pantalla, con topes */
+  color: var(--primario);
+}
+
+.cabecera__frase {
+  color: var(--texto-suave);
+  max-width: 70ch;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.volver {
+  display: inline-block;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s ease;
+}
+.volver:hover {
+  color: var(--primario);
+}
+
+/* Índice de secciones: flexbox con wrap para que baje de línea en móvil */
+.indice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.indice a {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: 999px;          /* píldora */
+  padding: 0.45rem 1rem;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+.indice a:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+  transform: translateY(-2px);   /* micro-animación al pasar el ratón */
+}
+
+/* ------------------------------------------------------------
+   5. SECCIONES Y TARJETAS
+   ------------------------------------------------------------ */
+.seccion {
+  margin-bottom: 3.5rem;
+  /* scroll-margin-top deja aire cuando se salta con un enlace ancla */
+  scroll-margin-top: 1rem;
+}
+
+.seccion__titulo {
+  font-size: 1.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 2px solid var(--borde);
+  padding-bottom: 0.6rem;
+}
+
+/* El número de la sección, dentro de un círculo */
+.numero {
+  display: inline-grid;
+  place-items: center;           /* centra en horizontal y vertical de una vez */
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--primario);
+  color: #0b1220;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.seccion__intro {
+  color: var(--texto-suave);
+  max-width: 78ch;
+}
+
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.tarjeta h3 {
+  color: var(--acento);
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+}
+
+.nota {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  margin: 0.6rem 0;
+}
+
+/* ------------------------------------------------------------
+   6. BOTONES
+   Un único bloque .btn y modificadores (--primario, --peligro...).
+   Así no repetimos el estilo base en cada variante.
+   ------------------------------------------------------------ */
+.btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.btn:hover {
+  border-color: var(--primario);
+}
+/* :active se aplica mientras el botón está pulsado: da sensación física */
+.btn:active {
+  transform: scale(0.96);
+}
+/* :focus-visible marca el foco SOLO cuando se navega con teclado.
+   Es clave para la accesibilidad: nunca elimines el foco sin sustituirlo. */
+.btn:focus-visible,
+.campo__control:focus-visible,
+.filtro:focus-visible,
+.tablero:focus-visible {
+  outline: 3px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.btn--primario {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #0b1220;
+  font-weight: 600;
+}
+.btn--peligro {
+  background: transparent;
+  border-color: var(--error);
+  color: var(--error);
+}
+.btn--peligro:hover {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: var(--error);
+}
+.btn--fantasma {
+  background: transparent;
+  color: var(--texto-suave);
+}
+.btn--mini {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+}
+/* Un botón desactivado debe VERSE desactivado */
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Fila de botones: flex + wrap para que nunca se salgan de la tarjeta */
+.fila-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+  margin: 0.6rem 0;
+}
+.fila-botones.alinear {
+  align-items: center;
+}
+
+/* ------------------------------------------------------------
+   7. CONSOLA VISUAL
+   Los estudiantes no siempre tienen abierto DevTools (F12), así que
+   cada sección imprime también aquí. Fuente monoespaciada, fondo muy
+   oscuro y altura máxima con scroll propio.
+   ------------------------------------------------------------ */
+.bloque-consola {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;              /* recorta las esquinas del contenido */
+  margin-top: 1rem;
+}
+.bloque-consola__barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: var(--superficie-2);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--borde);
+}
+.consola {
+  margin: 0;
+  padding: 1rem;
+  background: #0b1220;
+  color: var(--exito);
+  font-family: var(--mono);
+  font-size: var(--tamano-consola);
+  line-height: 1.55;
+  min-height: 90px;
+  max-height: 320px;
+  overflow: auto;                /* scroll propio si el texto crece */
+  white-space: pre-wrap;         /* respeta los saltos \n y parte líneas largas */
+  word-break: break-word;
+}
+
+/* ------------------------------------------------------------
+   8. CAJAS DE DEMOSTRACIÓN
+   ------------------------------------------------------------ */
+.caja-demo {
+  background: var(--superficie-2);
+  border: 2px dashed var(--borde);
+  border-radius: var(--radio);
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.caja-demo--click {
+  cursor: pointer;
+  user-select: none;             /* evita que el doble clic seleccione el texto */
+}
+/* Clase que JavaScript añade/quita al hacer doble clic */
+.caja-demo--activa {
+  background: var(--acento);
+  color: #1a0b2e;
+  border-color: var(--acento);
+}
+.caja-demo--hover {
+  min-height: 150px;
+  justify-content: center;
+}
+.caja-interior {
+  background: var(--primario);
+  color: #0b1220;
+  border-radius: 10px;
+  padding: 0.8rem 1.4rem;
+  font-weight: 600;
+}
+
+.enlace-demo {
+  color: var(--primario);
+  font-weight: 600;
+}
+
+.etiqueta-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+/* Cajas anidadas de la demo de propagación (abuelo > padre > hijo) */
+.cajas-anidadas {
+  position: relative;
+  background: rgba(56, 189, 248, 0.10);
+  border: 2px solid var(--primario);
+  border-radius: var(--radio);
+  padding: 2.5rem 1.5rem 1.5rem;
+  cursor: pointer;
+}
+.caja-anidada {
+  position: relative;
+  background: rgba(74, 222, 128, 0.10);
+  border: 2px solid var(--exito);
+  border-radius: var(--radio);
+  padding: 2.5rem 1.5rem 1.5rem;
+}
+.caja-anidada--hijo {
+  background: rgba(192, 132, 252, 0.16);
+  border-color: var(--acento);
+  min-height: 90px;
+}
+/* Etiqueta con el nombre de cada caja, pegada a su esquina */
+.etiqueta-caja {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ------------------------------------------------------------
+   9. LISTA DE PRODUCTOS (demo de delegación)
+   ------------------------------------------------------------ */
+.lista-productos {
+  list-style: none;              /* quitamos los puntos */
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.producto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  /* Animación de entrada definida al final del archivo */
+  animation: aparecer 0.28s ease;
+}
+.producto--favorito {
+  border-left-color: var(--alerta);
+  background: rgba(251, 191, 36, 0.08);
+}
+/* El nombre del producto. Ocupa el hueco que sobra (flex: 1) para que los
+   botones queden siempre alineados a la derecha, mida lo que mida el texto. */
+.producto__nombre {
+  flex: 1 1 auto;
+  min-width: 0;                  /* sin esto un nombre largo no se parte */
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+/* Cuando la fila está marcada como favorita, el nombre se tiñe de ámbar:
+   otra vez, el JS solo pone la clase y el CSS decide cómo se ve. */
+.producto--favorito .producto__nombre {
+  color: var(--alerta);
+}
+.producto__acciones {
+  display: flex;
+  gap: 0.45rem;
+}
+
+/* Caja con scroll para la demo de passive */
+.zona-scroll {
+  max-height: 130px;
+  overflow-y: auto;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   10. RATÓN Y TECLADO
+   ------------------------------------------------------------ */
+.rejilla-2 {
+  display: grid;
+  /* minmax + auto-fit: dos columnas en pantalla grande, una en móvil,
+     sin escribir ni una media query */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pad-raton {
+  height: 130px;
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(45deg, #16233d, #16233d 12px, #1b2b4a 12px, #1b2b4a 24px);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--texto-suave);
+  cursor: crosshair;
+}
+
+.marcadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+.marcadores strong {
+  color: var(--primario);
+}
+
+.zona-contextual {
+  position: relative;            /* referencia para posicionar el menú */
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1rem;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+.menu-contextual {
+  position: absolute;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  min-width: 150px;
+  background: var(--superficie);
+  border: 1px solid var(--primario);
+  border-radius: 10px;
+  box-shadow: var(--sombra);
+  z-index: 10;
+  animation: aparecer 0.15s ease;
+}
+.menu-contextual li {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.menu-contextual li:hover {
+  background: var(--primario);
+  color: #0b1220;
+}
+
+.tablero {
+  position: relative;
+  height: 180px;
+  background: var(--superficie-2);
+  border: 2px solid var(--borde);
+  border-radius: 10px;
+  overflow: hidden;
+}
+/* El tablero recibe el foco al hacer clic (tabindex="0" en el HTML) */
+.tablero:focus {
+  border-color: var(--primario);
+}
+.cuadrado {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--acento);
+  /* transition sobre left/top: el movimiento se ve suave, no a saltos */
+  transition: left 0.09s linear, top 0.09s linear;
+  left: 0;
+  top: 0;
+}
+
+/* ------------------------------------------------------------
+   11. FORMULARIOS
+   ------------------------------------------------------------ */
+.campo {
+  display: block;
+  margin-bottom: 0.9rem;
+}
+.campo__etiqueta {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  margin-bottom: 0.3rem;
+}
+.campo__control {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.55rem 0.8rem;
+  color: var(--texto);
+  background: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.campo__control:focus {
+  border-color: var(--primario);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+}
+/* Clase que añade JavaScript cuando un campo no pasa la validación */
+.campo__control--error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+}
+
+.grupo {
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  margin: 0 0 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.grupo legend {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  padding: 0 0.4rem;
+}
+
+/* Mensaje de error bajo un campo. min-height evita que la página
+   "salte" cuando el mensaje aparece y desaparece. */
+.error {
+  display: block;
+  min-height: 1.2rem;
+  color: var(--error);
+  font-size: 0.83rem;
+  margin-top: 0.25rem;
+}
+.aviso-exito {
+  color: var(--exito);
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid var(--exito);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+}
+
+/* ------------------------------------------------------------
+   12. PROYECTO: LISTA DE TAREAS
+   ------------------------------------------------------------ */
+.seccion--proyecto .tarjeta,
+.todo {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+}
+
+.todo__form {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.todo__input {
+  flex: 1 1 260px;               /* crece, encoge, base 260px */
+  font-family: inherit;
+  font-size: 1.05rem;
+  padding: 0.7rem 1rem;
+  color: var(--texto);
+  background: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+.todo__input:focus {
+  outline: none;
+  border-color: var(--primario);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+}
+.error--todo {
+  margin-top: 0.35rem;
+}
+
+/* Filtros */
+.todo__filtros {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 1rem;
+}
+.filtro {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filtro:hover {
+  color: var(--texto);
+  border-color: var(--primario);
+}
+/* Estado activo del filtro: se ve de un vistazo cuál está seleccionado */
+.filtro--activo {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: #0b1220;
+  font-weight: 600;
+}
+
+/* Lista de tareas */
+.todo__lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.tarea {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--primario);
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  animation: aparecer 0.3s ease;
+}
+.tarea:hover {
+  border-color: var(--texto-suave);
+  border-left-color: var(--primario);
+}
+.tarea__check {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--exito);    /* colorea el checkbox nativo */
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tarea__texto {
+  flex: 1;
+  cursor: text;
+  /* La transición hace que el tachado y el gris entren suavemente */
+  transition: color 0.25s ease, opacity 0.25s ease;
+  word-break: break-word;
+}
+/* Estado completado: tachado, apagado y con el borde verde */
+.tarea--completada {
+  border-left-color: var(--exito);
+}
+.tarea--completada .tarea__texto {
+  text-decoration: line-through;
+  color: var(--texto-suave);
+  opacity: 0.65;
+}
+/* Campo de edición en línea: ocupa el sitio del texto */
+.tarea__editor {
+  flex: 1;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.35rem 0.6rem;
+  color: var(--texto);
+  background: #0b1220;
+  border: 1px solid var(--primario);
+  border-radius: 8px;
+}
+.tarea__acciones {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+/* Animación de salida antes de borrar la tarea del DOM */
+.tarea--saliendo {
+  animation: desaparecer 0.25s ease forwards;
+}
+
+.todo__vacio {
+  text-align: center;
+  color: var(--texto-suave);
+  font-style: italic;
+  padding: 1.5rem 0;
+}
+.todo__pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  border-top: 1px solid var(--borde);
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   13. PIE DE PÁGINA
+   ------------------------------------------------------------ */
+.pie {
+  border-top: 1px solid var(--borde);
+  margin-top: 3rem;
+  padding: 1.5rem 0 2.5rem;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   14. ANIMACIONES
+   @keyframes define los fotogramas; luego se aplican con animation.
+   ------------------------------------------------------------ */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes desaparecer {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+
+/* Accesibilidad: si la persona ha pedido en su sistema operativo
+   "reducir el movimiento", desactivamos las animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   15. RESPONSIVE
+   En pantallas pequeñas reducimos espacios y apilamos elementos.
+   ------------------------------------------------------------ */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .tarjeta { padding: 1rem; }
+  .seccion__titulo { font-size: 1.4rem; }
+  .fila-botones .btn { flex: 1 1 auto; }
+  .todo__pie { flex-direction: column; align-items: flex-start; }
+  .cajas-anidadas, .caja-anidada { padding: 2.2rem 0.8rem 0.9rem; }
+}

@@ -1,0 +1,619 @@
+/* ============================================================
+   PROYECTO 02 - CONTROL DE FLUJO
+   Hoja de estilos propia del proyecto (autocontenida).
+
+   Este archivo esta comentado en español para que quien recien
+   empieza entienda POR QUE se toma cada decision de diseño,
+   no solo QUE hace cada propiedad.
+   ============================================================ */
+
+/* ============================================================
+   1. VARIABLES CSS (tambien llamadas "custom properties")
+   ------------------------------------------------------------
+   Una variable CSS es un valor con nombre que podemos reutilizar
+   en todo el archivo. Se declaran dentro de :root, que representa
+   la raiz del documento (la etiqueta <html>).
+
+   Ventaja: si mañana queremos cambiar el color primario, lo
+   cambiamos en UN solo sitio y se actualiza toda la pagina.
+   Se usan escribiendo var(--nombre-de-la-variable).
+   ============================================================ */
+:root {
+  --fondo: #0f172a;
+  --superficie: #1e293b;
+  --superficie-2: #273449;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --texto-suave: #94a3b8;
+  --primario: #38bdf8;
+  --exito: #4ade80;
+  --alerta: #fbbf24;
+  --error: #f87171;
+  --acento: #c084fc;
+  --radio: 12px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "Fira Code", "Consolas", "Courier New", monospace;
+}
+
+/* ============================================================
+   2. REINICIO BASICO (reset)
+   ------------------------------------------------------------
+   Los navegadores aplican margenes y rellenos por defecto que
+   varian entre uno y otro. Los ponemos a cero para partir
+   siempre del mismo punto.
+
+   box-sizing: border-box hace que el padding y el borde se
+   cuenten DENTRO del ancho declarado. Sin esto, un elemento de
+   width: 100% con padding se desborda de su contenedor.
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   3. ESTILOS GENERALES DE LA PAGINA
+   ------------------------------------------------------------
+   Tema oscuro: fondo oscuro y texto claro. Es comodo para
+   proyectar en clase porque cansa menos la vista y el
+   proyector no deslumbra.
+
+   El tamaño base es 17px: en una pantalla proyectada, 16px se
+   queda corto para los estudiantes de las ultimas filas.
+   ============================================================ */
+body {
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 17px;
+  line-height: 1.65; /* Separacion entre lineas: mejora mucho la lectura */
+  padding: 24px 16px 64px;
+}
+
+/* Contenedor central: limita el ancho para que las lineas de
+   texto no sean interminables. Entre 60 y 90 caracteres por
+   linea es lo mas comodo de leer.
+   margin: 0 auto centra el bloque horizontalmente. */
+.contenedor {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   4. CABECERA DEL PROYECTO
+   ============================================================ */
+.cabecera {
+  background: linear-gradient(135deg, var(--superficie), var(--superficie-2));
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 28px 26px;
+  margin-bottom: 28px;
+}
+
+/* Enlace para volver al indice general del curso. */
+.enlace-volver {
+  display: inline-block;
+  color: var(--primario);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+  transition: opacity 0.2s ease; /* Suaviza el cambio al pasar el raton */
+}
+
+.enlace-volver:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.cabecera h1 {
+  font-size: 2.1rem;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+/* clamp(minimo, preferido, maximo): el tamaño se adapta al ancho
+   de la pantalla sin pasarse por arriba ni por abajo.
+   Es la forma moderna de hacer tipografia responsive. */
+.cabecera h1 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+}
+
+.subtitulo {
+  color: var(--texto-suave);
+  max-width: 70ch; /* "ch" = ancho del caracter 0. Ideal para textos */
+}
+
+/* Etiquetas pequeñas de "temas" bajo el titulo. */
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap; /* Si no caben, saltan a la linea siguiente */
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.etiqueta {
+  background-color: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--primario);
+  border-radius: 999px; /* Un radio enorme produce forma de pastilla */
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-family: var(--mono);
+}
+
+/* ============================================================
+   5. INDICE DE SECCIONES
+   ------------------------------------------------------------
+   Usamos CSS Grid con "auto-fit" y "minmax": las columnas se
+   crean solas segun el espacio disponible. Cada columna mide
+   como minimo 220px y como maximo lo que sobre (1fr).
+   Resultado: es responsive sin escribir media queries.
+   ============================================================ */
+.indice {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 22px;
+  margin-bottom: 28px;
+}
+
+.indice h2 {
+  font-size: 1.15rem;
+  margin-bottom: 14px;
+  color: var(--acento);
+}
+
+.indice ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  list-style: none; /* Quitamos los numeros automaticos: los ponemos nosotros */
+  counter-reset: indice; /* Iniciamos un contador propio */
+}
+
+.indice li {
+  counter-increment: indice; /* Suma 1 al contador en cada <li> */
+}
+
+.indice a {
+  display: block;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--texto);
+  text-decoration: none;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+/* ::before inserta contenido generado ANTES del enlace.
+   counter() imprime el valor del contador que definimos arriba. */
+.indice a::before {
+  content: counter(indice) ". ";
+  color: var(--primario);
+  font-family: var(--mono);
+}
+
+.indice a:hover {
+  border-color: var(--primario);
+  transform: translateY(-2px); /* Se eleva ligeramente: da sensacion de boton */
+}
+
+/* ============================================================
+   6. TARJETAS DE SECCION
+   ------------------------------------------------------------
+   Cada tema del proyecto vive dentro de una "tarjeta":
+   superficie + borde + radio + sombra. Es el patron visual que
+   repetimos en todo el curso.
+
+   scroll-margin-top deja un respiro cuando saltamos a la
+   seccion desde el indice con un enlace ancla (#seccion).
+   ============================================================ */
+.tarjeta {
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 26px;
+  margin-bottom: 28px;
+  scroll-margin-top: 20px;
+}
+
+.tarjeta h2 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Numero grande y monoespaciado delante del titulo de seccion. */
+.numero-seccion {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  color: var(--primario);
+  background-color: rgba(56, 189, 248, 0.1);
+  border-radius: 8px;
+  padding: 2px 10px;
+}
+
+.tarjeta > p {
+  color: var(--texto-suave);
+  margin-bottom: 18px;
+  max-width: 80ch;
+}
+
+.tarjeta h3 {
+  font-size: 1.05rem;
+  margin: 22px 0 10px;
+  color: var(--acento);
+}
+
+/* ============================================================
+   7. CONSOLA VISUAL
+   ------------------------------------------------------------
+   Los estudiantes no siempre tienen abierto DevTools (F12).
+   Por eso duplicamos la salida de console.log en este bloque.
+
+   - Fuente monoespaciada: todos los caracteres miden lo mismo,
+     asi las columnas y las piramides de asteriscos se alinean.
+   - white-space: pre-wrap respeta los saltos de linea que
+     escribimos en JavaScript pero permite partir lineas largas.
+   - overflow-y: auto le da su propio scroll para que la pagina
+     no crezca sin control.
+   ============================================================ */
+.consola {
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--texto);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  padding: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+
+/* Barra superior de la consola con su titulo y sus botones. */
+.barra-consola {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.barra-consola span {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   8. BOTONES Y CONTROLES DE FORMULARIO
+   ============================================================ */
+.boton {
+  background-color: var(--primario);
+  color: #06263a; /* Texto oscuro sobre fondo claro: buen contraste */
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer; /* La manita indica "esto se puede pulsar" */
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.boton:hover {
+  filter: brightness(1.1);
+}
+
+/* :active se aplica mientras el boton esta pulsado. */
+.boton:active {
+  transform: scale(0.97);
+}
+
+/* Accesibilidad: NUNCA quitamos el foco sin poner algo a cambio.
+   Quien navega con el teclado necesita ver donde esta. */
+.boton:focus-visible,
+.campo:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Variante secundaria: mismo tamaño, menos peso visual. */
+.boton--secundario {
+  background-color: transparent;
+  border: 1px solid var(--borde);
+  color: var(--texto-suave);
+  font-weight: 500;
+}
+
+.boton--secundario:hover {
+  border-color: var(--primario);
+  color: var(--primario);
+}
+
+/* Fila de controles: se adapta y hace saltos de linea sola. */
+.controles {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grupo-campo label {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.campo,
+select {
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  color: var(--texto);
+  font-family: var(--mono);
+  font-size: 1rem;
+  padding: 9px 12px;
+  min-width: 140px;
+}
+
+/* ============================================================
+   9. CAJAS DE RESULTADO
+   ------------------------------------------------------------
+   El clasificador de notas escribe aqui su veredicto. Los
+   modificadores (--exito, --alerta...) cambian solo el color,
+   siguiendo la convencion BEM: bloque--modificador.
+   ============================================================ */
+.resultado {
+  background-color: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-left: 5px solid var(--texto-suave); /* Franja de color a la izquierda */
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.resultado strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+  margin-bottom: 4px;
+}
+
+.resultado--exito {
+  border-left-color: var(--exito);
+  color: var(--exito);
+}
+
+.resultado--info {
+  border-left-color: var(--primario);
+  color: var(--primario);
+}
+
+.resultado--alerta {
+  border-left-color: var(--alerta);
+  color: var(--alerta);
+}
+
+.resultado--error {
+  border-left-color: var(--error);
+  color: var(--error);
+}
+
+/* Cuando queremos dos resultados uno al lado del otro
+   (version if/else y version switch). */
+.rejilla-doble {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+/* ============================================================
+   10. TABLA DE MULTIPLICAR GENERADA POR JAVASCRIPT
+   ------------------------------------------------------------
+   border-collapse: collapse fusiona los bordes de las celdas
+   para que se vea una sola linea y no una doble.
+
+   El contenedor lleva overflow-x: auto: en moviles la tabla
+   podra desplazarse en horizontal sin romper la pagina.
+   ============================================================ */
+.contenedor-tabla {
+  overflow-x: auto;
+}
+
+.tabla-multiplicar {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+}
+
+.tabla-multiplicar caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--texto-suave);
+  font-family: var(--fuente);
+  padding-bottom: 10px;
+}
+
+.tabla-multiplicar th,
+.tabla-multiplicar td {
+  border: 1px solid var(--borde);
+  padding: 9px 14px;
+  text-align: center;
+}
+
+.tabla-multiplicar thead th {
+  background-color: var(--superficie-2);
+  color: var(--primario);
+}
+
+/* :nth-child(even) selecciona las filas pares: filas cebra.
+   Ayuda muchisimo a seguir una fila larga con la vista. */
+.tabla-multiplicar tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tabla-multiplicar tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.08);
+}
+
+.resultado-celda {
+  color: var(--exito);
+  font-weight: 600;
+}
+
+/* ============================================================
+   11. AVISOS (notas para el aula)
+   ============================================================ */
+.aviso {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 0.95rem;
+  border: 1px solid var(--borde);
+  background-color: var(--superficie-2);
+}
+
+.aviso--peligro {
+  border-color: rgba(248, 113, 113, 0.5);
+  background-color: rgba(248, 113, 113, 0.08);
+}
+
+.aviso--consejo {
+  border-color: rgba(74, 222, 128, 0.5);
+  background-color: rgba(74, 222, 128, 0.08);
+}
+
+.aviso strong {
+  color: var(--texto);
+}
+
+/* Fragmentos de codigo dentro del texto explicativo. */
+code {
+  font-family: var(--mono);
+  background-color: #0b1220;
+  border: 1px solid var(--borde);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 0.88em;
+  color: var(--alerta);
+}
+
+/* ============================================================
+   12. PIE DE PAGINA
+   ============================================================ */
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  padding-top: 20px;
+  border-top: 1px solid var(--borde);
+}
+
+/* ============================================================
+   13. AJUSTES RESPONSIVE
+   ------------------------------------------------------------
+   Casi todo el diseño ya se adapta gracias a grid auto-fit y
+   flex-wrap. Aqui solo afinamos los espacios en pantallas
+   pequeñas, donde cada pixel de ancho cuenta.
+   ============================================================ */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+    padding: 16px 10px 40px;
+  }
+
+  .tarjeta,
+  .cabecera,
+  .indice {
+    padding: 18px 14px;
+  }
+
+  .controles {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campo,
+  select,
+  .boton {
+    width: 100%;
+  }
+}
+
+/* Respeto por quien configura su sistema para reducir el
+   movimiento (mareos, vertigo). Desactivamos las animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   EXTRA SOLO PARA LA PLANTILLA DE CLASE
+   ------------------------------------------------------------
+   Estas reglas NO existen en la version resuelta del proyecto.
+   Dan formato al cartel ".aviso-modo-clase" que aparece arriba
+   del todo y que recuerda que el HTML y el CSS ya vienen hechos
+   y que lo unico que se escribe en vivo es el JavaScript.
+
+   Reutilizamos las variables ya declaradas en :root, asi el
+   aviso encaja con el resto del tema oscuro sin inventar
+   colores nuevos.
+   ============================================================ */
+.aviso-modo-clase {
+  background-color: var(--superficie-2);
+  /* Barra amarilla a la izquierda: llama la atencion sin gritar. */
+  border-left: 4px solid var(--alerta);
+  border-radius: var(--radio);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  /* Un punto mas pequeño que el texto normal: es un apunte, no contenido. */
+  font-size: 0.92rem;
+  color: var(--texto-suave);
+}
+
+/* El "MODO CLASE" en negrita se pinta del color de la barra
+   para que los dos elementos se lean como una sola unidad. */
+.aviso-modo-clase strong {
+  color: var(--alerta);
+}
+
+/* El enlace a la version resuelta usa el color primario del tema. */
+.aviso-modo-clase a {
+  color: var(--primario);
+}
