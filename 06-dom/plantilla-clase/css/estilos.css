@@ -956,3 +956,10 @@ code {
 .aviso-modo-clase strong {
   color: var(--alerta);
 }
+
+/* El enlace a la versión resuelta usa el color primario del tema.
+   Sin esta regla el navegador lo pintaría con su azul por defecto,
+   que sobre el fondo oscuro casi no se lee. */
+.aviso-modo-clase a {
+  color: var(--primario);
+}

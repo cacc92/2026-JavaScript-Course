@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  PROYECTO 09 - ASINCRONIA EN JAVASCRIPT
+  Curso: Full Stack 2 - Desarrollo Front End
+
+  Este archivo es solo la ESTRUCTURA (el esqueleto) de la pagina.
+  - Los estilos viven en css/estilos.css
+  - El comportamiento vive en los cinco archivos de la carpeta js/
+
+  Los <script> llevan el atributo "defer": eso significa que el navegador
+  descarga el archivo mientras sigue leyendo el HTML, y lo EJECUTA al final,
+  cuando el documento ya esta completo. Gracias a defer podemos usar
+  document.getElementById(...) sin miedo a que el elemento aun no exista,
+  y ademas los scripts se ejecutan en el mismo orden en que se escriben.
+  ============================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>09 · Asincronía: callbacks, promesas, async/await y fetch · Plantilla de clase</title>
+  <!-- Icono de la pestana escrito EN LINEA con un data URI (un SVG diminuto
+       con un emoji dentro). Sin esta linea el navegador pide /favicon.ico por
+       su cuenta y, como ese archivo no existe, deja un 404 rojo en la consola
+       justo cuando estamos ensenando a leerla. Asi no hace falta ningun
+       archivo extra ni ninguna peticion de red. -->
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48dGV4dCB5PScuOWVtJyBmb250LXNpemU9Jzg4Jz7ij7M8L3RleHQ+PC9zdmc+">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+<div class="aviso-modo-clase">
+  <strong>MODO CLASE</strong> — el HTML y el CSS ya estan listos. Lo que se escribe en vivo es el
+  JavaScript de la carpeta <code>js/</code>. La version resuelta esta en
+  <a href="../index.html">la carpeta del proyecto</a>.
+</div>
+<div class="contenedor">
+
+  <!-- ==========================================================
+       CABECERA DEL PROYECTO
+       ========================================================== -->
+  <header class="cabecera">
+    <a class="volver" href="../../index.html">← Volver al índice del curso</a>
+    <h1>09 · Asincronía: callbacks, promesas, async/await y fetch</h1>
+    <p class="lema">
+      Aprenderás por qué JavaScript puede esperar sin bloquearse: cómo funciona el
+      <strong>event loop</strong>, cómo se encadenan <strong>promesas</strong>, cómo
+      <strong>async/await</strong> convierte código enredado en código legible y cómo pedir
+      datos reales a un servidor con <strong>fetch</strong> cuidando los estados de la interfaz
+      (cargando, éxito, error y vacío).
+    </p>
+    <div class="etiquetas">
+      <span class="etiqueta">nivel: intermedio</span>
+      <span class="etiqueta">duración: 3 sesiones</span>
+      <span class="etiqueta">requiere: DOM y funciones</span>
+      <span class="etiqueta">fetch: mejor con Live Server</span>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       INDICE DE SECCIONES (enlaces ancla)
+       Un enlace ancla es un <a href="#id"> que salta al elemento
+       de la misma pagina cuyo atributo id coincide.
+       ========================================================== -->
+  <nav class="indice" aria-label="Índice de secciones">
+    <h2>Índice del proyecto</h2>
+    <ol>
+      <li><a href="#event-loop">1 · Síncrono vs asíncrono y el event loop</a></li>
+      <li><a href="#callbacks">2 · Callbacks y el callback hell</a></li>
+      <li><a href="#promesas">3 · Promesas y combinadores</a></li>
+      <li><a href="#async-await">4 · async / await</a></li>
+      <li><a href="#fetch">5 · fetch y peticiones HTTP</a></li>
+      <li><a href="#app">6 · Proyecto práctico: lista de usuarios</a></li>
+    </ol>
+  </nav>
+
+  <!-- ==========================================================
+       CONSOLA GENERAL
+       El sistema de "consola visual" del curso usa por convención un
+       elemento con id="salida". Aquí lo usamos como consola de bienvenida.
+       Cada sección tendrá además su propia consola independiente.
+       ========================================================== -->
+  <section class="seccion" id="bienvenida">
+    <h2>Consola visual del proyecto</h2>
+    <p class="descripcion">
+      Todo lo que este proyecto imprime aparece en dos sitios a la vez: en la consola del
+      navegador (tecla <code>F12</code>) y en estos bloques oscuros de la página. Así el
+      código se puede seguir en clase sin abrir las herramientas de desarrollo.
+    </p>
+    <span class="etiqueta-consola">consola general</span>
+    <pre id="salida" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 1 - EVENT LOOP
+       ========================================================== -->
+  <section class="seccion" id="event-loop">
+    <h2>1 · Síncrono vs asíncrono y el event loop</h2>
+    <p class="descripcion">
+      JavaScript tiene <strong>un solo hilo</strong>: hace una cosa cada vez. Aun así puede
+      atender temporizadores, animaciones y peticiones de red sin congelarse. El truco tiene
+      nombre: <em>event loop</em>.
+    </p>
+
+    <div class="nota">
+      <strong>La analogía de la fila del banco.</strong> Código <em>síncrono</em> es una única
+      caja atendiendo: hasta que el cliente de delante no termina, nadie avanza. Código
+      <em>asíncrono</em> es esa misma caja, pero cuando un trámite necesita esperar (una firma
+      del director, por ejemplo) el cajero le da un número al cliente, lo manda a la sala de
+      espera y sigue atendiendo. Cuando la firma llega, avisan al cliente y vuelve a la caja.
+    </div>
+
+    <h3>1.1 · El orden real de ejecución</h3>
+    <p>
+      Antes de pulsar el botón, pide a la clase que prediga el orden en que se imprimirán
+      cuatro mensajes: dos normales, uno dentro de <code>setTimeout(..., 0)</code> y uno dentro
+      de <code>Promise.resolve().then(...)</code>.
+    </p>
+    <div class="botonera">
+      <button id="btn-orden-ejecucion">Ejecutar demo de orden</button>
+      <button id="btn-explicar-orden" class="secundario">Explicar el resultado</button>
+      <button id="btn-bloquear-hilo" class="alerta">Bloquear el hilo 2 segundos</button>
+    </div>
+
+    <h3>1.2 · Temporizadores: setTimeout y clearTimeout</h3>
+    <p>
+      <code>setTimeout</code> programa una tarea para "dentro de un rato" y devuelve un
+      identificador. Con ese identificador, <code>clearTimeout</code> puede cancelarla antes de
+      que ocurra.
+    </p>
+    <div class="botonera">
+      <button id="btn-programar-timeout">Programar aviso (3 s)</button>
+      <button id="btn-cancelar-timeout" class="peligro">Cancelar aviso</button>
+    </div>
+
+    <h3>1.3 · Repeticiones: setInterval y clearInterval</h3>
+    <p>
+      <code>setInterval</code> repite una tarea cada cierto tiempo <em>hasta que alguien la
+      detiene</em>. Olvidar el <code>clearInterval</code> es una de las fugas de memoria más
+      típicas del principiante.
+    </p>
+    <div class="botonera">
+      <button id="btn-iniciar-cuenta" class="exito">Iniciar cuenta atrás (10)</button>
+      <button id="btn-detener-cuenta" class="peligro">Detener cuenta atrás</button>
+      <span class="insignia" id="marcador-cuenta">cuenta atrás detenida</span>
+    </div>
+
+    <div class="botonera">
+      <button id="btn-limpiar-1" class="secundario">Limpiar consola</button>
+    </div>
+    <span class="etiqueta-consola">consola · event loop</span>
+    <pre id="salida-eventloop" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 2 - CALLBACKS
+       ========================================================== -->
+  <section class="seccion" id="callbacks">
+    <h2>2 · Callbacks y el callback hell</h2>
+    <p class="descripcion">
+      Un <strong>callback</strong> es simplemente una función que le pasamos a otra función para
+      que la llame cuando termine su trabajo. Fue la primera forma de escribir código asíncrono
+      en JavaScript... y también la primera fuente de dolor de cabeza.
+    </p>
+
+    <div class="nota">
+      <strong>Analogía:</strong> dejas tu número de teléfono en el taller mecánico. No te quedas
+      allí de pie mirando; te vas a hacer otras cosas y ellos te llaman cuando el coche está
+      listo. Tu número de teléfono es el <em>callback</em>.
+    </div>
+
+    <div class="botonera">
+      <button id="btn-callback-simple">Callback asíncrono simple</button>
+      <button id="btn-callback-error" class="alerta">Convención error-first</button>
+      <button id="btn-callback-hell" class="peligro">Callback hell (pirámide)</button>
+      <button id="btn-callback-plano" class="exito">La misma lógica con promesas</button>
+      <button id="btn-limpiar-2" class="secundario">Limpiar consola</button>
+    </div>
+
+    <span class="etiqueta-consola">consola · callbacks</span>
+    <pre id="salida-callbacks" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 3 - PROMESAS
+       ========================================================== -->
+  <section class="seccion" id="promesas">
+    <h2>3 · Promesas: estados, encadenado y combinadores</h2>
+    <p class="descripcion">
+      Una promesa es un objeto que representa un valor que <em>todavía no existe</em>, pero que
+      existirá (o fallará) en el futuro. Tiene exactamente tres estados y solo puede cambiar de
+      estado una vez.
+    </p>
+
+    <div class="nota">
+      <strong>Los tres estados:</strong>
+      <code>pending</code> (pendiente, aún trabajando) →
+      <code>fulfilled</code> (cumplida, hay un valor) o
+      <code>rejected</code> (rechazada, hay un error). Una promesa cumplida o rechazada se dice
+      que está <em>settled</em> (resuelta, en el sentido de "ya no cambiará").
+    </div>
+
+    <h3>3.1 · Crear y consumir promesas</h3>
+    <div class="botonera">
+      <button id="btn-promesa-ok" class="exito">Promesa que se cumple</button>
+      <button id="btn-promesa-fallo" class="peligro">Promesa que se rechaza</button>
+      <button id="btn-estados">Ver los 3 estados en vivo</button>
+    </div>
+
+    <h3>3.2 · Encadenar then y errores clásicos</h3>
+    <div class="botonera">
+      <button id="btn-encadenar">Encadenar then (valores y promesas)</button>
+      <button id="btn-olvidar-return" class="alerta">Error: olvidar el return</button>
+      <button id="btn-catch-tardio" class="alerta">Error: el catch que no captura</button>
+    </div>
+
+    <h3>3.3 · Combinadores</h3>
+    <div class="tabla-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Combinador</th>
+            <th>Se cumple cuando…</th>
+            <th>Se rechaza cuando…</th>
+            <th>Úsalo para…</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Promise.all</code></td>
+            <td>TODAS se cumplen</td>
+            <td>la PRIMERA que falle</td>
+            <td>necesitas todos los datos sí o sí</td>
+          </tr>
+          <tr>
+            <td><code>Promise.allSettled</code></td>
+            <td>siempre (nunca se rechaza)</td>
+            <td>nunca</td>
+            <td>quieres saber qué fue bien y qué fue mal</td>
+          </tr>
+          <tr>
+            <td><code>Promise.race</code></td>
+            <td>la PRIMERA que termine, sea como sea</td>
+            <td>si la primera en terminar falla</td>
+            <td>tiempos límite (timeouts)</td>
+          </tr>
+          <tr>
+            <td><code>Promise.any</code></td>
+            <td>la PRIMERA que se CUMPLA</td>
+            <td>solo si fallan todas</td>
+            <td>varios servidores espejo, vale el más rápido que funcione</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="botonera">
+      <button id="btn-all">Promise.all</button>
+      <button id="btn-allsettled">Promise.allSettled</button>
+      <button id="btn-race">Promise.race</button>
+      <button id="btn-any">Promise.any</button>
+      <button id="btn-limpiar-3" class="secundario">Limpiar consola</button>
+    </div>
+
+    <span class="etiqueta-consola">consola · promesas</span>
+    <pre id="salida-promesas" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 4 - ASYNC / AWAIT
+       ========================================================== -->
+  <section class="seccion" id="async-await">
+    <h2>4 · async / await</h2>
+    <p class="descripcion">
+      <code>async/await</code> no sustituye a las promesas: es una forma de <em>escribirlas</em>
+      que se lee como código normal, de arriba abajo. Por dentro sigue habiendo promesas.
+    </p>
+
+    <div class="nota ok">
+      <strong>Dos reglas que hay que memorizar.</strong>
+      1) Una función <code>async</code> SIEMPRE devuelve una promesa, aunque su
+      <code>return</code> sea un número. 2) <code>await</code> solo puede usarse dentro de una
+      función <code>async</code> (o en el nivel superior de un módulo ES).
+    </div>
+
+    <div class="botonera">
+      <button id="btn-then-vs-await">Mismo código: then vs await</button>
+      <button id="btn-async-devuelve-promesa">Una async siempre devuelve promesa</button>
+      <button id="btn-try-catch" class="alerta">try / catch / finally</button>
+    </div>
+
+    <h3>4.1 · Secuencial vs paralelo (con cronómetro)</h3>
+    <p>
+      Tres tareas de 600 ms cada una. Si las esperamos de una en una dentro de un bucle,
+      tardaremos unos 1800 ms. Si las lanzamos a la vez con <code>Promise.all</code>, unos
+      600 ms. Esta es la optimización más rentable del día.
+    </p>
+    <div class="botonera">
+      <button id="btn-secuencial" class="alerta">await dentro de un bucle</button>
+      <button id="btn-paralelo" class="exito">Promise.all (en paralelo)</button>
+      <button id="btn-comparar-tiempos">Comparar los dos y medir</button>
+    </div>
+
+    <div class="medidor" id="medidor">
+      <div class="medida secuencial">
+        <span>Secuencial</span>
+        <span class="pista"><span class="barra" id="barra-secuencial"></span></span>
+        <span class="ms" id="ms-secuencial">— ms</span>
+      </div>
+      <div class="medida paralelo">
+        <span>Paralelo</span>
+        <span class="pista"><span class="barra" id="barra-paralelo"></span></span>
+        <span class="ms" id="ms-paralelo">— ms</span>
+      </div>
+    </div>
+
+    <div class="botonera">
+      <button id="btn-limpiar-4" class="secundario">Limpiar consola</button>
+    </div>
+    <span class="etiqueta-consola">consola · async/await</span>
+    <pre id="salida-async" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 5 - FETCH
+       ========================================================== -->
+  <section class="seccion" id="fetch">
+    <h2>5 · fetch: hablar con un servidor</h2>
+    <p class="descripcion">
+      <code>fetch()</code> lanza una petición HTTP y devuelve una promesa que se cumple con un
+      objeto <code>Response</code>. Leer el cuerpo de esa respuesta (<code>response.json()</code>)
+      es una SEGUNDA promesa. Por eso siempre hay dos esperas.
+    </p>
+
+    <div class="nota peligro">
+      <strong>⚠️ El error número uno con fetch:</strong> un 404 o un 500 <em>no</em> rechazan la
+      promesa. Para <code>fetch</code>, "el servidor respondió" ya es un éxito, aunque la
+      respuesta sea un error. Solo se rechaza si la red falla del todo. Por eso hay que
+      comprobar <code>response.ok</code> a mano y lanzar el error nosotros.
+    </div>
+
+    <div class="botonera">
+      <button id="btn-demo-get">GET y objeto Response</button>
+      <button id="btn-demo-404" class="alerta">Demostrar el 404 silencioso</button>
+      <button id="btn-post" class="exito">POST con cabeceras y body JSON</button>
+    </div>
+
+    <h3>5.1 · Cancelar una petición con AbortController</h3>
+    <p>
+      Si el usuario cambia de pantalla mientras se descargan datos, seguir esperando es tirar
+      batería y ancho de banda. <code>AbortController</code> nos da un mando a distancia para
+      cancelar.
+    </p>
+    <div class="botonera">
+      <button id="btn-peticion-lenta">Iniciar petición lenta (5 s)</button>
+      <button id="btn-cancelar-peticion" class="peligro">Cancelar petición</button>
+      <button id="btn-limpiar-5" class="secundario">Limpiar consola</button>
+    </div>
+
+    <span class="etiqueta-consola">consola · fetch</span>
+    <pre id="salida-fetch" class="consola" aria-live="polite"></pre>
+  </section>
+
+  <!-- ==========================================================
+       SECCION 6 - PROYECTO PRACTICO
+       ========================================================== -->
+  <section class="seccion" id="app">
+    <h2>6 · Proyecto práctico: lista de usuarios</h2>
+    <p class="descripcion">
+      Juntamos todo: pedimos usuarios a una API real, mostramos un spinner mientras llegan,
+      pintamos tarjetas cuando llegan, enseñamos una pantalla de error si algo falla y una
+      pantalla de "sin resultados" si el filtro no encuentra nada.
+    </p>
+
+    <div class="nota ok">
+      <strong>Este ejemplo funciona SIEMPRE, incluso sin internet.</strong> La función
+      <code>obtenerUsuarios()</code> intenta primero un <code>fetch</code> real a
+      <code>jsonplaceholder.typicode.com</code>. Si falla por lo que sea (sin conexión, archivo
+      abierto con <code>file://</code>, API caída), captura el error y devuelve un array de datos
+      simulados tras un retraso artificial. La insignia de abajo indica de dónde vienen los datos
+      que estás viendo.
+    </div>
+
+    <div class="botonera">
+      <button id="btn-cargar-usuarios">Cargar usuarios</button>
+      <button id="btn-error-deliberado" class="peligro">Provocar un error</button>
+      <button id="btn-vaciar" class="secundario">Vaciar lista</button>
+      <input type="search" id="filtro-usuarios" placeholder="Filtrar por nombre o ciudad…" aria-label="Filtrar usuarios">
+    </div>
+
+    <div class="botonera">
+      <span class="insignia" id="estado-datos">sin datos todavía</span>
+    </div>
+
+    <!-- Aquí es donde el JavaScript pinta los cuatro estados de la interfaz -->
+    <div id="zona-usuarios" aria-live="polite">
+      <div class="estado">
+        <span class="icono">👥</span>
+        <p>Pulsa «Cargar usuarios» para pedir los datos al servidor.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <p>Full Stack 2 · Desarrollo Front End · Proyecto 09 — Asincronía</p>
+    <p><a class="volver" href="../../index.html">← Volver al índice del curso</a></p>
+  </footer>
+
+</div>
+
+<!-- ==========================================================
+     CARGA DE LOS SCRIPTS
+     Cada archivo envuelve su código en una IIFE, así que ninguno
+     puede pisar las variables de otro aunque usen el mismo nombre.
+     ========================================================== -->
+<script src="js/01-event-loop.js" defer></script>
+<script src="js/02-callbacks.js" defer></script>
+<script src="js/03-promesas.js" defer></script>
+<script src="js/04-async-await.js" defer></script>
+<script src="js/05-fetch.js" defer></script>
+</body>
+</html>

@@ -678,3 +678,44 @@ tbody tr:hover { background-color: rgba(56, 189, 248, 0.05); }
     animation: none !important;
   }
 }
+
+/* ============================================================
+   19. AVISO DE MODO CLASE  (solo en plantilla-clase)
+   ------------------------------------------------------------
+   Estas reglas NO existen en el CSS del proyecto resuelto: son
+   exclusivas de la plantilla. Dan formato al cartel que recuerda
+   que el HTML y el CSS ya vienen hechos y que lo unico que se
+   escribe en vivo es el JavaScript de la carpeta js/.
+
+   Reutilizamos las variables ya definidas en :root para que el
+   aviso encaje con el resto del diseno sin inventar colores.
+   ============================================================ */
+.aviso-modo-clase {
+  background-color: var(--superficie-2);
+  /* Un borde grueso SOLO a la izquierda es el patron clasico de
+     "nota al margen": llama la atencion sin gritar. */
+  border-left: 4px solid var(--alerta);
+  border-radius: var(--radio);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  /* Algo mas pequeno que el texto normal: es un apunte, no contenido. */
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--texto-suave);
+}
+
+/* La palabra MODO CLASE en el color de alerta, para localizarla de un golpe. */
+.aviso-modo-clase strong {
+  color: var(--alerta);
+  letter-spacing: 0.04em;
+}
+
+/* El <code> del aviso hereda el estilo general de code, pero le
+   subimos el contraste porque va sobre una superficie mas clara. */
+.aviso-modo-clase code {
+  color: var(--primario);
+}
+
+.aviso-modo-clase a {
+  color: var(--primario);
+}
